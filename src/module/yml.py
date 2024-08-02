@@ -1,5 +1,4 @@
 import yaml
-from pprint import pprint
 
 
 class Yml:
