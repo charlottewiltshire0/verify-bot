@@ -12,7 +12,7 @@ echo (%time%)    # #    ###   #       ###   #   #   ###   #       ###    ###    
 echo (%time%)                                      #   #
 echo (%time%)                                       ###
 echo %copyright%
-rm ./poetry.lock
+del ./poetry.lock
 python ./installer.py
 :runScript
 poetry run python ./run.py
