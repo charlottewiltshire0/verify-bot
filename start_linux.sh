@@ -12,6 +12,8 @@ echo "($time)    # #    ###   #       ###   #   #   ###   #       ###    ###    
 echo "($time)                                      #   #"
 echo "($time)                                       ###"
 echo "$copyright"
+rm ./poetry.lock
+python3 ./installer.py
 while true; do
     poetry run python ./run.py
     echo "($time) Bot closed/crashed... restarting!"
