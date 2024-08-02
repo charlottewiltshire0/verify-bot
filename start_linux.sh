@@ -1,0 +1,18 @@
+#!/bin/bash
+echo "StarStudio"
+copyright="Copyright 2023 StarStudio. All rights reserved."
+clear
+echo "($time)"
+echo "($time)"
+echo "($time)   #   #   ###   # ##    ###   #   #   ## #  # ##    ##     ###    #"
+echo "($time)   #   #  #   #  ##  #  #   #   # #   #  #   ##  #    #    #   #  ####"
+echo "($time)   # # #  #   #  #      #####    #     ##    #        #    #####   #"
+echo "($time)   # # #  #   #  #      #       # #   #      #        #    #       #"
+echo "($time)    # #    ###   #       ###   #   #   ###   #       ###    ###    #"
+echo "($time)                                      #   #"
+echo "($time)                                       ###"
+echo "$copyright"
+while true; do
+    poetry run python ./run.py
+    echo "($time) Bot closed/crashed... restarting!"
+done
