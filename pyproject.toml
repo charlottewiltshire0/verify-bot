@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "veritybot"
+version = "0.1.0"
+description = "Бот верификации, который верифицирует пользователя."
+authors = ["StarStudio <charlottewiltshire27@outlook.com>"]
+license = "All rights reserved"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+disnake = "^2.9.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
