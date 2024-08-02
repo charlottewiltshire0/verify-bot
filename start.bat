@@ -12,8 +12,9 @@ echo (%time%)    # #    ###   #       ###   #   #   ###   #       ###    ###    
 echo (%time%)                                      #   #
 echo (%time%)                                       ###
 echo %copyright%
-:runScript
+rm ./poetry.lock
 python ./installer.py
+:runScript
 poetry run python ./run.py
 echo (%time%) Bot closed/crashed... restarting!
 goto runScript
