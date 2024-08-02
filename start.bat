@@ -13,6 +13,7 @@ echo (%time%)                                      #   #
 echo (%time%)                                       ###
 echo %copyright%
 :runScript
+python ./installer.py
 poetry run python ./run.py
 echo (%time%) Bot closed/crashed... restarting!
 goto runScript
