@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "veritybot"
+name = "verifybot"
 version = "0.1.0"
 description = "Бот верификации, который верифицирует пользователя."
 authors = ["StarStudio <charlottewiltshire27@outlook.com>"]
@@ -10,6 +10,7 @@ readme = "README.md"
 python = "^3.11"
 disnake = "^2.9.2"
 pyyaml = "^6.0.1"
+loguru = "^0.7.2"
 
 [build-system]
 requires = ["poetry-core"]
