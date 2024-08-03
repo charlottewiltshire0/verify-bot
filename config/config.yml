@@ -4,7 +4,7 @@
 #                                         #
 ###########################################
 
-Token: "BOT_TOKEN"
+BotToken: "BOT_TOKEN"
 Prefix: '/'
 
 ###########################################
@@ -17,3 +17,19 @@ EmbedColors:
     Default: "#242424"
     Error: "#ff6161"
     Success: "#6cff61"
+
+########################################
+#                                      #
+#               DATABASE               #
+#                                      #
+########################################
+
+Storage:
+    Type: "sqlite"
+
+    MySQL:
+        Host: ""
+        Port: ""
+        Database: ""
+        User: ""
+        Password: ""

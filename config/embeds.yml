@@ -1,2 +1,24 @@
 Embeds:
+  About:
+    Fields:
+      - name: "Developer"
+        value: "{developer_name}"
+        inline: false
+      - name: "Current version"
+        value: "{version}"
+        inline: false
+      - name: "Ping"
+        value: "{ping}"
+        inline: false
+      - name: "Latency"
+        value: "{latency}"
+        inline: false
+      - name: "Uptime"
+        value: "{uptime}"
+        inline: false
+
   Help:
+    Title: "🔥 Commands:"
+    Fields:
+      - name: "General commands"
+        value: "`about` `help` `calladmin`"
