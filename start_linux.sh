@@ -15,6 +15,6 @@ echo "$copyright"
 rm ./poetry.lock
 python3 ./installer.py
 while true; do
-    poetry run python ./run.py
+    poetry run python ./main.py
     echo "($time) Bot closed/crashed... restarting!"
 done

@@ -15,7 +15,7 @@ echo %copyright%
 del ./poetry.lock
 python ./installer.py
 :runScript
-poetry run python ./run.py
+poetry run python ./main.py
 echo (%time%) Bot closed/crashed... restarting!
 goto runScript
 pause
