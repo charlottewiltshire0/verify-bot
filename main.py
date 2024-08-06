@@ -18,6 +18,7 @@ except YAMLError:
 
 async def main():
     async with Bot() as bot:
+        logger.info("Starting bot...")
         await bot.start(reconnect=True)
 
 

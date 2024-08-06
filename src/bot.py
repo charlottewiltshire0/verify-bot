@@ -2,16 +2,23 @@ from __future__ import annotations
 from typing import Optional
 import disnake
 from disnake.ext import commands
-from src.module import Yml
-import asyncio
+from src.module import Yml, loadExtensions
+from loguru import logger
+from datetime import datetime
+
 
 __all__ = (
     "Bot"
 )
 
+
 config = Yml('./config/config.yml')
 data = config.read()
 prefix = data.get('Prefix')
+
+
+log_filename = f"./logs/bot_{datetime.now().strftime('%Y-%m-%d')}.log"
+logger.add(log_filename, rotation="1 week", level="INFO", format="{time} | {level} | {message}")
 
 
 class Bot(commands.AutoShardedBot):
@@ -22,6 +29,8 @@ class Bot(commands.AutoShardedBot):
             chunk_guilds_at_startup=False
         )
 
+        loadExtensions(self, 'src/events', 'src/commands')
+
     async def success(self, content: str, interaction: disnake.Interaction, ephemeral: Optional[bool]):
         """"SENDING SUCCESS MESSAGE"""
         pass
@@ -31,16 +40,19 @@ class Bot(commands.AutoShardedBot):
         pass
 
     async def __aenter__(self):
-        token = data.get('Token')
+        token = data.get('BotToken')
         if not token:
-            raise ValueError("Discord bot token not found in config.yml")
+            logger.error("Your bot token is incorrect! Shutting down...")
+            raise ValueError("Your bot token is incorrect! Shutting down...")
 
+        logger.info("Logging in...")
         await self.login(token)
+        logger.info("Connecting...")
         await self.connect()
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
+        logger.info("Closing connection...")
         await self.close()
-
-# loadExtensions(bot, 'src/events')
-# loadExtensions(bot, 'src/commands')
+        if exc_type:
+            logger.error(f"An error occurred: {exc_type.__name__} - {exc}")
