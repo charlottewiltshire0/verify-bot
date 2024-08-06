@@ -1,1 +1,1 @@
-# verify-bot
+<p align="center"><img src="https://socialify.git.ci/charlottewiltshire0/verify-bot/image?description=1&amp;descriptionEditable=This%20bot%20facilitates%20manual%20user%20verification%20on%20the%20server%20by%20streamlining%20the%20process%20and%20ensuring%20accurate%20access%20control.&amp;forks=1&amp;issues=1&amp;language=1&amp;logo=https%3A%2F%2Fcdn.prod.website-files.com%2F6257adef93867e50d84d30e2%2F636e0a6cc3c481a15a141738_icon_clyde_white_RGB.png&amp;name=1&amp;owner=1&amp;pattern=Plus&amp;pulls=1&amp;stargazers=1&amp;theme=Auto" alt="project-image"></p>
