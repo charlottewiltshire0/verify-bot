@@ -14,7 +14,6 @@ __all__ = (
 
 config = Yml('./config/config.yml')
 data = config.read()
-prefix = data.get('Prefix')
 
 
 log_filename = f"./logs/bot_{datetime.now().strftime('%Y-%m-%d')}.log"
@@ -24,7 +23,7 @@ logger.add(log_filename, rotation="1 week", level="INFO", format="{time} | {leve
 class Bot(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(
-            command_prefix=prefix,
+            command_prefix=data.get('Prefix'),
             intents=disnake.Intents.all(),
             chunk_guilds_at_startup=False
         )
