@@ -12,42 +12,42 @@ class EmbedFactory:
         self.color_data = Yml(color_config_path).load()
         self.formatter = TextFormatter(bot)
 
-    def create_embed(self, preset: Optional[str] = None, **kwargs) -> disnake.Embed:
+    def create_embed(self, preset: Optional[str] = None, user: disnake.Member = None, **kwargs) -> disnake.Embed:
         embed_dict = self.embed_data.get('Embeds', {}).get(preset, {}) if preset else kwargs
 
         embed = disnake.Embed(
-            title=self.formatter.format_text(embed_dict.get('Title', '')),
-            description=self.formatter.format_text(embed_dict.get('Description', '')),
+            title=self.formatter.format_text(embed_dict.get('Title', ''), user=user),
+            description=self.formatter.format_text(embed_dict.get('Description', ''), user=user),
             url=embed_dict.get('Url', ''),
             color=disnake.Color.from_rgb(*self.hex_to_rgb(embed_dict.get('Color', self.color_data['EmbedColors'].get('Default', '#242424'))))
         )
 
         if 'Author' in embed_dict:
             embed.set_author(
-                name=self.formatter.format_text(embed_dict['Author']),
+                name=self.formatter.format_text(embed_dict['Author'], user=user),
                 url=embed_dict.get('AuthorUrl', None),
-                icon_url=self.formatter.format_text(embed_dict.get('AuthorIcon', None))
+                icon_url=self.formatter.format_text(embed_dict.get('AuthorIcon', None), user=user)
             )
 
         if 'Footer' in embed_dict:
             embed.set_footer(
-                text=self.formatter.format_text(embed_dict['Footer']),
-                icon_url=self.formatter.format_text(embed_dict.get('FooterIcon', None))
+                text=self.formatter.format_text(embed_dict['Footer'], user=user),
+                icon_url=self.formatter.format_text(embed_dict.get('FooterIcon', None), user=user)
             )
 
         if 'Thumbnail' in embed_dict:
-            embed.set_thumbnail(url=self.formatter.format_text(embed_dict['Thumbnail']))
+            embed.set_thumbnail(url=self.formatter.format_text(embed_dict['Thumbnail'], user=user))
 
         if 'Image' in embed_dict:
-            embed.set_image(url=self.formatter.format_text(embed_dict['Image']))
+            embed.set_image(url=self.formatter.format_text(embed_dict['Image'], user=user))
 
         if embed_dict.get('Timestamp', False):
             embed.timestamp = disnake.utils.utcnow()
 
         for field in embed_dict.get('Fields', []):
             embed.add_field(
-                name=self.formatter.format_text(field.get('name', 'No Name')),
-                value=self.formatter.format_text(field.get('value', 'No Value')),
+                name=self.formatter.format_text(field.get('name', 'No Name'), user=user),
+                value=self.formatter.format_text(field.get('value', 'No Value'), user=user),
                 inline=field.get('inline', False)
             )
 

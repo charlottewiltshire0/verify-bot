@@ -10,14 +10,14 @@ class TextFormatter:
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    def format_text(self, text: str, user: disnake.Member = None) -> str:
+    async def format_text(self, text: str, user: disnake.Member = None) -> str:
         placeholders = {
             '{api-ping}': round(self.bot.latency*1000),
             '{bot-pfp}': str(self.bot.user.avatar.url) if self.bot.user.avatar else '',
             '{bot-displayname}': self.bot.user.name,
             '{bot-id}': str(self.bot.user.id),
             '{developer-displayname}': '<@671761516265078789>',
-            '{developer-pfp}': '<@671761516265078789>',
+            '{developer-pfp}': await self.get_user_avatar_url(671761516265078789),
             '{user-pfp}': str(user.avatar.url) if user and user.avatar else '',
             '{user-displayname}': user.display_name if user else '',
         }
@@ -27,9 +27,12 @@ class TextFormatter:
 
         return text
 
-    # def get_uptime(self) -> str:
-    #     delta = disnake.utils.utcnow() - self.bot.start_time
-    #     return str(delta).split('.')[0]
+    async def get_user_avatar_url(self, user_id: int) -> str:
+        try:
+            user = await self.bot.fetch_user(user_id)
+            return str(user.avatar.url) if user.avatar else ''
+        except disnake.NotFound:
+            return ''
 
 
 def loadExtensions(bot: commands.Bot, *directories: str):
