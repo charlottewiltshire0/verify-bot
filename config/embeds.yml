@@ -1,20 +1,41 @@
 Embeds:
-  About:
+  Example:
+    Author: "Example Author"
+    AuthorIcon: "https://i.pinimg.com/736x/86/6b/e4/866be4dc8c9ce51aa87bf07cf3dad15e.jpg"
+    AuthorUrl: "https://example.com"
+    Title: "Example Title"
+    Description: "Example Description"
+    Url: "https://example.com"
+    Timestamp: true
+    Footer: "Ticket System"
+    FooterIcon: "https://i.pinimg.com/736x/86/6b/e4/866be4dc8c9ce51aa87bf07cf3dad15e.jpg"
+    Thumbnail: "https://i.pinimg.com/736x/86/6b/e4/866be4dc8c9ce51aa87bf07cf3dad15e.jpg"
+    Image: "https://i.pinimg.com/736x/86/6b/e4/866be4dc8c9ce51aa87bf07cf3dad15e.jpg"
     Fields:
-      - name: "Developer"
-        value: "{developer_name}"
+      - name: "Example Fields"
+        value: "Example"
         inline: false
-      - name: "Current version"
+  About:
+    Footer: "© {developer-name}"
+    FooterIcon: "{developer-pfp}"
+    Fields:
+      - name: "Разработчик"
+        value: "{developer-displayname}"
+        inline: false
+      - name: "Задержка"
+        value: "{api-ping}"
+        inline: false
+      - name: "Время работы системы"
+        value: "{uptime}"
+        inline: false
+      - name: "Текущая версия"
         value: "{version}"
         inline: false
-      - name: "Ping"
-        value: "{ping}"
+      - name: "Всего сообществ"
+        value: "{total-messages}"
         inline: false
-      - name: "Latency"
-        value: "{latency}"
-        inline: false
-      - name: "Uptime"
-        value: "{uptime}"
+      - name: "Всего пользователей"
+        value: "{total-members}"
         inline: false
 
   Help:

@@ -3,6 +3,7 @@ import os
 
 import disnake
 from disnake.ext import commands
+from loguru import logger
 
 
 class Help(commands.Cog):
@@ -11,9 +12,9 @@ class Help(commands.Cog):
 
     @commands.command(
         name="help",
-        description="Помощь и информация бота."
+        description="Need help? Shows all commands of bot."
     )
-    async def help_command(self, inter: disnake.ApplicationCommandInteraction):
+    async def help_command(self, ctx: commands.Context):
         embed = disnake.Embed(
             title="📎 Команды:",
             description="- `/player <ник>` - информация об игроке.\n- `/subscribe <канал>` - подписка на новости *("
@@ -28,14 +29,12 @@ class Help(commands.Cog):
         embed.set_author(
             name="🤍 WoreXGrief",
             url="https://discord.gg/xuGTzvtQxs",
-            icon_url=os.environ["BOT_ICON_URL"],
         )
         embed.set_footer(
             text="✨ Support Squad of StarStudio"
         )
-        await inter.response.send_message(embed=embed)
+        await ctx.send(embed=embed)
 
 
 def setup(bot: commands.Bot):
     bot.add_cog(Help(bot))
-    logger.info(f"Extension {__name__} is ready")

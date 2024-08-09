@@ -25,10 +25,11 @@ class Bot(commands.AutoShardedBot):
         super().__init__(
             command_prefix=data.get('Prefix'),
             intents=disnake.Intents.all(),
+            help_command=None,
             chunk_guilds_at_startup=False
         )
 
-        loadExtensions(self, 'src/events', 'src/commands')
+        loadExtensions(self, 'src/events', 'src/commands/general')
 
     async def success(self, content: str, interaction: disnake.Interaction, ephemeral: Optional[bool]):
         """"SENDING SUCCESS MESSAGE"""
