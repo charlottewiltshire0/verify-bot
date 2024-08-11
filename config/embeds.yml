@@ -39,7 +39,7 @@ Embeds:
         inline: false
 
   Help:
-    Title: "🔥 Commands:"
-    Fields:
-      - name: "General commands"
-        value: "`about` `help` `calladmin`"
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "Список команд"
+    Description: "**Общие команды**\n`about`, `help`, `user`, `server`\n**Команды модерации**\n`ban`, `kick`, `report`, `verify`, `unverify`, `newkick`, `newban`"
