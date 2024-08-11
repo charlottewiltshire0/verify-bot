@@ -1,38 +1,19 @@
-import datetime
-import os
-
-import disnake
 from disnake.ext import commands
-from loguru import logger
+
+from src.module import EmbedFactory
 
 
 class Help(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.embed_factory = EmbedFactory('./config/embeds.yml', './config/config.yml', bot=bot)
 
     @commands.command(
         name="help",
-        description="Need help? Shows all commands of bot."
+        description="Нужна помощь? Показывает все команды бота."
     )
     async def help_command(self, ctx: commands.Context):
-        embed = disnake.Embed(
-            title="📎 Команды:",
-            description="- `/player <ник>` - информация об игроке.\n- `/subscribe <канал>` - подписка на новости *("
-                        "нужны права админа)*\n- `/un-subscribe` - отписаться от новостей *(нужны права "
-                        "админа)*\n\n**🔗 Сcылки:**\n<:reply:1184934756320817243> **Пригласить бота - "
-                        "https://dsc.gg/worexgrief-public**\n<:reply:1184934756320817243> **Дискорд сервер - "
-                        "https://discord.gg/tAbkmQdAPy**",
-            color=0xFFFFFF,
-            timestamp=datetime.datetime.now()
-        )
-
-        embed.set_author(
-            name="🤍 WoreXGrief",
-            url="https://discord.gg/xuGTzvtQxs",
-        )
-        embed.set_footer(
-            text="✨ Support Squad of StarStudio"
-        )
+        embed = await self.embed_factory.create_embed(preset='Help', user=ctx.author)
         await ctx.send(embed=embed)
 
 
