@@ -18,7 +18,7 @@ class About(commands.Cog):
         description=""
     )
     async def help_command(self, ctx: commands.Context):
-        embed = self.embed_factory.create_embed(preset='About', user=ctx.author)
+        embed = await self.embed_factory.create_embed(preset='About', user=ctx.author)
         await ctx.send(embed=embed)
 
 

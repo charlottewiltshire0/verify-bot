@@ -13,4 +13,3 @@ class OnReady(commands.Cog):
 
 def setup(bot: commands.Bot):
     bot.add_cog(OnReady(bot))
-    logger.info(f"Extension {__name__} is ready")
