@@ -19,22 +19,22 @@ Embeds:
     Footer: "© {developer-displayname}"
     FooterIcon: "{developer-pfp}"
     Fields:
-      - name: "Разработчик"
+      - name: "<:developer:1272284487149158450> **Разработчик**"
         value: "{developer-displayname}"
         inline: false
-      - name: "Задержка"
+      - name: "<a:ping:1272284672814223390> **Задержка**"
         value: "{api-ping}"
         inline: false
-      - name: "Время работы системы"
+      - name: "<a:uptime:1272284867660611604> **Время работы системы**"
         value: "{uptime}"
         inline: false
-      - name: "Текущая версия"
+      - name: "<:github:1272285058551775272> **Текущая версия**"
         value: "{version}"
         inline: false
-      - name: "Всего сообществ"
+      - name: "<:hash_message:1272285350110433380> Всего сообществ"
         value: "{total-messages}"
         inline: false
-      - name: "Всего пользователей"
+      - name: "<:members:1272285358901559326> Всего пользователей"
         value: "{total-members}"
         inline: false
 

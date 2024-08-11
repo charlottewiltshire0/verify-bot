@@ -1,17 +1,13 @@
-import os
 import importlib
+import os
+from datetime import datetime
+import httpx
 
 import disnake
-from datetime import datetime
 from disnake.ext import commands
 from loguru import logger
+
 from src.module import Yml
-
-
-def get_version() -> str:
-    config = Yml('./config/config.yml')
-    data = config.read()
-    return data['Version']
 
 
 class TextFormatter:
@@ -96,3 +92,19 @@ def loadExtensions(bot: commands.Bot, *directories: str):
                     logger.info(f"Loaded extension: {module_name}")
                 except Exception as e:
                     logger.error(f"Failed to load extension {module_name}: {e}")
+
+
+def get_version() -> str:
+    config = Yml('./config/config.yml')
+    data = config.read()
+    version = data['Version']
+    request_latest_version = httpx.get(f'https://api.github.com/repos/charlottewiltshire0/verify-bot/releases/latest')
+    try:
+        currect_version = request_latest_version.json()['tag_name']
+    except KeyError:
+        return version
+    if version != currect_version:
+        return f"{version} (Неактуально)"
+    else:
+        return version
+
