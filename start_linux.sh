@@ -1,20 +1,51 @@
 #!/bin/bash
-echo "StarStudio"
+
+cd "$(dirname "$0")"
+title="StarStudio"
 copyright="Copyright 2023 StarStudio. All rights reserved."
 clear
-echo "($time)"
-echo "($time)"
-echo "($time)   #   #   ###   # ##    ###   #   #   ## #  # ##    ##     ###    #"
-echo "($time)   #   #  #   #  ##  #  #   #   # #   #  #   ##  #    #    #   #  ####"
-echo "($time)   # # #  #   #  #      #####    #     ##    #        #    #####   #"
-echo "($time)   # # #  #   #  #      #       # #   #      #        #    #       #"
-echo "($time)    # #    ###   #       ###   #   #   ###   #       ###    ###    #"
-echo "($time)                                      #   #"
-echo "($time)                                       ###"
+
+echo "(${date +%T})                                                      #             ##"
+echo "(${date +%T})                                                                   #  #"
+echo "(${date +%T})   #   #   ###   # ##    ###   #   #   ## #  # ##    ##     ###    #"
+echo "(${date +%T})   #   #  #   #  ##  #  #   #   # #   #  #   ##  #    #    #   #  ####"
+echo "(${date +%T})   # # #  #   #  #      #####    #     ##    #        #    #####   #"
+echo "(${date +%T})   # # #  #   #  #      #       # #   #      #        #    #       #"
+echo "(${date +%T})    # #    ###   #       ###   #   #   ###   #       ###    ###    #"
+echo "(${date +%T})                                      #   #"
+echo "(${date +%T})                                       ###"
 echo "$copyright"
-rm ./poetry.lock
-python3 ./installer.py
-while true; do
-    poetry run python ./main.py
-    echo "($time) Bot closed/crashed... restarting!"
-done
+
+if ! command -v poetry &> /dev/null; then
+    echo "Poetry is not installed. Please install Poetry first."
+    exit 1
+fi
+
+command="$1"
+shift
+
+case "$command" in
+    install)
+        echo "Installing dependencies..."
+        poetry install
+        ;;
+    run)
+        echo "Running the application..."
+        poetry run python ./main.py
+        ;;
+    shell)
+        echo "Entering the Poetry shell..."
+        poetry shell
+        ;;
+    test)
+        echo "Running tests..."
+        poetry run pytest
+        ;;
+    *)
+        echo "Usage: $0 [install|run|shell|test]"
+        exit 1
+        ;;
+esac
+
+echo "(${date +%T}) Bot closed/crashed..."
+exit 0
