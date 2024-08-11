@@ -16,7 +16,7 @@ Embeds:
         value: "Example"
         inline: false
   About:
-    Footer: "© {developer-name}"
+    Footer: "© {developer-displayname}"
     FooterIcon: "{developer-pfp}"
     Fields:
       - name: "Разработчик"
