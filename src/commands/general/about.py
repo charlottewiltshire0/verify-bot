@@ -1,9 +1,4 @@
-import datetime
-import os
-
-import disnake
 from disnake.ext import commands
-from loguru import logger
 
 from src.module import EmbedFactory
 
@@ -15,7 +10,7 @@ class About(commands.Cog):
 
     @commands.command(
         name="about",
-        description=""
+        description="Основная информация о боте.",
     )
     async def help_command(self, ctx: commands.Context):
         embed = await self.embed_factory.create_embed(preset='About', user=ctx.author)
