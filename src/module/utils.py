@@ -2,13 +2,22 @@ import os
 import importlib
 
 import disnake
+from datetime import datetime
 from disnake.ext import commands
 from loguru import logger
+from src.module import Yml
+
+
+def get_version() -> str:
+    config = Yml('./config/config.yml')
+    data = config.read()
+    return data['Version']
 
 
 class TextFormatter:
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.start_time = datetime.utcnow()
 
     async def format_text(self, text: str, user: disnake.Member = None) -> str:
         placeholders = {
@@ -23,6 +32,8 @@ class TextFormatter:
             '{total-members-local}': str(user.guild.member_count) if user else '0',
             '{total-members}': self.get_total_members(),
             '{total-messages}': self.get_total_messages(),
+            '{version}': get_version(),
+            '{uptime}': self.get_uptime(),
         }
 
         for placeholder, value in placeholders.items():
@@ -53,6 +64,17 @@ class TextFormatter:
         if tracker:
             return str(tracker.get_total_messages())
         return '0'
+
+    def get_uptime(self) -> str:
+        now = datetime.utcnow()
+        uptime_duration = now - self.start_time
+
+        days, seconds = uptime_duration.days, uptime_duration.seconds
+        hours = seconds // 3600
+        minutes = (seconds % 3600) // 60
+        seconds = seconds % 60
+
+        return f"{days}d {hours}h {minutes}m {seconds}s"
 
 
 def loadExtensions(bot: commands.Bot, *directories: str):
