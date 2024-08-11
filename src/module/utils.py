@@ -16,14 +16,17 @@ class TextFormatter:
             '{bot-pfp}': str(self.bot.user.avatar.url) if self.bot.user.avatar else '',
             '{bot-displayname}': self.bot.user.name,
             '{bot-id}': str(self.bot.user.id),
-            '{developer-displayname}': '<@671761516265078789>',
+            '{developer-displayname}': await self.get_user_displayname(671761516265078789),
             '{developer-pfp}': await self.get_user_avatar_url(671761516265078789),
             '{user-pfp}': str(user.avatar.url) if user and user.avatar else '',
             '{user-displayname}': user.display_name if user else '',
+            '{total-members-local}': str(user.guild.member_count) if user else '0',
+            '{total-members}': self.get_total_members(),
+            '{total-messages}': self.get_total_messages(),
         }
 
         for placeholder, value in placeholders.items():
-            text = text.replace(placeholder, value)
+            text = text.replace(placeholder, str(value))
 
         return text
 
@@ -33,6 +36,23 @@ class TextFormatter:
             return str(user.avatar.url) if user.avatar else ''
         except disnake.NotFound:
             return ''
+
+    async def get_user_displayname(self, user_id: int) -> str:
+        try:
+            user = await self.bot.fetch_user(user_id)
+            return user.display_name
+        except disnake.NotFound:
+            return ''
+
+    def get_total_members(self) -> str:
+        total_members = sum(guild.member_count for guild in self.bot.guilds)
+        return str(total_members)
+
+    def get_total_messages(self) -> str:
+        tracker = self.bot.get_cog('MessageCreate')
+        if tracker:
+            return str(tracker.get_total_messages())
+        return '0'
 
 
 def loadExtensions(bot: commands.Bot, *directories: str):
