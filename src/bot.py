@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Optional
 import disnake
 from disnake.ext import commands
-from src.module import Yml, loadExtensions
+from src.module import Yml, loadExtensions, init_db
 from loguru import logger
 from datetime import datetime
 
@@ -14,6 +14,9 @@ __all__ = (
 
 config = Yml('./config/config.yml')
 data = config.read()
+
+
+init_db()
 
 
 log_filename = f"./logs/bot_{datetime.now().strftime('%Y-%m-%d')}.log"
