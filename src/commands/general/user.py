@@ -1,3 +1,4 @@
+import disnake
 from disnake.ext import commands
 
 from src.module import EmbedFactory
@@ -12,8 +13,9 @@ class User(commands.Cog):
         name="user",
         description="Отображает информацию о пользователе."
     )
-    async def help_command(self, ctx: commands.Context):
-        embed = await self.embed_factory.create_embed(preset='User', user=ctx.author)
+    async def user_command(self, ctx: commands.Context, member: disnake.Member = None):
+        user = member or ctx.author
+        embed = await self.embed_factory.create_embed(preset='User', user=user)
         await ctx.send(embed=embed)
 
 
