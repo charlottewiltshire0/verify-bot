@@ -26,11 +26,4 @@ EmbedColors:
 ########################################
 
 Storage:
-    Type: "sqlite"
-
-    MySQL:
-        Host: ""
-        Port: ""
-        Database: ""
-        User: ""
-        Password: ""
+    URL: "postgresql://username:password@localhost:5432/mydatabase"
