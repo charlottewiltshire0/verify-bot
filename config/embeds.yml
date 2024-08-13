@@ -21,29 +21,77 @@ Embeds:
     Fields:
       - name: "<:developer:1272284487149158450> **Разработчик**"
         value: "{developer-displayname}"
-        inline: false
+        inline: True
+
       - name: "<a:ping:1272284672814223390> **Задержка**"
         value: "{api-ping}"
-        inline: false
+        inline: True
+
       - name: "<a:uptime:1272284867660611604> **Время работы системы**"
         value: "{uptime}"
-        inline: false
+        inline: True
+
       - name: "<:github:1272285058551775272> **Текущая версия**"
         value: "{version}"
-        inline: false
+        inline: True
+
       - name: "<:hash_message:1272285350110433380> Всего сообществ"
         value: "{total-messages}"
-        inline: false
+        inline: True
+
       - name: "<:members:1272285358901559326> Всего пользователей"
         value: "{total-members}"
-        inline: false
+        inline: True
 
   Help:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
     Title: "Список команд"
-    Description: "**Общие команды**\n`about`, `help`, `user`, `server`\n**Команды модерации**\n`ban`, `kick`, `report`, `verify`, `unverify`, `newkick`, `newban`"
+    Fields:
+      - name: "**`{prefix}about`**"
+        value: "Информация о боте и его авторе"
+        inline: True
+
+      - name: "**`{prefix}help`**"
+        value: "Показать доступные команды и их описание"
+        inline: True
+
+      - name: "**`{prefix}user`**"
+        value: "Показать информацию о пользователе"
+        inline: True
+
+      - name: "**`{prefix}server`**"
+        value: "Показать информацию о сервере"
+        inline: True
+
+      - name: "**`{prefix}ban`** ┊ <:moderator:1272260923196969134>"
+        value: "Забанить пользователя с сервера"
+        inline: True
+
+      - name: "**`{prefix}kick`** ┊ <:moderator:1272260923196969134>"
+        value: "Исключить пользователя из сервера"
+        inline: True
+
+      - name: "**`{prefix}report`**"
+        value: "Сообщить о проблеме или нарушении"
+        inline: True
+
+      - name: "**`{prefix}verify`** ┊ <:moderator:1272260923196969134>"
+        value: "Верифицировать пользователя на сервере"
+        inline: True
+
+      - name: "**`{prefix}unverify`** ┊ <:moderator:1272260923196969134>"
+        value: "Удалить верификацию пользователя из системы"
+        inline: True
+
+      - name: "**`{prefix}newkick`** ┊ <:moderator:1272260923196969134>"
+        value: "Выгоняйте всех новых пользователей в соответствии с определенным временным промежутком"
+        inline: True
+
+      - name: "**`{prefix}newban`** ┊ <:moderator:1272260923196969134>"
+        value: "Забаньте всех новых пользователей сервера в соответствии с определенным временным промежутком"
+        inline : True
 
   User:
     Title: "Кто такая {user-displayname}"
-    Description: "**Общие сведения**:\n<:profile:1272248323280994345> **Имя**: `{user-displayname}`\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {user-id}\n<:birthday:1272250119156404337> **Создание:** {user-creation}\n<:date:1272253126803591290> **Присоединился**: {user-join}\n\n**Информация по Verify Bot**:\n<:verify:1272263865480253632> **Верифицирован?**: {verify-status}\n<:ban:1272608029883502612> **Отказы**: {verify-rejection}\n<:moderator:1272260923196969134> **Модератор:** {verify-moderator}\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {verify-moderator-id}\n<:time:1272262579393269790> Верифицирован: {verify-date}"
+    Description: "**Общие сведения**:\n<:profile:1272248323280994345> **Имя**: `{user-displayname}`\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {user-id}\n<:birthday:1272250119156404337> **Создание:** {user-creation}\n<:date:1272253126803591290> **Присоединился**: {user-join}\n\n**Информация по Verify Bot**:\n<:verify:1272263865480253632> **Верифицирован?**: {verify-status}\n<:ban:1272608029883502612> **Отказы**: {verify-rejection}\n<:moderator:1272260923196969134> **Модератор:** {verify-moderator}\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {verify-moderator-id}\n<:time:1272262579393269790> **Верифицирован**: {verify-date}"
