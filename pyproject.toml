@@ -5,6 +5,8 @@ description = "Бот верификации, который верифицир�
 authors = ["StarStudio <charlottewiltshire27@outlook.com>"]
 license = "All rights reserved"
 readme = "README.md"
+repository = "https://github.com/charlottewiltshire0/verify-bot"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -12,7 +14,9 @@ disnake = "^2.9.2"
 pyyaml = "^6.0.1"
 loguru = "^0.7.2"
 httpx = "^0.27.0"
-pymongo = "^4.8.0"
+sqlalchemy = "^2.0.32"
+psycopg2 = "^2.9.9"
+alembic = "^1.13.2"
 
 [build-system]
 requires = ["poetry-core"]
