@@ -6,7 +6,6 @@ authors = ["StarStudio <charlottewiltshire27@outlook.com>"]
 license = "All rights reserved"
 readme = "README.md"
 repository = "https://github.com/charlottewiltshire0/verify-bot"
-package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
