@@ -17,21 +17,21 @@ class TextFormatter:
 
     async def format_text(self, text: str, user: disnake.Member = None) -> str:
         placeholders = {
-            '{api-ping}': round(self.bot.latency*1000),
-            '{bot-pfp}': str(self.bot.user.avatar.url) if self.bot.user.avatar else '',
+            '{api-ping}': round(self.bot.latency * 1000),
+            '{bot-pfp}': self.bot.user.avatar.url if self.bot.user.avatar else '',
             '{bot-displayname}': self.bot.user.name,
             '{bot-id}': str(self.bot.user.id),
             '{developer-displayname}': await self.get_user_displayname(671761516265078789),
             '{developer-pfp}': await self.get_user_avatar_url(671761516265078789),
-            '{user-pfp}': str(user.avatar.url) if user and user.avatar else '',
+            '{user-pfp}': user.avatar.url if user and user.avatar else '',
             '{user-displayname}': user.display_name if user else '',
-            '{user-id}': user.id if user else '',
+            '{user-id}': str(user.id) if user else '',
             '{user-creation}': f"<t:{int(user.created_at.timestamp())}:R>" if user else '',
             '{user-join}': f"<t:{int(user.joined_at.timestamp())}:R>" if user and user.joined_at else '',
             '{total-members-local}': str(user.guild.member_count) if user else '0',
-            '{total-members}': self.get_total_members(),
+            '{total-members}': await self.get_total_members(),
             '{total-messages}': self.get_total_messages(),
-            '{version}': get_version(),
+            '{version}': await get_version(),
             '{uptime}': self.get_uptime(),
         }
 
@@ -43,7 +43,7 @@ class TextFormatter:
     async def get_user_avatar_url(self, user_id: int) -> str:
         try:
             user = await self.bot.fetch_user(user_id)
-            return str(user.avatar.url) if user.avatar else ''
+            return user.avatar.url if user.avatar else ''
         except disnake.NotFound:
             return ''
 
@@ -54,15 +54,13 @@ class TextFormatter:
         except disnake.NotFound:
             return ''
 
-    def get_total_members(self) -> str:
+    async def get_total_members(self) -> str:
         total_members = sum(guild.member_count for guild in self.bot.guilds)
         return str(total_members)
 
     def get_total_messages(self) -> str:
         tracker = self.bot.get_cog('MessageCreate')
-        if tracker:
-            return str(tracker.get_total_messages())
-        return '0'
+        return str(tracker.get_total_messages()) if tracker else '0'
 
     def get_uptime(self) -> str:
         now = datetime.utcnow()
@@ -73,7 +71,7 @@ class TextFormatter:
         minutes = (seconds % 3600) // 60
         seconds = seconds % 60
 
-        return f"{days}d {hours}h {minutes}m {seconds}s"
+        return f"{days}д {hours}ч {minutes}м {seconds}с"
 
 
 def loadExtensions(bot: commands.Bot, *directories: str):
@@ -94,17 +92,16 @@ def loadExtensions(bot: commands.Bot, *directories: str):
                     logger.error(f"Failed to load extension {module_name}: {e}")
 
 
-def get_version() -> str:
+async def get_version() -> str:
     config = Yml('./config/config.yml')
-    data = config.read()
-    version = data['Version']
-    request_latest_version = httpx.get(f'https://api.github.com/repos/charlottewiltshire0/verify-bot/releases/latest')
-    try:
-        currect_version = request_latest_version.json()['tag_name']
-    except KeyError:
-        return version
-    if version != currect_version:
-        return f"{version} (Неактуально)"
-    else:
-        return version
+    version = config.read().get('Version', 'Unknown')
 
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get('https://api.github.com/repos/charlottewiltshire0/verify-bot/releases/latest')
+            response.raise_for_status()
+            current_version = response.json().get('tag_name', version)
+        except (httpx.RequestError, httpx.HTTPStatusError, KeyError):
+            return version
+
+    return f"{version} (Неактуально)" if version != current_version else version
