@@ -14,6 +14,7 @@ class TextFormatter:
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.start_time = datetime.utcnow()
+        self.cache = {}
 
     async def format_text(self, text: str, user: disnake.Member = None) -> str:
         placeholders = {
@@ -21,6 +22,7 @@ class TextFormatter:
             '{bot-pfp}': self.bot.user.avatar.url if self.bot.user.avatar else '',
             '{bot-displayname}': self.bot.user.name,
             '{bot-id}': str(self.bot.user.id),
+            '{prefix}': get_prefix(),
             '{developer-displayname}': await self.get_user_displayname(671761516265078789),
             '{developer-pfp}': await self.get_user_avatar_url(671761516265078789),
             '{user-pfp}': user.avatar.url if user and user.avatar else '',
@@ -41,16 +43,26 @@ class TextFormatter:
         return text
 
     async def get_user_avatar_url(self, user_id: int) -> str:
+        if user_id in self.cache:
+            return self.cache[user_id].get('avatar_url', '')
+
         try:
             user = await self.bot.fetch_user(user_id)
-            return user.avatar.url if user.avatar else ''
+            avatar_url = str(user.avatar.url) if user.avatar else ''
+            self.cache[user_id] = {'avatar_url': avatar_url}
+            return avatar_url
         except disnake.NotFound:
             return ''
 
     async def get_user_displayname(self, user_id: int) -> str:
+        if user_id in self.cache:
+            return self.cache[user_id].get('displayname', '')
+
         try:
             user = await self.bot.fetch_user(user_id)
-            return user.display_name
+            displayname = user.display_name
+            self.cache[user_id] = {'displayname': displayname}
+            return displayname
         except disnake.NotFound:
             return ''
 
@@ -105,3 +117,8 @@ async def get_version() -> str:
             return version
 
     return f"{version} (Неактуально)" if version != current_version else version
+
+
+def get_prefix() -> str:
+    config = Yml('./config/config.yml')
+    return config.read().get('Prefix', 'Unknown')
