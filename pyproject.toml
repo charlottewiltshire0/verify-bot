@@ -14,6 +14,7 @@ loguru = "^0.7.2"
 httpx = "^0.27.0"
 sqlalchemy = "^2.0.32"
 psycopg2 = "^2.9.9"
+alembic = "^1.13.2"
 
 [build-system]
 requires = ["poetry-core"]
