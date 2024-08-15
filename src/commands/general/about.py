@@ -25,5 +25,6 @@ class About(commands.Cog):
         embed = await self.embed_factory.create_embed(preset='About', user=interaction.user)
         await interaction.response.send_message(embed=embed)
 
+
 def setup(bot: commands.Bot):
     bot.add_cog(About(bot))
