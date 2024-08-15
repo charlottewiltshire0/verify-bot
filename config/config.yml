@@ -27,3 +27,17 @@ EmbedColors:
 
 Storage:
     URL: "postgresql://username:password@localhost:5432/mydatabase"
+
+########################################
+#                                      #
+#           BOT ACTIVITY               #
+#                                      #
+########################################
+
+BotActivitySettings:
+  Enabled: True
+  Type: "WATCHING" # WATCHING, PLAYING, COMPETING
+  Interval: 30 # Время в секундах между изменениями статуса, рекомендуется держать его выше 20-30 секунд, чтобы не получить ограничение по скорости
+  Statuses: # Действительные переменные: {total-users}, {total-verify}, {total-messages}
+    - "{total-users} пользователей"
+    - "{total-messages} сообщений"
