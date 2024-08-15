@@ -1,8 +1,7 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, BigInteger
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, BigInteger, ARRAY
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from enum import Enum as PyEnum
-
 
 Base = declarative_base()
 metadata = Base.metadata
@@ -30,10 +29,12 @@ class Verify(Base):
     id = Column(Integer, primary_key=True)
     guild = Column(Integer, unique=True, nullable=False)
     channel_mention = Column(String, unique=True, nullable=True)
+    staff_roles = Column(ARRAY(BigInteger), nullable=True)
     verify_users = relationship('VerifyUsers', back_populates='verify', cascade='all, delete-orphan')
 
     def __repr__(self):
-        return f"<Verify(id={self.id}, guild={self.guild}, channel_mention={self.channel_mention})>"
+        return (f"<Verify(id={self.id}, guild={self.guild}, channel_mention={self.channel_mention}, "
+                f"staff_roles={self.staff_roles})>")
 
 
 class VerifyUsers(Base):
