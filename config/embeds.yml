@@ -20,7 +20,7 @@ Embeds:
     FooterIcon: "{developer-pfp}"
     Fields:
       - name: "<:developer:1272284487149158450> **Разработчик**"
-        value: "{developer-displayname}"
+        value: "{developer-name}"
         inline: True
 
       - name: "<a:ping:1272284672814223390> **Задержка**"

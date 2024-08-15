@@ -1,68 +1,79 @@
+import asyncio
+from datetime import datetime
+
+import disnake
+from disnake import Embed
+from disnake.ext import commands
+from typing import Optional
+from functools import lru_cache
+import re
+
+from src.module import Yml
+from .utils import TextFormatter
+
 import disnake
 from disnake.ext import commands
 from typing import Optional
+import asyncio
 
 from src.module import Yml
 from .utils import TextFormatter
 
 
 class EmbedFactory:
-    def __init__(self, embed_config_path: str, color_config_path: str, bot: commands.Bot):
-        self.embed_data = Yml(embed_config_path).load()
-        self.color_data = Yml(color_config_path).load()
+    def __init__(self, embeds_path: str, config_path: str, bot: commands.Bot):
+        self.embeds = Yml(embeds_path).load()
+        self.config = Yml(config_path).load()
         self.formatter = TextFormatter(bot)
 
-    async def create_embed(self, preset: Optional[str] = None, user: disnake.Member = None, **kwargs) -> disnake.Embed:
-        embed_dict = self.embed_data.get('Embeds', {}).get(preset, {}) if preset else kwargs
+    async def create_embed(self, preset: Optional[str] = None, user: disnake.Member = None, **kwargs) -> Embed:
+        embed_data = self.embeds.get('Embeds', {}).get(preset, {}) if preset else {}
+        embed_data.update(kwargs)
 
-        title = await self.formatter.format_text(embed_dict.get('Title', ''), user=user)
-        description = await self.formatter.format_text(embed_dict.get('Description', ''), user=user)
-        color = disnake.Color.from_rgb(*self.hex_to_rgb(embed_dict.get('Color', self.color_data['EmbedColors'].get('Default', '#242424'))))
+        title = await self.formatter.format_text(embed_data.get("Title", ""), user)
+        description = await self.formatter.format_text(embed_data.get("Description", ""), user)
+        color = int(self.config['EmbedColors'].get(embed_data.get("Color", "Default"), "#242424").lstrip("#"), 16)
 
-        embed = disnake.Embed(
+        embed = Embed(
             title=title,
             description=description,
-            url=embed_dict.get('Url', ''),
+            url=embed_data.get("Url", ""),
             color=color
         )
 
-        if 'Author' in embed_dict:
+        if "Author" in embed_data:
             embed.set_author(
-                name=await self.formatter.format_text(embed_dict['Author'], user=user),
-                url=embed_dict.get('AuthorUrl', None),
-                icon_url=await self.formatter.format_text(embed_dict.get('AuthorIcon', None), user=user)
+                name=await self.formatter.format_text(embed_data['Author'], user=user),
+                url=embed_data.get('AuthorUrl', None),
+                icon_url=await self.formatter.format_text(embed_data.get('AuthorIcon', ""), user=user)
             )
-
-        if 'Footer' in embed_dict:
+        if "Thumbnail" in embed_data:
+            embed.set_thumbnail(url=embed_data["Thumbnail"])
+        if "Image" in embed_data:
+            embed.set_image(url=embed_data["Image"])
+        if "Footer" in embed_data:
+            footer_text = await self.formatter.format_text(embed_data["Footer"], user)
+            footer_icon_url = await self.formatter.format_text(embed_data.get("FooterIcon", ""), user)
             embed.set_footer(
-                text=await self.formatter.format_text(embed_dict['Footer'], user=user),
-                icon_url=await self.formatter.format_text(embed_dict.get('FooterIcon', None), user=user)
+                text=footer_text,
+                icon_url=footer_icon_url
             )
 
-        if 'Thumbnail' in embed_dict:
-            embed.set_thumbnail(url=await self.formatter.format_text(embed_dict['Thumbnail'], user=user))
-
-        if 'Image' in embed_dict:
-            embed.set_image(url=await self.formatter.format_text(embed_dict['Image'], user=user))
-
-        if embed_dict.get('Timestamp', False):
-            embed.timestamp = disnake.utils.utcnow()
-
-        for field in embed_dict.get('Fields', []):
-            embed.add_field(
-                name=await self.formatter.format_text(field.get('name', 'No Name'), user=user),
-                value=await self.formatter.format_text(field.get('value', 'No Value'), user=user),
-                inline=field.get('inline', False)
-            )
+        if embed_data.get("Timestamp", False):
+            embed.timestamp = datetime.utcnow()
+        if "Fields" in embed_data:
+            fields = await asyncio.gather(*[
+                self.formatter.format_text(field["name"], user)
+                for field in embed_data["Fields"]
+            ], *[
+                self.formatter.format_text(field["value"], user)
+                for field in embed_data["Fields"]
+            ])
+            for i, field in enumerate(embed_data["Fields"]):
+                embed.add_field(
+                    name=fields[i],
+                    value=fields[i + len(embed_data["Fields"])],
+                    inline=field.get("inline", False)
+                )
 
         return embed
-
-    @staticmethod
-    def hex_to_rgb(hex_color: str) -> tuple:
-        hex_color = hex_color.lstrip('#')
-        return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
-
-# Usage example:
-# embed_factory = EmbedFactory('embeds.yml', 'config.yml')
-# embed = embed_factory.create_embed(preset='Example')  # Using preset
-# embed = embed_factory.create_embed(Title="Custom Title", Description="Custom Description")  # Direct input
