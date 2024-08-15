@@ -42,7 +42,7 @@ class TextFormatter:
         }
 
         async_replacements = {
-            '{total-members}': self.get_total_members(),
+            '{total-users}': self.get_total_members(),
             '{version}': self.get_version(),
         }
 

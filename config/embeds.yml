@@ -40,7 +40,7 @@ Embeds:
         inline: True
 
       - name: "<:members:1272285358901559326> Всего пользователей"
-        value: "{total-members}"
+        value: "{total-users}"
         inline: True
 
   Help:
@@ -80,10 +80,6 @@ Embeds:
         value: "Верифицировать пользователя на сервере"
         inline: True
 
-      - name: "**`{prefix}unverify`** ┊ <:moderator:1272260923196969134>"
-        value: "Удалить верификацию пользователя из системы"
-        inline: True
-
       - name: "**`{prefix}newkick`** ┊ <:moderator:1272260923196969134>"
         value: "Выгоняйте всех новых пользователей в соответствии с определенным временным промежутком"
         inline: True
@@ -91,6 +87,10 @@ Embeds:
       - name: "**`{prefix}newban`** ┊ <:moderator:1272260923196969134>"
         value: "Забаньте всех новых пользователей сервера в соответствии с определенным временным промежутком"
         inline : True
+
+      - name: "**`{prefix}mention`** ┊ <:moderator:1272260923196969134>"
+        value: "Отправляет упоминание новым пользователям, уведомляя их о необходимости пройти верификацию на сервере"
+        inline: True
 
   User:
     Title: "Кто такая {user-displayname}"
