@@ -40,7 +40,7 @@ Embeds:
         inline: True
 
       - name: "<:members:1272285358901559326> Всего пользователей"
-        value: "{total-members}"
+        value: "{total-users}"
         inline: True
 
   Help:
