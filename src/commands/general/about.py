@@ -12,7 +12,7 @@ class About(commands.Cog):
         name="about",
         description="Основная информация о боте.",
     )
-    async def help_command(self, ctx: commands.Context):
+    async def about_command(self, ctx: commands.Context):
         embed = await self.embed_factory.create_embed(preset='About', user=ctx.author)
         await ctx.send(embed=embed)
 
