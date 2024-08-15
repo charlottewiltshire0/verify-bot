@@ -1,15 +1,26 @@
 import yaml
 from typing import Any, Dict
 from loguru import logger
+from functools import lru_cache
 
 
 class Yml:
     def __init__(self, src: str):
         self.src = src
+        self._data = None
 
+    @lru_cache(maxsize=1)
     def load(self) -> Dict[str, Any]:
         """Load YAML data from the file."""
-        return self._read_file()
+        if self._data is None:
+            try:
+                with open(self.src, 'r', encoding='utf-8') as f:
+                    self._data = yaml.safe_load(f) or {}
+            except FileNotFoundError as e:
+                raise FileNotFoundError(f"YAML file not found: {self.src}") from e
+            except yaml.YAMLError as e:
+                raise ValueError(f"Error parsing YAML file: {self.src}") from e
+        return self._data
 
     def read(self) -> Dict[str, Any]:
         """Read YAML data from the file."""
