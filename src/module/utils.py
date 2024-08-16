@@ -23,7 +23,7 @@ class TextFormatter:
         self.version_cache_time = None
         self.cache = {}
 
-    async def format_text(self, text: str, user: Optional[disnake.Member] = None) -> str:
+    async def format_text(self, text: str, user: Optional[disnake.Member] = None, channel: Optional[disnake.TextChannel] = None) -> str:
         placeholders = {
             '{api-ping}': round(self.bot.latency * 1000),
             '{bot-pfp}': self.bot.user.avatar.url if self.bot.user.avatar else '',
@@ -40,7 +40,8 @@ class TextFormatter:
             '{uptime}': self.get_uptime(),
             '{developer-name}': "[WoreXGrief](https://discord.gg/xuGTzvtQxs)\n@charlottewiltshire0\n@snezhokyt",
             '{developer-displayname}': "WoreXGrief",
-            '{developer-pfp}': "https://cdn.discordapp.com/attachments/1098234521721241660/1273630739262603295/logo.gif?ex=66bf508f&is=66bdff0f&hm=c19083e5f5e62dab94d9358c72e0fc8b29cc4c6128675ab5f53342b0cbc59317&"
+            '{developer-pfp}': "https://cdn.discordapp.com/attachments/1098234521721241660/1273630739262603295/logo.gif?ex=66bf508f&is=66bdff0f&hm=c19083e5f5e62dab94d9358c72e0fc8b29cc4c6128675ab5f53342b0cbc59317&",
+            '{channel-mention}': f"<#{channel.id}>" if channel else '',
         }
 
         async_replacements = {
@@ -123,11 +124,14 @@ def get_prefix() -> str:
 def add_channel_mention(db: Session, guild_id: int, channel_mention: int):
     verify_entry = db.query(Verify).filter_by(guild=guild_id).first()
     if verify_entry:
+        if verify_entry.channel_mention == channel_mention:
+            return False
         verify_entry.channel_mention = channel_mention
     else:
         verify_entry = Verify(guild=guild_id, channel_mention=channel_mention)
         db.add(verify_entry)
     db.commit()
+    return True
 
 
 def remove_channel_mention(db: Session, guild_id: int):
