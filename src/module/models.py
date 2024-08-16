@@ -43,7 +43,7 @@ class VerifyUsers(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(BigInteger, nullable=False)
     moder_id = Column(BigInteger, nullable=True)
-    verify_id = Column(Integer, ForeignKey('verify.id'), nullable=False)
+    guild_id = Column(BigInteger, ForeignKey('verify.guild'), nullable=False)
     status = Column(Enum(Status), nullable=False, default=Status.PENDING)
     rejection = Column(Integer, default=0)
     verification_date = Column(DateTime, nullable=True)
@@ -51,5 +51,5 @@ class VerifyUsers(Base):
 
     def __repr__(self):
         return (f"<VerifyUsers(id={self.id}, user_id={self.user_id}, moder_id={self.moder_id}, "
-                f"verify_id={self.verify_id}, status={self.status}, rejection={self.rejection}, "
+                f"guild_id={self.guild_id}, status={self.status}, rejection={self.rejection}, "
                 f"verification_date={self.verification_date})>")
