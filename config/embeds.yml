@@ -113,3 +113,21 @@ Embeds:
     AuthorIcon: "{bot-pfp}"
     Title: "<:crossmark:1272260131677278209> Ошибка!"
     Description: "Этот канал уже привязан для упоминаний новых пользователей!"
+
+  MentionDelete:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:tick:1272260155190546584> Успех!"
+    Description: "Канал для упоминания новых пользователей был удален"
+
+  NoMentionChannel:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Канал для упоминания новых пользователей не найден"
+
+  MentionSet:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:checkmark:1272260131677278208> Успех!"
+    Description: "Канал для упоминания новых пользователей изменен на {channel-mention}"
