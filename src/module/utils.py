@@ -9,8 +9,10 @@ import asyncio
 import disnake
 from disnake.ext import commands
 from loguru import logger
+from sqlalchemy.orm import Session
 
 from src.module import Yml
+from .models import *
 
 
 class TextFormatter:
@@ -116,3 +118,30 @@ def loadExtensions(bot: commands.Bot, *directories: str):
 def get_prefix() -> str:
     config = Yml('./config/config.yml')
     return config.read().get('Prefix', 'Unknown')
+
+
+def add_channel_mention(db: Session, guild_id: int, channel_mention: int):
+    verify_entry = db.query(Verify).filter_by(guild=guild_id).first()
+    if verify_entry:
+        verify_entry.channel_mention = channel_mention
+    else:
+        verify_entry = Verify(guild=guild_id, channel_mention=channel_mention)
+        db.add(verify_entry)
+    db.commit()
+
+
+def remove_channel_mention(db: Session, guild_id: int):
+    verify_entry = db.query(Verify).filter_by(guild=guild_id).first()
+    if verify_entry:
+        verify_entry.channel_mention = None
+        db.commit()
+
+
+def set_channel_mention(db: Session, guild_id: int, channel_mention: int):
+    verify_entry = db.query(Verify).filter_by(guild=guild_id).first()
+    if verify_entry:
+        verify_entry.channel_mention = channel_mention
+    else:
+        verify_entry = Verify(guild=guild_id, channel_mention=channel_mention)
+        db.add(verify_entry)
+    db.commit()
