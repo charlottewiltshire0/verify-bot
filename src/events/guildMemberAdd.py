@@ -1,50 +1,45 @@
-# from datetime import datetime
-#
-# import disnake
-# from disnake.ext import commands
-# from sqlalchemy import select
-# from sqlalchemy.orm import scoped_session
-#
-# from src.module import SessionLocal, Verify, VerifyUsers
-#
-#
-# class GuildMemberAdd(commands.Cog):
-#     def __init__(self, bot):
-#         self.bot = bot
-#         self.session = scoped_session(SessionLocal)
-#
-#     @commands.Cog.listener()
-#     async def on_member_join(self, member: disnake.Member):
-#         print(f"{member.name} joined {member.guild}")
-#         with self.session() as session:
-#             verify_obj = session.execute(
-#                 select(Verify).where(Verify.guild == member.guild.id)
-#             ).scalars().one_or_none()
-#
-#             if not verify_obj:
-#                 print(f"No verify object found for guild: {member.guild.id}")
-#                 return
-#
-#             user_record = session.execute(
-#                 select(VerifyUsers).where(VerifyUsers.user_id == member.id)
-#             ).scalars().one_or_none()
-#
-#             if not user_record:
-#
-#                 new_user = VerifyUsers(
-#                     user_id=member.id,
-#                     moder_id=None,
-#                     verify_id=verify_obj.id,
-#                     status="pending",
-#                     rejection=0,
-#                     verification_date=datetime.utcnow()
-#                 )
-#                 session.add(new_user)
-#                 session.commit()
-#                 print(f"Added new user to database: {member.id}")
-#             else:
-#                 print(f"User already exists in the database: {member.id}")
-#
-#
-# def setup(bot):
-#     bot.add_cog(GuildMemberAdd(bot))
+import disnake
+from disnake.ext import commands
+from loguru import logger
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import scoped_session
+
+from src.module import SessionLocal, VerifyUsers, Verify, Status
+
+
+class GuildMemberAdd(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self.session = scoped_session(SessionLocal)
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member: disnake.Member):
+        logger.info(f"{member.name} joined {member.guild}")
+        await self.add_user_to_db(member)
+
+    async def add_user_to_db(self, member):
+        session = self.session()
+        try:
+            existing_user = session.query(VerifyUsers).filter_by(user_id=member.id, guild_id=member.guild.id).first()
+            if not existing_user:
+                verify_entry = session.query(Verify).filter_by(guild=member.guild.id).first()
+                if verify_entry:
+                    new_user = VerifyUsers(
+                        user_id=member.id,
+                        guild_id=member.guild.id,
+                        status=Status.PENDING
+                    )
+                    session.add(new_user)
+                    session.commit()
+                    logger.info(f"User {member} has been added to the database.")
+                else:
+                    logger.warning(f"Guild {member.guild.id} not found in the Verify table. User {member.id} not added.")
+        except SQLAlchemyError as e:
+            logger.error(f"Error occurred while adding user {member} to the database: {e}")
+            session.rollback()
+        finally:
+            session.close()
+
+
+def setup(bot):
+    bot.add_cog(GuildMemberAdd(bot))
