@@ -25,7 +25,8 @@ class User(commands.Cog):
     async def user_slash(self, interaction: disnake.CommandInteraction, member: disnake.Member = None):
         user = member or interaction.user
         embed = await self.embed_factory.create_embed(preset='User', user=user)
-        await interaction.response.send_message(embed=embed)
+        await interaction.response.defer()
+        await interaction.followup.send(embed=embed)
 
 
 def setup(bot: commands.Bot):
