@@ -26,9 +26,9 @@ class Settings(Base):
 class Verify(Base):
     __tablename__ = 'verify'
 
-    id = Column(Integer, primary_key=True)
-    guild = Column(Integer, unique=True, nullable=False)
-    channel_mention = Column(String, unique=True, nullable=True)
+    id = Column(BigInteger, primary_key=True)
+    guild = Column(BigInteger, unique=True, nullable=False)
+    channel_mention = Column(BigInteger, unique=True, nullable=True)
     staff_roles = Column(ARRAY(BigInteger), nullable=True)
     verify_users = relationship('VerifyUsers', back_populates='verify', cascade='all, delete-orphan')
 
