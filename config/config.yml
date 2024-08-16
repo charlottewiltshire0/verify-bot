@@ -41,3 +41,54 @@ BotActivitySettings:
   Statuses: # Действительные переменные: {total-users}, {total-verify}, {total-messages}
     - "{total-users} пользователей"
     - "{total-messages} сообщений"
+
+########################################
+#                                      #
+#              AUTOBAN                 #
+#                                      #
+########################################
+
+AutoBan:
+  VerifyRejection:
+    Enabled: True
+    MaxRejection: 5
+
+    DMUser: True
+    DMMessage: "Вам был выдан отказ в проверке."
+
+    AutoPunishments:
+      # Количество отказов от применения наказания:
+      3:
+        - PunishmentType: "LOG"
+        - Reason: "Auto Punish"
+      5:
+        - PunishmentType: "TEMPBAN"
+        - Reason: "Auto Punish"
+        - Length: "3d" # Длительность наказания для временного бана
+
+  AccountAge:
+    Enabled: True # Включает проверку возраста аккаунта
+    TriggerAction: "KICK" # Действие при несоответствии возраста аккаунта: KICK, TIMEOUT, BAN, LOG
+    MinimumAccountAge: 7 # Минимальный возраст аккаунта в днях
+
+  NoAvatar:
+    Enabled: True
+    TriggerAction: "KICK" # Действие при отсутствии аватара: KICK, TIMEOUT, BAN, LOG
+
+  AdvertisingName:
+    Enabled: True
+    TriggerAction: "KICK" # Действие при активации: KICK, TIMEOUT, BAN, LOG
+
+  Username:
+    Enabled: True
+    TriggerAction: "LOG" # Действие при активации: KICK, TIMEOUT, BAN, LOG
+
+    # Имя пользователя должно точно совпадать с одним из указанных элементов, без учёта регистра. Если в имени пользователя присутствует слово "Discord", полное имя пользователя, присоединяющегося, должно быть "discord".
+    # Примечание: Бот очищает и упрощает имя пользователя перед сравнением.
+    StrictWorlds:
+      - "nitro"
+
+    # Имя пользователя должно содержать один из указанных элементов, без учёта регистра. Например, если указано слово "nitro", пользователь с именем "discordnitro" будет затронут.
+    # Примечание: Бот очищает и упрощает имя пользователя перед сравнением.
+    WildcardWorlds:
+      - "nitro"
