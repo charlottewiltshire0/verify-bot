@@ -23,7 +23,8 @@ class About(commands.Cog):
     )
     async def about_slash(self, interaction: disnake.CommandInteraction):
         embed = await self.embed_factory.create_embed(preset='About', user=interaction.user)
-        await interaction.response.send_message(embed=embed)
+        await interaction.response.defer()
+        await interaction.followup.send(embed=embed)
 
 
 def setup(bot: commands.Bot):
