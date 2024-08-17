@@ -7,7 +7,7 @@ from src.module import EmbedFactory
 class Server(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.embed_factory = EmbedFactory('./config/embeds.yml', './config/config.yml')
+        self.embed_factory = EmbedFactory('./config/embeds.yml', './config/config.yml', bot=bot)
 
     @commands.slash_command(
         name="server",

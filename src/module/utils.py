@@ -17,19 +17,20 @@ from .models import *
 
 
 class TextFormatter:
-    def __init__(self):
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
         self.start_time = datetime.utcnow()
         self.version_cache = None
         self.version_cache_time = None
         self.cache = {}
         self.verify_utils = VerifyUtils()
 
-    async def format_text(self, text: str, user: Optional[disnake.Member] = None, channel: Optional[disnake.TextChannel] = None, bot: Optional[commands.Bot] = None) -> str:
+    async def format_text(self, text: str, user: Optional[disnake.Member] = None, channel: Optional[disnake.TextChannel] = None) -> str:
         placeholders = {
-            '{api-ping}': round(bot.latency * 1000),
-            '{bot-pfp}': bot.user.avatar.url if bot.user.avatar else '',
-            '{bot-displayname}': bot.user.name,
-            '{bot-id}': str(bot.user.id),
+            '{api-ping}': round(self.bot.latency * 1000),
+            '{bot-pfp}': self.bot.user.avatar.url if self.bot.user.avatar else '',
+            '{bot-displayname}': self.bot.user.name,
+            '{bot-id}': str(self.bot.user.id),
             '{prefix}': get_prefix(),
             '{user-pfp}': user.avatar.url if user and user.avatar else '',
             '{user-displayname}': user.display_name if user else '',

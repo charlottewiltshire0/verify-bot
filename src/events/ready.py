@@ -12,7 +12,7 @@ class OnReady(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.activity_settings = Yml("./config/config.yml").load().get("BotActivitySettings", {})
-        self.formatter = TextFormatter()
+        self.formatter = TextFormatter(bot)
         self.session = scoped_session(SessionLocal)
 
     @commands.Cog.listener()
@@ -39,7 +39,7 @@ class OnReady(commands.Cog):
         }.get(activity_type_str, disnake.ActivityType.watching)
 
         formatted_statuses = await asyncio.gather(
-            *[self.formatter.format_text(status, bot=self.bot) for status in self.activity_settings['Statuses']])
+            *[self.formatter.format_text(status) for status in self.activity_settings['Statuses']])
         interval = self.activity_settings.get('Interval', 30)
 
         while True:
