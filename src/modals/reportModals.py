@@ -9,6 +9,8 @@ class ReportModal(disnake.ui.Modal):
         self.report_settings = Yml("./config/config.yml").load().get("Report", {})
         self.embed_color = Yml("./config/config.yml").load().get("EmbedColors", {})
         self.channel_settings = Yml("./config/config.yml").load().get("Channels", {})
+        self.staff_roles = self.report_settings.get("StaffRoles", [])
+        self.ping_support = self.report_settings.get("PingSupport", False)
 
         components = [
             disnake.ui.TextInput(
@@ -83,12 +85,18 @@ class ReportModal(disnake.ui.Modal):
             await interaction.send(embed=embed, ephemeral=True)
             return
 
+        if self.ping_support:
+            mention_roles = ' '.join([f"<@&{role_id}>" for role_id in self.staff_roles])
+            content = f"@here {mention_roles}"
+        else:
+            content = ""
+
         embed = disnake.Embed(
             title=interaction.text_values["subject"],
             color=int(self.embed_color.get("Default", "#242424").lstrip("#"), 16),
             description=f"<:profile:1272248323280994345> **Автор жалобы**: <@{interaction.author.id}>\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {interaction.author.id}\n<:report:1274406261814722761> **Нарушитель**: <@{user.id}>\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {user.id}\n<:text:1274281670459133962> **Описание**: \n{description}"
         )
-        await channel.send(embed=embed)
+        await channel.send(content=content, embed=embed)
 
         embed = disnake.Embed(
             title="<:tick:1272260155190546584> Успех!",
