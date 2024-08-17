@@ -26,7 +26,7 @@ logger.add(log_filename, rotation="1 week", level="INFO", format="{time} | {leve
 class Bot(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(
-            command_prefix=data.get('Prefix'),
+            command_prefix=commands.when_mentioned,
             intents=disnake.Intents.all(),
             help_command=None,
             chunk_guilds_at_startup=False
