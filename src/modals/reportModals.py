@@ -2,7 +2,7 @@ import disnake
 from disnake import TextInputStyle
 
 from src.buttons.reportButton import ReportButton
-from src.module import Yml
+from src.module import Yml, ReportUtils
 
 
 class ReportModal(disnake.ui.Modal):
@@ -12,6 +12,7 @@ class ReportModal(disnake.ui.Modal):
         self.channel_settings = Yml("./config/config.yml").load().get("Channels", {})
         self.staff_roles = self.report_settings.get("StaffRoles", [])
         self.ping_support = self.report_settings.get("PingSupport", False)
+        self.report_utils = ReportUtils()
 
         components = [
             disnake.ui.TextInput(
@@ -86,6 +87,21 @@ class ReportModal(disnake.ui.Modal):
             await interaction.send(embed=embed, ephemeral=True)
             return
 
+        report = self.report_utils.create_report(
+            victim_id=interaction.author.id,
+            perpetrator_id=user.id,
+            guild_id=interaction.guild.id
+        )
+
+        if report is None:
+            embed = disnake.Embed(
+                title="<:crossmark:1272260131677278209> Ошибка!",
+                color=int(self.embed_color.get("Error", "#ff6161").lstrip("#"), 16),
+                description="Репорт уже существует и находится в ожидании или в процессе рассмотрения."
+            )
+            await interaction.send(embed=embed, ephemeral=True)
+            return
+
         if self.ping_support:
             mention_roles = ' '.join([f"<@&{role_id}>" for role_id in self.staff_roles])
             content = f"@here {mention_roles}"
@@ -98,7 +114,7 @@ class ReportModal(disnake.ui.Modal):
             description=f"<:profile:1272248323280994345> **Автор жалобы**: <@{interaction.author.id}>\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {interaction.author.id}\n<:report:1274406261814722761> **Нарушитель**: <@{user.id}>\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {user.id}\n<:text:1274281670459133962> **Описание**: \n{description}"
         )
 
-        buttons = ReportButton()
+        buttons = ReportButton(self.report_utils, report.id)
 
         await channel.send(content=content, embed=embed, view=buttons)
 
