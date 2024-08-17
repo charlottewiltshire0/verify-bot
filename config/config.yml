@@ -113,3 +113,12 @@ Report:
       Enabled: true
       Channel: "transcripts"
       DMToUser: true
+
+########################################
+#                                      #
+#              CHANNELS                #
+#                                      #
+########################################
+
+Channels:
+  Reports: ""
