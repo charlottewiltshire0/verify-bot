@@ -105,13 +105,16 @@ Report:
     DMUser: True
     DMClosureReason: False
 
+    StaffRoles:
+      - "role_id"
+
     Channel:
-      Category: "Репорт"
+      Category: "category_id"
       Topic: "**Пользователь** {user-displayname} **Причина** {reason} **Время** {time} **ID** {id}"
 
     Transcripts:
       Enabled: true
-      Channel: "transcripts"
+      Channel: "transcript_id"
       DMToUser: true
 
 ########################################
