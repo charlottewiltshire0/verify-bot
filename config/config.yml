@@ -92,3 +92,25 @@ AutoBan:
     # Примечание: Бот очищает и упрощает имя пользователя перед сравнением.
     WildcardWorlds:
       - "nitro"
+
+########################################
+#                                      #
+#               REPORT                 #
+#                                      #
+########################################
+
+Report:
+    LimitPerUser: 5
+    PingSupport: True
+    PingUser: True
+    DMUser: True
+    DMClosureReason: False
+
+    Channel:
+      Category: "Репорт"
+      Topic: "**Пользователь** {user-displayname} **Причина** {reason} **Время** {time} **ID** {id}"
+
+    Transcripts:
+      Enabled: true
+      Channel: "transcripts"
+      DMToUser: true
