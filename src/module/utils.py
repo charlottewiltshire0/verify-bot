@@ -226,8 +226,7 @@ def loadExtensions(bot: commands.Bot, *directories: str):
 
 
 def get_prefix() -> str:
-    config = Yml('./config/config.yml')
-    return config.read().get('Prefix', 'Unknown')
+    return '/'
 
 
 def add_channel_mention(db: Session, guild_id: int, channel_mention: int) -> bool:
