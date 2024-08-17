@@ -64,6 +64,10 @@ Embeds:
         value: "Показать информацию о сервере"
         inline: True
 
+      - name: "**`{prefix}report`**"
+        value: "Сообщить о проблеме или нарушении"
+        inline: True
+
       - name: "**`{prefix}ban`** ┊ <:moderator:1272260923196969134>"
         value: "Забанить пользователя с сервера"
         inline: True
@@ -72,26 +76,62 @@ Embeds:
         value: "Исключить пользователя из сервера"
         inline: True
 
-      - name: "**`{prefix}report`**"
-        value: "Сообщить о проблеме или нарушении"
-        inline: True
-
       - name: "**`{prefix}verify`** ┊ <:moderator:1272260923196969134>"
         value: "Верифицировать пользователя на сервере"
         inline: True
 
-      - name: "**`{prefix}newkick`** ┊ <:moderator:1272260923196969134>"
+      - name: "**`{prefix}newkick`** ┊ <:owner:1273932655028605060>"
         value: "Выгоняйте всех новых пользователей в соответствии с определенным временным промежутком"
         inline: True
 
-      - name: "**`{prefix}newban`** ┊ <:moderator:1272260923196969134>"
+      - name: "**`{prefix}newban`** ┊ <:owner:1273932655028605060>"
         value: "Забаньте всех новых пользователей сервера в соответствии с определенным временным промежутком"
         inline : True
 
-      - name: "**`{prefix}mention`** ┊ <:moderator:1272260923196969134>"
+      - name: "**`{prefix}mention`** ┊ <:owner:1273932655028605060>"
         value: "Отправляет упоминание новым пользователям, уведомляя их о необходимости пройти верификацию на сервере"
         inline: True
 
   User:
     Title: "Кто такая {user-displayname}"
-    Description: "**Общие сведения**:\n<:profile:1272248323280994345> **Имя**: `{user-displayname}`\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {user-id}\n<:birthday:1272250119156404337> **Создание:** {user-creation}\n<:date:1272253126803591290> **Присоединился**: {user-join}\n\n**Информация по Verify Bot**:\n<:verify:1272263865480253632> **Верифицирован?**: {verify-status}\n<:ban:1272608029883502612> **Отказы**: {verify-rejection}\n<:moderator:1272260923196969134> **Модератор:** {verify-moderator}\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {verify-moderator-id}\n<:time:1272262579393269790> **Верифицирован**: {verify-date}"
+    Description: "**Общие сведения**:\n<:profile:1272248323280994345> **Имя**: `{user-displayname}`\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {user-id}\n<:birthday:1272250119156404337> **Создание:** {user-creation}\n<:date:1272253126803591290> **Присоединился**: {user-join}\n\n**Информация по Verify Bot**:\n<:verify:1272263865480253632> **Верифицирован?**: {verify-status}\n<:ban:1272608029883502612> **Отказы**: `{verify-rejection}`\n<:moderator:1272260923196969134> **Модератор:** {verify-moderator}\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {verify-moderator-id}\n<:time:1272262579393269790> **Время проверки**: {verify-date}"
+
+  Server:
+    Title: "Информация о сервере [{guild-name}]"
+    Description: "<:profile:1272248323280994345> **Название**: {guild-name}\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {guild-id}\n<:ownerguild:1274280914901405739> **Владелец:** {guild-owner}<:ownerguild:1274280914901405739>\n<:birthday:1272250119156404337> **Создание**: {guild-creation}\n<:arrow:1274280332304322611> **Каналы**: `{guild-totalchannels}`\n<:space:1272248683903189084><:text:1274281670459133962> Текстовые: `{guild-totaltext}`\n<:space:1272248683903189084><:vc:1274281659264532591> Голосовые: `{guild-totalvoice}`\n<:memberguild:1274284457779531806> **Участники**: `{total-members-local}`\n<:roles:1274285161256718429> **Роли**: `{guild-totalrole}`"
+
+  MentionHelp:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "Список команд (mention)"
+    Description: "<:owner:1273932655028605060> `{prefix}mention add` ┊ Установить канал для упоминания новых пользователей \n<:owner:1273932655028605060> `{prefix}mention set` ┊ Изменить канал для упоминания новых пользователей \n<:owner:1273932655028605060> `{prefix}mention remove` ┊ Удалить канал для упоминания новых пользователей"
+
+  MentionAdd:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:tick:1272260155190546584> Успех!"
+    Description: "Упоминания новых пользователей будут отправляться в канал {channel-mention}"
+
+  MentionAlreadyAdded:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Этот канал уже привязан для упоминаний новых пользователей!"
+
+  MentionDelete:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:tick:1272260155190546584> Успех!"
+    Description: "Канал для упоминания новых пользователей был удален"
+
+  NoMentionChannel:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Канал для упоминания новых пользователей не найден"
+
+  MentionSet:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:checkmark:1272260131677278208> Успех!"
+    Description: "Канал для упоминания новых пользователей изменен на {channel-mention}"

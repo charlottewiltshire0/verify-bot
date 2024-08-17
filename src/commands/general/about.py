@@ -7,23 +7,16 @@ from src.module import EmbedFactory
 class About(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.embed_factory = EmbedFactory('./config/embeds.yml', './config/config.yml', bot=bot)
-
-    @commands.command(
-        name="about",
-        description="Основная информация о боте.",
-    )
-    async def about_command(self, ctx: commands.Context):
-        embed = await self.embed_factory.create_embed(preset='About', user=ctx.author)
-        await ctx.send(embed=embed)
+        self.embed_factory = EmbedFactory('./config/embeds.yml', './config/config.yml')
 
     @commands.slash_command(
         name="about",
         description="Основная информация о боте.",
     )
-    async def about_slash(self, interaction: disnake.CommandInteraction):
-        embed = await self.embed_factory.create_embed(preset='About', user=interaction.user)
-        await interaction.response.send_message(embed=embed)
+    async def about_slash(self, interaction: disnake.AppCmdInter):
+        embed = await self.embed_factory.create_embed(preset='About', user=interaction.user, bot=self.bot)
+        await interaction.response.defer()
+        await interaction.followup.send(embed=embed)
 
 
 def setup(bot: commands.Bot):

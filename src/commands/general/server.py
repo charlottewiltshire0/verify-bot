@@ -4,21 +4,20 @@ from disnake.ext import commands
 from src.module import EmbedFactory
 
 
-class User(commands.Cog):
+class Server(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.embed_factory = EmbedFactory('./config/embeds.yml', './config/config.yml')
 
     @commands.slash_command(
-        name="user",
-        description="Отображает информацию о пользователе."
+        name="server",
+        description="Показать информацию о сервере"
     )
-    async def user_slash(self, interaction: disnake.AppCmdInter, member: disnake.Member = None):
-        user = member or interaction.user
-        embed = await self.embed_factory.create_embed(preset='User', user=user)
+    async def server_slash(self, interaction: disnake.AppCmdInter):
+        embed = await self.embed_factory.create_embed(preset='Server', user=interaction.user)
         await interaction.response.defer()
         await interaction.followup.send(embed=embed)
 
 
 def setup(bot: commands.Bot):
-    bot.add_cog(User(bot))
+    bot.add_cog(Server(bot))
