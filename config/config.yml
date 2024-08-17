@@ -109,6 +109,7 @@ Report:
       - "role_id"
 
     Channel:
+      VC: True
       Category: "category_id"
       Topic: "**Пользователь** {user-displayname} **Причина** {reason} **Время** {time} **ID** {id}"
 
