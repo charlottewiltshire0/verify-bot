@@ -40,8 +40,8 @@ class TextFormatter:
             '{total-members-local}': str(user.guild.member_count) if user else '0',
             '{total-messages}': self.get_total_messages(),
             '{uptime}': self.get_uptime(),
-            '{developer-name}': "[WoreXGrief](https://discord.gg/xuGTzvtQxs)\n@charlottewiltshire0\n@snezhokyt",
-            '{developer-displayname}': "WoreXGrief",
+            '{developer-name}': "\n@charlottewiltshire0\n[WoreXGrief](https://discord.gg/xuGTzvtQxs)",
+            '{developer-displayname}': "@charlottewiltshire0",
             '{developer-pfp}': "https://cdn.discordapp.com/attachments/1098234521721241660/1273630739262603295/logo.gif?ex=66bf508f&is=66bdff0f&hm=c19083e5f5e62dab94d9358c72e0fc8b29cc4c6128675ab5f53342b0cbc59317&",
             '{channel-mention}': f"<#{channel.id}>" if channel else '',
             '{verify-status}': self.verify_utils.get_verify_status(user_id=user.id, guild_id=user.guild.id) if user else '',
@@ -49,6 +49,17 @@ class TextFormatter:
             '{verify-moderator}': self.verify_utils.get_verify_moderator(user_id=user.id, guild_id=user.guild.id) if user else '',
             '{verify-moderator-id}': self.verify_utils.get_verify_moderator_id(user_id=user.id, guild_id=user.guild.id) if user else '',
             '{verify-date}': self.verify_utils.get_verify_date(user_id=user.id, guild_id=user.guild.id) if user else '',
+            '{guild-name}': str(user.guild.name) if user else '',
+            '{guild-id}': str(user.guild.id) if user else '',
+            '{guild-owner-displayname}': str(user.guild.owner) if user else '',
+            '{guild-owner}': f"<@{str(user.guild.owner.id)}>" if user else '',
+            '{guild-creation}': f"<t:{int(user.guild.created_at.timestamp())}:R>" if user else '',
+            '{guild-totalchannels}': str(len(user.guild.channels)) if user else '0',
+            '{guild-totaltext}': str(
+                len([c for c in user.guild.channels if isinstance(c, disnake.TextChannel)])) if user else '0',
+            '{guild-totalvoice}': str(
+                len([c for c in user.guild.channels if isinstance(c, disnake.VoiceChannel)])) if user else '0',
+            '{guild-totalrole}': str(len(user.guild.roles)) if user else '0',
         }
 
         async_replacements = {
