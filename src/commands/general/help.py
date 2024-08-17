@@ -9,22 +9,13 @@ class Help(commands.Cog):
         self.bot = bot
         self.embed_factory = EmbedFactory('./config/embeds.yml', './config/config.yml', bot=bot)
 
-    @commands.command(
-        name="help",
-        description="Нужна помощь? Показывает все команды бота.",
-        aliases=["cmd", "command", "commands", "cmds", "commmands", "commmnd"],
-    )
-    async def help_command(self, ctx: commands.Context):
-        embed = await self.embed_factory.create_embed(preset='Help', user=ctx.author)
-        await ctx.send(embed=embed)
-
     @commands.slash_command(
         name="help",
         description="Нужна помощь? Показывает все команды бота.",
         aliases=["cmd", "command", "commands", "cmds", "commmands", "commmnd"],
 
     )
-    async def help_slash(self, interaction: disnake.CommandInteraction):
+    async def help_slash(self, interaction: disnake.AppCmdInter):
         embed = await self.embed_factory.create_embed(preset='Help', user=interaction.user)
         await interaction.response.send_message(embed=embed)
 
