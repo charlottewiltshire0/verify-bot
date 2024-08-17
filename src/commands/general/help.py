@@ -7,7 +7,7 @@ from src.module import EmbedFactory
 class Help(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.embed_factory = EmbedFactory('./config/embeds.yml', './config/config.yml', bot=bot)
+        self.embed_factory = EmbedFactory('./config/embeds.yml', './config/config.yml')
 
     @commands.slash_command(
         name="help",
