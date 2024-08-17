@@ -9,8 +9,10 @@ import asyncio
 import disnake
 from disnake.ext import commands
 from loguru import logger
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy import update, select
+from sqlalchemy.exc import NoResultFound, SQLAlchemyError
 from sqlalchemy.orm import Session, scoped_session
+from sqlalchemy.sql.elements import and_
 
 from src.module import Yml, SessionLocal
 from .models import *
@@ -114,6 +116,110 @@ class TextFormatter:
         seconds = seconds % 60
 
         return f"{days}д {hours}ч {minutes}м {seconds}с"
+
+
+class ReportUtils:
+    def __init__(self):
+        self.session = scoped_session(SessionLocal)
+
+    def create_report(self, victim_id, perpetrator_id, guild_id, voice_id=None, channel_id=None):
+        existing_report = self.session.execute(
+            select(Report).where(
+                and_(
+                    Report.victim_id == victim_id,
+                    Report.perpetrator_id == perpetrator_id,
+                    Report.guild_id == guild_id,
+                    Report.status.in_([ReportStatus.PENDING, ReportStatus.IN_PROGRESS])
+                )
+            )
+        ).scalar_one_or_none()
+
+        if existing_report:
+            return None
+
+        new_report = Report(
+            victim_id=victim_id,
+            perpetrator_id=perpetrator_id,
+            guild_id=guild_id,
+            voice_id=voice_id,
+            channel_id=channel_id
+        )
+        self.session.add(new_report)
+        self.session.commit()
+        return new_report
+
+    def get_report_status(self, report_id):
+        try:
+            report = self.session.execute(
+                select(Report).where(Report.id == report_id)
+            ).scalar_one()
+            return report.status
+        except NoResultFound:
+            return None
+
+    def format_status(self, status):
+        status_map = {
+            ReportStatus.PENDING: "Pending",
+            ReportStatus.IN_PROGRESS: "In Progress",
+            ReportStatus.RESOLVED: "Resolved",
+            ReportStatus.CLOSED: "Closed"
+        }
+        return status_map.get(status, "Unknown Status")
+
+    def claim_report(self, report_id: int, moderator_id: int) -> bool:
+        try:
+            report = self.session.query(Report).filter_by(id=report_id).first()
+            if report:
+                report.status = ReportStatus.IN_PROGRESS
+                report.claimed = True
+                report.claimed_by = moderator_id
+                self.session.commit()
+                return True
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            logger.info(f"Ошибка базы данных: {e}")
+        return False
+
+    def get_moderator_id(self, report_id):
+        try:
+            report = self.session.execute(
+                select(Report).where(Report.id == report_id)
+            ).scalar_one()
+            return report.claimed_by
+        except NoResultFound:
+            return None
+
+    def get_victim_id(self, report_id):
+        try:
+            report = self.session.execute(
+                select(Report).where(Report.id == report_id)
+            ).scalar_one()
+            return report.victim_id
+        except NoResultFound:
+            return None
+
+    def get_perpetrator_id(self, report_id):
+        try:
+            report = self.session.execute(
+                select(Report).where(Report.id == report_id)
+            ).scalar_one()
+            return report.perpetrator_id
+        except NoResultFound:
+            return None
+
+    def add_member_to_report(self, report_id, member_id):
+        report = self.session.execute(
+            select(Report).where(Report.id == report_id)
+        ).scalar_one_or_none()
+
+        if report:
+            if report.members_id:
+                report.members_id.append(member_id)
+            else:
+                report.members_id = [member_id]
+            self.session.commit()
+            return True
+        return False
 
 
 class VerifyUtils:
