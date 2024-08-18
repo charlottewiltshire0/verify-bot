@@ -125,4 +125,22 @@ Report:
 ########################################
 
 Channels:
-  Reports: ""
+  Reports: "channel_id"
+
+########################################
+#                                      #
+#               VERIFY                 #
+#                                      #
+########################################
+
+Verify:
+  DMUser: true
+  SendReview: true
+
+  Roles:
+    - id: "role_id"
+      color: "Blurple" # Возможные значения: Blurple, Grey, Green, Red, Grey
+      emoji: "😴"
+
+  StaffRoles:
+    - "role_id"
