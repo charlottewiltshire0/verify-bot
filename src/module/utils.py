@@ -340,6 +340,10 @@ class VerifyUtils:
         }
         return status_mapping.get(status, "<a:404:1274017785541955676>")
 
+    def is_user_verified(self, user_id: int, guild_id: int) -> bool:
+        user = self._get_or_create_user(user_id, guild_id)
+        return user and user.status == Status.APPROVED
+
 
 def loadExtensions(bot: commands.Bot, *directories: str):
     """Load extensions (cogs) from specified directories."""
