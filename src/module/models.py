@@ -44,6 +44,7 @@ class VerifyUsers(Base):
     user_id = Column(BigInteger, nullable=False)
     moder_id = Column(BigInteger, nullable=True)
     guild_id = Column(BigInteger, ForeignKey('verify.guild'), nullable=False)
+    role_id = Column(BigInteger, nullable=True)
     status = Column(Enum(Status), nullable=False, default=Status.PENDING)
     rejection = Column(Integer, default=0)
     verification_date = Column(DateTime, nullable=True)
