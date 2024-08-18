@@ -111,7 +111,6 @@ Embeds:
     Description: "{user-mention} успешно прошёл верификацию!"
     Timestamp: True
 
-
   VerifyRejection:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
@@ -131,6 +130,18 @@ Embeds:
     Title: "<:tick:1272260155190546584> Верификация удалена!"
     Description: "Верификация пользователя {user-mention} была успешно удалена."
     Timestamp: True
+
+  AlreadyVerified:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Этот пользователь уже верифицирован!"
+
+  NotVerified:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Этот пользователь не найден в списке верифицированных."
 
   MentionHelp:
     Author: "{bot-displayname}"
