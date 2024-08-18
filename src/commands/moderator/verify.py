@@ -59,6 +59,7 @@ class Verify(commands.Cog):
         description="Добавить пользователя в верифицированные"
     )
     async def verify_add_slash(self, interaction: disnake.AppCmdInter, member: disnake.Member):
+        self.verify_utils.last_moder(member.id, interaction.guild.id, interaction.user.id)
         if await self.check_self_verification(interaction, member):
             return
 
@@ -89,9 +90,9 @@ class Verify(commands.Cog):
             return
 
         self.verify_utils.unverify_user(member.id, interaction.guild.id)
-        await self.log_action('VerifyRemoved', member)
         embed = await self.embed_factory.create_embed(preset='VerifyRemoved', user=member, color_type="Success")
         await interaction.response.send_message(embed=embed, ephemeral=True)
+        await self.log_action('LogVerifyRemoved', member)
 
     @verify_add_slash.error
     @verify_remove_slash.error
