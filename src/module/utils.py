@@ -51,7 +51,10 @@ class TextFormatter:
             '{verify-rejection}': self.verify_utils.get_verify_rejection(user_id=user.id, guild_id=user.guild.id) if user else '',
             '{verify-moderator}': self.verify_utils.get_verify_moderator(user_id=user.id, guild_id=user.guild.id) if user else '',
             '{verify-moderator-id}': self.verify_utils.get_verify_moderator_id(user_id=user.id, guild_id=user.guild.id) if user else '',
+            '{verify-lastmoderator}': self.verify_utils.get_verify_last_moderator(user_id=user.id, guild_id=user.guild.id) if user else '',
+            '{verify-lastmoderator-id}': self.verify_utils.get_verify_last_moderator_id(user_id=user.id, guild_id=user.guild.id) if user else '',
             '{verify-date}': self.verify_utils.get_verify_date(user_id=user.id, guild_id=user.guild.id) if user else '',
+            '{verify-lastdate}': self.verify_utils.get_verify_last_date(user_id=user.id, guild_id=user.guild.id) if user else '',
             '{guild-name}': str(user.guild.name) if user else '',
             '{guild-id}': str(user.guild.id) if user else '',
             '{guild-owner-displayname}': str(user.guild.owner) if user else '',
@@ -264,10 +267,27 @@ class VerifyUtils:
         user = self._get_or_create_user(user_id, guild_id)
         return user.moder_id
 
+    def get_verify_last_moderator(self, user_id: int, guild_id: int) -> str:
+        """Получение упоминания модератора, который верифицировал пользователя."""
+        user = self._get_or_create_user(user_id, guild_id)
+        if user.last_moder_id:
+            return f"<@{user.last_moder_id}>"
+        return "`Нету`"
+
+    def get_verify_last_moderator_id(self, user_id: int, guild_id: int) -> Optional[int]:
+        """Получение ID модератора, который верифицировал пользователя."""
+        user = self._get_or_create_user(user_id, guild_id)
+        return user.last_moder_id
+
     def get_verify_date(self, user_id: int, guild_id: int) -> Optional[datetime]:
         """Получение даты верификации пользователя."""
         user = self._get_or_create_user(user_id, guild_id)
         return user.verification_date
+
+    def get_verify_last_date(self, user_id: int, guild_id: int) -> Optional[datetime]:
+        """Получение даты верификации пользователя."""
+        user = self._get_or_create_user(user_id, guild_id)
+        return user.last_verification_date
 
     def verify_user(self, user_id: int, guild_id: int, moder_id: Optional[int] = None):
         """Утверждение пользователя."""
@@ -275,6 +295,13 @@ class VerifyUtils:
         user.status = Status.APPROVED
         user.moder_id = moder_id
         user.verification_date = datetime.utcnow()
+        self.session.commit()
+
+    def last_moder(self, user_id: int, guild_id: int, moder_id: Optional[int] = None):
+        """Утверждение пользователя."""
+        user = self._get_or_create_user(user_id, guild_id)
+        user.last_moder_id = moder_id
+        user.last_verification_date = datetime.utcnow()
         self.session.commit()
 
     def unverify_user(self, user_id: int, guild_id: int):
