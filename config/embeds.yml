@@ -213,6 +213,13 @@ Embeds:
     Description: "Вы не можете верифицировать самого себя."
     Timestamp: True
 
+  SelectRole:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:roles:1274285161256718429> Выберите роль"
+    Description: "Пожалуйста, выберите роль, которая будет выдана."
+    Timestamp: True
+
   LogVerifySuccess:
     Title: "Пользователь Верифицирован"
     Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-moderator} `{verify-moderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> {verify-date}"
@@ -226,5 +233,5 @@ Embeds:
     Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-lastmoderator} `{verify-lastmoderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> {verify-lastdate}"
 
   LogVerifyRemoved:
-    Title: "Верификация Отменена"
+    Title: "Верификация Удалена"
     Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-lastmoderator} `{verify-lastmoderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> {verify-lastdate}"
