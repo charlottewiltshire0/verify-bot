@@ -19,6 +19,8 @@ class Verify(commands.Cog):
         self.logging_channel_id = int(Yml("./config/config.yml").load().get('Logging', {}).get('Verify', {})
                                       .get('ChannelID', 0))
 
+        self.dm_user_enabled = self.verify_settings.get('DMUser', False)
+
     async def log_action(self, action: str, member: disnake.Member, color: str = None):
         if not self.logging_enabled or not self.logging_channel_id:
             return
@@ -83,12 +85,14 @@ class Verify(commands.Cog):
             await self.log_action('LogVerifySuccess', member, "Success")
 
             embed = await self.embed_factory.create_embed(preset='UserVerifySuccess', color_type="Success")
-            await member.send(embed=embed)
+            if self.dm_user_enabled:
+                await member.send(embed=embed)
         elif view.value is False:
             self.verify_utils.give_rejection(member.id, interaction.guild.id)
             await self.log_action('LogVerifyRejection', member, "Error")
             embed = await self.embed_factory.create_embed(preset='UserVerifyRejection', color_type="Error")
-            await member.send(embed=embed)
+            if self.dm_user_enabled:
+                await member.send(embed=embed)
 
     @verify_slash.sub_command(
         name="remove",
@@ -111,6 +115,7 @@ class Verify(commands.Cog):
         self.verify_utils.unverify_user(member.id, interaction.guild.id)
         embed = await self.embed_factory.create_embed(preset='VerifyRemoved', user=member, color_type="Success")
         await interaction.response.send_message(embed=embed, ephemeral=True)
+
         await self.log_action('LogVerifyRemoved', member)
 
     @verify_add_slash.error
