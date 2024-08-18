@@ -56,10 +56,10 @@ AutoBan:
     AutoPunishments:
       # Количество отказов от применения наказания:
       3:
-        - PunishmentType: "LOG"
+        - PunishmentType: "LOG" # Действие при активации: KICK, TIMEOUT, BAN, LOG
         - Reason: "Auto Punish"
       5:
-        - PunishmentType: "TEMPBAN"
+        - PunishmentType: "BAN" # Действие при активации: KICK, TIMEOUT, BAN, LOG
         - Reason: "Auto Punish"
         - Length: "3d" # Длительность наказания для временного бана
 
