@@ -155,3 +155,7 @@ Logging:
   Verify:
     Enabled: True
     ChannelID: "channel_id"
+
+  AutoBan:
+    Enabled: True
+    ChannelID: "channel_id"
