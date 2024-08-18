@@ -135,7 +135,7 @@ Embeds:
   VerifyCancelled:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
-    Title: "<:crossmark:1272260131677278209> Верификация отменена!"
+    Title: "<:roles:1274285161256718429> Верификация отменена!"
     Description: "Процесс верификации {user-mention} был отменён."
 
   VerifyRemoved:
@@ -227,9 +227,16 @@ Embeds:
     Description: "Роль, которую вы пытаетесь удалить, не найдена на сервере. Пожалуйста, убедитесь, что роль существует и попробуйте снова."
     Timestamp: True
 
+  AutoBanVerifyRejection:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Превышен лимит отказов!"
+    Description: "К сожалению, вам был выдан отказ в проверке из-за превышения допустимого количества отказов."
+    Timestamp: True
+
   LogVerifySuccess:
     Title: "Пользователь Верифицирован"
-    Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-moderator} `{verify-moderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> {verify-date}\n<:arrow:1274280332304322611> **Роль**: <@&{verify-role}> `{verify-role}`"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-moderator} `{verify-moderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Роль**: <@&{verify-role}> `{verify-role}`\n<:arrow:1274280332304322611> {verify-date}"
 
   LogVerifyRejection:
     Title: "Недопуск Пользователя"
@@ -242,3 +249,7 @@ Embeds:
   LogVerifyRemoved:
     Title: "Верификация Удалена"
     Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-lastmoderator} `{verify-lastmoderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> {verify-lastdate}"
+
+  LogAutoBanRejection:
+      Title: "Превышен лимит отказов"
+      Description: "<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Отказы**: `{verify-rejection}`"

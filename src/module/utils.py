@@ -419,3 +419,23 @@ def get_button_style(color: str) -> disnake.ButtonStyle:
         "Red": disnake.ButtonStyle.red,
     }
     return color_map.get(color, disnake.ButtonStyle.grey)
+
+
+async def log_action(bot: commands.Bot, logging_channel_id: int, embed_factory, action: str, member: disnake.Member, color: str = None):
+    if not logging_channel_id:
+        return
+
+    channel = bot.get_channel(logging_channel_id)
+    if channel:
+        embed = await embed_factory.create_embed(preset=action, user=member, color_type=color)
+        await channel.send(embed=embed)
+    else:
+        print(f"Logging channel with ID {logging_channel_id} not found.")
+
+
+async def send_embed_to_member(embed_factory, member, preset, color_type):
+    embed = await embed_factory.create_embed(preset=preset, color_type=color_type)
+    try:
+        await member.send(embed=embed)
+    except Exception as e:
+        logger.error(f"Failed to send DM to {member}: {e}")
