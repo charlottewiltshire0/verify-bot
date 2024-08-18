@@ -135,7 +135,7 @@ Embeds:
   VerifyCancelled:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
-    Title: "<:crossmark:1272260131677278209> Верификация отменена!"
+    Title: "<:roles:1274285161256718429> Верификация отменена!"
     Description: "Процесс верификации {user-mention} был отменён."
 
   VerifyRemoved:
@@ -225,6 +225,13 @@ Embeds:
     AuthorIcon: "{bot-pfp}"
     Title: "<:crossmark:1272260131677278209> Ошибка!"
     Description: "Роль, которую вы пытаетесь удалить, не найдена на сервере. Пожалуйста, убедитесь, что роль существует и попробуйте снова."
+    Timestamp: True
+
+  AutoBanVerifyRejection:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Превышен лимит отказов!"
+    Description: "К сожалению, вам был выдан отказ в проверке из-за превышения допустимого количества отказов."
     Timestamp: True
 
   LogVerifySuccess:
