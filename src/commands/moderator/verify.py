@@ -15,7 +15,8 @@ class Verify(commands.Cog):
         self.verify_settings = Yml("./config/config.yml").load().get("Verify", {})
         self.staff_roles = [int(role_id) for role_id in self.verify_settings.get("StaffRoles", [])]
 
-        self.logging_enabled = Yml("./config/config.yml").load().get('Logging', {}).get('Verify', {}).get('Enabled', False)
+        self.logging_enabled = Yml("./config/config.yml").load().get('Logging', {}).get('Verify', {}).get('Enabled',
+                                                                                                          False)
         self.logging_channel_id = int(Yml("./config/config.yml").load().get('Logging', {}).get('Verify', {})
                                       .get('ChannelID', 0))
 
