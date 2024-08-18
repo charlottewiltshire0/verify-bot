@@ -51,9 +51,7 @@ AutoBan:
   VerifyRejection:
     Enabled: True
     MaxRejection: 5
-
     DMUser: True
-    DMMessage: "Вам был выдан отказ в проверке."
 
     AutoPunishments:
       # Количество отказов от применения наказания:
