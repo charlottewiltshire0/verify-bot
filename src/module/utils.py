@@ -39,6 +39,7 @@ class TextFormatter:
             '{user-id}': str(user.id) if user else '',
             '{user-creation}': f"<t:{int(user.created_at.timestamp())}:R>" if user else '',
             '{user-join}': f"<t:{int(user.joined_at.timestamp())}:R>" if user and user.joined_at else '',
+            '{user-mention}': f"<@{int(user.id)}>" if user else '',
             '{total-members-local}': str(user.guild.member_count) if user else '0',
             '{total-messages}': self.get_total_messages(),
             '{uptime}': self.get_uptime(),
