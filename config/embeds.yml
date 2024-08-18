@@ -236,7 +236,7 @@ Embeds:
 
   LogVerifySuccess:
     Title: "Пользователь Верифицирован"
-    Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-moderator} `{verify-moderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> {verify-date}\n<:arrow:1274280332304322611> **Роль**: <@&{verify-role}> `{verify-role}`"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-moderator} `{verify-moderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Роль**: <@&{verify-role}> `{verify-role}`\n<:arrow:1274280332304322611> {verify-date}"
 
   LogVerifyRejection:
     Title: "Недопуск Пользователя"
@@ -249,3 +249,7 @@ Embeds:
   LogVerifyRemoved:
     Title: "Верификация Удалена"
     Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-lastmoderator} `{verify-lastmoderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> {verify-lastdate}"
+
+  LogAutoBanRejection:
+      Title: "Превышен лимит отказов"
+      Description: "<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Отказы**: `{verify-rejection}`"
