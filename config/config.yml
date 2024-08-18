@@ -144,3 +144,14 @@ Verify:
 
   StaffRoles:
     - "role_id"
+
+########################################
+#                                      #
+#               LOGGING                #
+#                                      #
+########################################
+
+Logging:
+  Verify:
+    Enabled: True
+    ChannelID: "channel_id"
