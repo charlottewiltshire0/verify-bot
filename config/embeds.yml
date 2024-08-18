@@ -101,8 +101,36 @@ Embeds:
     Description: "<:profile:1272248323280994345> **Название**: {guild-name}\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {guild-id}\n<:ownerguild:1274280914901405739> **Владелец:** {guild-owner}<:ownerguild:1274280914901405739>\n<:birthday:1272250119156404337> **Создание**: {guild-creation}\n<:arrow:1274280332304322611> **Каналы**: `{guild-totalchannels}`\n<:space:1272248683903189084><:text:1274281670459133962> Текстовые: `{guild-totaltext}`\n<:space:1272248683903189084><:vc:1274281659264532591> Голосовые: `{guild-totalvoice}`\n<:memberguild:1274284457779531806> **Участники**: `{total-members-local}`\n<:roles:1274285161256718429> **Роли**: `{guild-totalrole}`"
 
   Verify:
-    Title: "Верифицировать {user-displayname}"
+    Title: "Вы хотите верифицировать {user-displayname}?"
     Description: "**Общие сведения**:\n<:profile:1272248323280994345> **Имя**: `{user-displayname}`\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {user-id}\n<:birthday:1272250119156404337> **Создание:** {user-creation}\n<:date:1272253126803591290> **Присоединился**: {user-join}\n<:ban:1272608029883502612> **Отказы**: `{verify-rejection}`"
+
+  VerifySuccess:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:tick:1272260155190546584> Верификация успешна!"
+    Description: "{user-mention} успешно прошёл верификацию!"
+    Timestamp: True
+
+
+  VerifyRejection:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Верификация отклонена!"
+    Description: "{user-mention} не прошёл верификацию."
+    Timestamp: True
+
+  VerifyCancelled:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Верификация отменена!"
+    Description: "Процесс верификации {user-mention} был отменён."
+
+  VerifyRemoved:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:tick:1272260155190546584> Верификация удалена!"
+    Description: "Верификация пользователя {user-mention} была успешно удалена."
+    Timestamp: True
 
   MentionHelp:
     Author: "{bot-displayname}"
@@ -139,3 +167,28 @@ Embeds:
     AuthorIcon: "{bot-pfp}"
     Title: "<:checkmark:1272260131677278208> Успех!"
     Description: "Канал для упоминания новых пользователей изменен на {channel-mention}"
+
+  NoPermissions:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "У вас нет прав для выполнения этой команды."
+
+  SelfVerifyError:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Вы не можете верифицировать самого себя."
+    Timestamp: True
+
+  LogVerifySuccess:
+    Title: "Пользователь Верифицирован"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-moderator} `{verify-moderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> {verify-date}"
+
+  LogVerifyRejection:
+    Title: "Недопуск Пользователя"
+    Description: "<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`"
+
+  LogVerifyCancelled:
+    Title: "Верификация Отменена"
+    Description: "<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`"
