@@ -59,12 +59,19 @@ class Verify(commands.Cog):
         description="Добавить пользователя в верифицированные"
     )
     async def verify_add_slash(self, interaction: disnake.AppCmdInter, member: disnake.Member):
-        self.verify_utils.last_moder(member.id, interaction.guild.id, interaction.user.id)
+
         if await self.check_self_verification(interaction, member):
             return
 
         if not await self.check_staff_roles(interaction):
             return
+
+        if self.verify_utils.is_user_verified(member.id, interaction.guild.id):
+            embed = await self.embed_factory.create_embed(preset='AlreadyVerified', user=member, color_type="Error")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+
+        self.verify_utils.last_moder(member.id, interaction.guild.id, interaction.user.id)
 
         view = VerifyButton(self.verify_utils, self.embed_factory, member)
         embed = await self.embed_factory.create_embed(preset='Verify', user=member)
@@ -88,6 +95,13 @@ class Verify(commands.Cog):
 
         if not await self.check_staff_roles(interaction):
             return
+
+        if not self.verify_utils.is_user_verified(member.id, interaction.guild.id):
+            embed = await self.embed_factory.create_embed(preset='NotVerified', user=member, color_type="Error")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+
+        self.verify_utils.last_moder(member.id, interaction.guild.id, interaction.user.id)
 
         self.verify_utils.unverify_user(member.id, interaction.guild.id)
         embed = await self.embed_factory.create_embed(preset='VerifyRemoved', user=member, color_type="Success")
