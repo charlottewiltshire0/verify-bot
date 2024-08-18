@@ -64,14 +64,17 @@ AutoBan:
     MinimumAccountAge: 7 # Минимальный возраст аккаунта в днях
 
   NoAvatar:
+    DMUser: True
     Enabled: True
     TriggerAction: "KICK" # Действие при отсутствии аватара: KICK, TIMEOUT, BAN, LOG
 
   AdvertisingName:
+    DMUser: True
     Enabled: True
     TriggerAction: "KICK" # Действие при активации: KICK, TIMEOUT, BAN, LOG
 
   Username:
+    DMUser: True
     Enabled: True
     TriggerAction: "LOG" # Действие при активации: KICK, TIMEOUT, BAN, LOG
 
