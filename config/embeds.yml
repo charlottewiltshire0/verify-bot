@@ -111,11 +111,25 @@ Embeds:
     Description: "{user-mention} успешно прошёл верификацию!"
     Timestamp: True
 
+  UserVerifySuccess:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:tick:1272260155190546584> Верификация успешна!"
+    Description: "Поздравляем! Вы успешно прошли верификацию на сервере."
+    Timestamp: True
+
   VerifyRejection:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
     Title: "<:crossmark:1272260131677278209> Верификация отклонена!"
     Description: "{user-mention} не прошёл верификацию."
+    Timestamp: True
+
+  UserVerifyRejection:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Верификация отклонена!"
+    Description: "К сожалению, ваша верификация была отклонена. Если у вас есть вопросы, обратитесь к модераторам."
     Timestamp: True
 
   VerifyCancelled:
@@ -182,7 +196,7 @@ Embeds:
   NoPermissions:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
-    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Title: "<:crossmark:1272260131677278209> Отсутствуют права!"
     Description: "У вас нет прав для выполнения этой команды."
 
   SelfVerifyError:
