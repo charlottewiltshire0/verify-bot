@@ -4,7 +4,7 @@ from disnake.ext.commands import MissingPermissions
 from loguru import logger
 
 from src.buttons.verifyButton import VerifyButton
-from src.module import EmbedFactory, VerifyUtils, Yml, log_action
+from src.module import EmbedFactory, VerifyUtils, Yml, log_action, send_embed_to_member
 
 
 class Verify(commands.Cog):
@@ -75,23 +75,17 @@ class Verify(commands.Cog):
             await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id, embed_factory=self.embed_factory,
                              action='LogVerifySuccess', member=member, color="Success")
 
-            embed = await self.embed_factory.create_embed(preset='UserVerifySuccess', color_type="Success")
             if self.dm_user_enabled:
-                try:
-                    await member.send(embed=embed)
-                except Exception as e:
-                    logger.error(f"Failed to send DM to {member}: {e}")
+                await send_embed_to_member(embed_factory=self.embed_factory, member=member, preset="UserVerifySuccess",
+                                           color_type="Success")
 
         elif view.value is False:
             self.verify_utils.give_rejection(member.id, interaction.guild.id)
             await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id, embed_factory=self.embed_factory,
                              action='LogVerifyRejection', member=member, color="Error")
-            embed = await self.embed_factory.create_embed(preset='UserVerifyRejection', color_type="Error")
             if self.dm_user_enabled:
-                try:
-                    await member.send(embed=embed)
-                except Exception as e:
-                    logger.error(f"Failed to send DM to {member}: {e}")
+                await send_embed_to_member(embed_factory=self.embed_factory, member=member,
+                                           preset="UserVerifyRejection", color_type="Success")
 
     @verify_slash.sub_command(
         name="remove",
@@ -130,11 +124,8 @@ class Verify(commands.Cog):
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
         if self.dm_user_enabled:
-            embed = await self.embed_factory.create_embed(preset='UserVerifyRemoved', color_type="Error")
-            try:
-                await member.send(embed=embed)
-            except Exception as e:
-                logger.error(f"Failed to send DM to {member}: {e}")
+            await send_embed_to_member(embed_factory=self.embed_factory, member=member,
+                                       preset="UserVerifyRemoved", color_type="Success")
 
         await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id, embed_factory=self.embed_factory,
                          action='LogVerifyRemoved', member=member, color="Error")
