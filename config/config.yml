@@ -55,14 +55,9 @@ AutoBan:
 
     AutoPunishments:
       # Количество отказов от применения наказания:
-      3:
-        - PunishmentType: "LOG" # Действие при активации: KICK, TIMEOUT, BAN, LOG
-        - Reason: "Auto Punish"
-      5:
-        - PunishmentType: "BAN" # Действие при активации: KICK, TIMEOUT, BAN, LOG
-        - Reason: "Auto Punish"
-        - Length: "3d" # Длительность наказания для временного бана
-
+      3: "LOG" # Действие при активации: KICK, TIMEOUT, BAN, LOG
+      5: "BAN" # Действие при активации: KICK, TIMEOUT, BAN, LOG
+        
   AccountAge:
     Enabled: True # Включает проверку возраста аккаунта
     TriggerAction: "KICK" # Действие при несоответствии возраста аккаунта: KICK, TIMEOUT, BAN, LOG
