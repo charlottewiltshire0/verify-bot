@@ -15,7 +15,8 @@ class Verify(commands.Cog):
         self.verify_settings = Yml("./config/config.yml").load().get("Verify", {})
         self.staff_roles = [int(role_id) for role_id in self.verify_settings.get("StaffRoles", [])]
 
-        self.logging_enabled = Yml("./config/config.yml").load().get('Logging', {}).get('Verify', {}).get('Enabled', False)
+        self.logging_enabled = Yml("./config/config.yml").load().get('Logging', {}).get('Verify', {}).get('Enabled',
+                                                                                                          False)
         self.logging_channel_id = int(Yml("./config/config.yml").load().get('Logging', {}).get('Verify', {})
                                       .get('ChannelID', 0))
 
@@ -112,11 +113,25 @@ class Verify(commands.Cog):
 
         self.verify_utils.last_moder(member.id, interaction.guild.id, interaction.user.id)
 
+        verify_role_id = self.verify_utils.get_verify_role(user_id=member.id, guild_id=interaction.guild.id)
+        if verify_role_id is None:
+            embed = await self.embed_factory.create_embed(preset='RoleNotFound', color_type="Error")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+
+        role = disnake.utils.get(interaction.guild.roles, id=int(verify_role_id))
+        if role is None:
+            embed = await self.embed_factory.create_embed(preset='RoleNotFound', color_type="Error")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+
+        await member.remove_roles(role)
+
         self.verify_utils.unverify_user(member.id, interaction.guild.id)
         embed = await self.embed_factory.create_embed(preset='VerifyRemoved', user=member, color_type="Success")
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-        await self.log_action('LogVerifyRemoved', member)
+        await self.log_action('LogVerifyRemoved', member, color="Error")
 
     @verify_add_slash.error
     @verify_remove_slash.error

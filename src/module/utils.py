@@ -55,6 +55,7 @@ class TextFormatter:
             '{verify-lastmoderator-id}': self.verify_utils.get_verify_last_moderator_id(user_id=user.id, guild_id=user.guild.id) if user else '',
             '{verify-date}': self.verify_utils.get_verify_date(user_id=user.id, guild_id=user.guild.id) if user else '',
             '{verify-lastdate}': self.verify_utils.get_verify_last_date(user_id=user.id, guild_id=user.guild.id) if user else '',
+            '{verify-role}': self.verify_utils.get_verify_role(user_id=user.id, guild_id=user.guild.id) if user else '',
             '{guild-name}': str(user.guild.name) if user else '',
             '{guild-id}': str(user.guild.id) if user else '',
             '{guild-owner-displayname}': str(user.guild.owner) if user else '',
@@ -289,6 +290,10 @@ class VerifyUtils:
         user = self._get_or_create_user(user_id, guild_id)
         return user.last_verification_date
 
+    def get_verify_role(self, user_id: int, guild_id: int) -> Optional[int]:
+        user = self._get_or_create_user(user_id, guild_id)
+        return user.role_id
+
     def verify_user(self, user_id: int, guild_id: int, moder_id: Optional[int] = None):
         """Утверждение пользователя."""
         user = self._get_or_create_user(user_id, guild_id)
@@ -310,6 +315,7 @@ class VerifyUtils:
         user.status = Status.PENDING
         user.moder_id = None
         user.verification_date = None
+        user.role_id = None
         self.session.commit()
 
     def give_rejection(self, user_id: int, guild_id: int):
@@ -329,6 +335,12 @@ class VerifyUtils:
         """Установка количества отказов пользователю."""
         user = self._get_or_create_user(user_id, guild_id)
         user.rejection = rejection_count
+        self.session.commit()
+
+    def set_role(self, user_id: int, guild_id: int, role_id: int):
+        """Установка количества отказов пользователю."""
+        user = self._get_or_create_user(user_id, guild_id)
+        user.role_id = role_id
         self.session.commit()
 
     def format_status(self, status: Status) -> str:
@@ -397,3 +409,13 @@ def set_channel_mention(db: Session, guild_id: int, channel_mention: int):
         verify_entry = Verify(guild=guild_id, channel_mention=channel_mention)
         db.add(verify_entry)
     db.commit()
+
+
+def get_button_style(color: str) -> disnake.ButtonStyle:
+    color_map = {
+        "Blurple": disnake.ButtonStyle.blurple,
+        "Grey": disnake.ButtonStyle.grey,
+        "Green": disnake.ButtonStyle.green,
+        "Red": disnake.ButtonStyle.red,
+    }
+    return color_map.get(color, disnake.ButtonStyle.grey)
