@@ -145,6 +145,13 @@ Embeds:
     Description: "Верификация пользователя {user-mention} была успешно удалена."
     Timestamp: True
 
+  UserVerifyRemoved:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Верификация удалена!"
+    Description: "Ваша верификация была успешно удалена. Если у вас есть вопросы или вы хотите снова пройти верификацию, обратитесь к модераторам."
+    Timestamp: True
+
   AlreadyVerified:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
