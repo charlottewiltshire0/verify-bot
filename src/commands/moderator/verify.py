@@ -116,7 +116,7 @@ class Verify(commands.Cog):
         embed = await self.embed_factory.create_embed(preset='VerifyRemoved', user=member, color_type="Success")
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-        await self.log_action('LogVerifyRemoved', member)
+        await self.log_action('LogVerifyRemoved', member, color="Error")
 
     @verify_add_slash.error
     @verify_remove_slash.error
