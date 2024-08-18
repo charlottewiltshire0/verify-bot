@@ -48,11 +48,14 @@ class VerifyUsers(Base):
     rejection = Column(Integer, default=0)
     verification_date = Column(DateTime, nullable=True)
     verify = relationship('Verify', back_populates='verify_users')
+    last_moder_id = Column(BigInteger, nullable=True)
+    last_verification_date = Column(DateTime, nullable=True)
 
     def __repr__(self):
         return (f"<VerifyUsers(id={self.id}, user_id={self.user_id}, moder_id={self.moder_id}, "
                 f"guild_id={self.guild_id}, status={self.status}, rejection={self.rejection}, "
-                f"verification_date={self.verification_date})>")
+                f"verification_date={self.verification_date}), last_moder_id={self.last_moder_id}, "
+                f"last_verification_date={self.last_verification_date})>")
 
 
 class ReportStatus(PyEnum):
