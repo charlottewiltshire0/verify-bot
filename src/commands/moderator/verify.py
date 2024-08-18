@@ -85,7 +85,7 @@ class Verify(commands.Cog):
                              action='LogVerifyRejection', member=member, color="Error")
             if self.dm_user_enabled:
                 await send_embed_to_member(embed_factory=self.embed_factory, member=member,
-                                           preset="UserVerifyRejection", color_type="Success")
+                                           preset="UserVerifyRejection", color_type="Error")
 
     @verify_slash.sub_command(
         name="remove",
