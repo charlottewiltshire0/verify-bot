@@ -431,3 +431,11 @@ async def log_action(bot: commands.Bot, logging_channel_id: int, embed_factory, 
         await channel.send(embed=embed)
     else:
         print(f"Logging channel with ID {logging_channel_id} not found.")
+
+
+async def send_embed_to_member(self, member, preset, color_type):
+    embed = self.embed_factory.create_embed(preset=preset, color_type=color_type)
+    try:
+        await member.send(embed=embed)
+    except Exception as e:
+        logger.error(f"Failed to send DM to {member}: {e}")
