@@ -32,7 +32,7 @@ class Bot(commands.AutoShardedBot):
             chunk_guilds_at_startup=False
         )
 
-        loadExtensions(self, 'src/events', 'src/events/buttons', 'src/commands/general', 'src/commands/owner')
+        loadExtensions(self, 'src/events', 'src/commands/moderator', 'src/commands/general', 'src/commands/owner')
 
     async def success(self, content: str, interaction: disnake.Interaction, ephemeral: Optional[bool]):
         """"SENDING SUCCESS MESSAGE"""
