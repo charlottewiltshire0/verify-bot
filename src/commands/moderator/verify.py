@@ -81,9 +81,14 @@ class Verify(commands.Cog):
         if view.value is True:
             self.verify_utils.verify_user(member.id, interaction.guild.id, interaction.user.id)
             await self.log_action('LogVerifySuccess', member, "Success")
+
+            embed = await self.embed_factory.create_embed(preset='UserVerifySuccess', color_type="Success")
+            await member.send(embed=embed)
         elif view.value is False:
             self.verify_utils.give_rejection(member.id, interaction.guild.id)
             await self.log_action('LogVerifyRejection', member, "Error")
+            embed = await self.embed_factory.create_embed(preset='UserVerifyRejection', color_type="Error")
+            await member.send(embed=embed)
 
     @verify_slash.sub_command(
         name="remove",
