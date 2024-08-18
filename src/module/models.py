@@ -56,7 +56,7 @@ class VerifyUsers(Base):
         return (f"<VerifyUsers(id={self.id}, user_id={self.user_id}, moder_id={self.moder_id}, "
                 f"guild_id={self.guild_id}, status={self.status}, rejection={self.rejection}, "
                 f"verification_date={self.verification_date}), last_moder_id={self.last_moder_id}, "
-                f"last_verification_date={self.last_verification_date})>")
+                f"last_verification_date={self.last_verification_date})>, role_id={self.role_id}")
 
 
 class ReportStatus(PyEnum):
