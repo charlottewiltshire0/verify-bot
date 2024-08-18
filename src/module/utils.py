@@ -397,3 +397,13 @@ def set_channel_mention(db: Session, guild_id: int, channel_mention: int):
         verify_entry = Verify(guild=guild_id, channel_mention=channel_mention)
         db.add(verify_entry)
     db.commit()
+
+
+def get_button_style(color: str) -> disnake.ButtonStyle:
+    color_map = {
+        "Blurple": disnake.ButtonStyle.blurple,
+        "Grey": disnake.ButtonStyle.grey,
+        "Green": disnake.ButtonStyle.green,
+        "Red": disnake.ButtonStyle.red,
+    }
+    return color_map.get(color, disnake.ButtonStyle.grey)
