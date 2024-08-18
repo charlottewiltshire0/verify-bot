@@ -220,9 +220,16 @@ Embeds:
     Description: "Пожалуйста, выберите роль, которая будет выдана."
     Timestamp: True
 
+  RoleNotFound:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Роль, которую вы пытаетесь удалить, не найдена на сервере. Пожалуйста, убедитесь, что роль существует и попробуйте снова."
+    Timestamp: True
+
   LogVerifySuccess:
     Title: "Пользователь Верифицирован"
-    Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-moderator} `{verify-moderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> {verify-date}"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-moderator} `{verify-moderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> {verify-date}\n<:arrow:1274280332304322611> **Роль**: <@&{verify-role}> `{verify-role}`"
 
   LogVerifyRejection:
     Title: "Недопуск Пользователя"
