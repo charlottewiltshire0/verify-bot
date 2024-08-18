@@ -114,9 +114,9 @@ Report:
       Topic: "**Пользователь** {user-displayname} **Причина** {reason} **Время** {time} **ID** {id}"
 
     Transcripts:
-      Enabled: true
+      Enabled: True
       Channel: "transcript_id"
-      DMToUser: true
+      DMToUser: True
 
 ########################################
 #                                      #
@@ -134,8 +134,8 @@ Channels:
 ########################################
 
 Verify:
-  DMUser: true
-  SendReview: true
+  DMUser: True
+  SendReview: True
 
   Roles:
     - id: "role_id"
