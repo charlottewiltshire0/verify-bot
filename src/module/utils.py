@@ -331,6 +331,12 @@ class VerifyUtils:
         user.rejection = rejection_count
         self.session.commit()
 
+    def set_role(self, user_id: int, guild_id: int, role_id: int):
+        """Установка количества отказов пользователю."""
+        user = self._get_or_create_user(user_id, guild_id)
+        user.role_id = role_id
+        self.session.commit()
+
     def format_status(self, status: Status) -> str:
         """Форматирование статуса в понятный вид."""
         status_mapping = {
