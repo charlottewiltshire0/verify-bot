@@ -187,8 +187,12 @@ Embeds:
 
   LogVerifyRejection:
     Title: "Недопуск Пользователя"
-    Description: "<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-lastmoderator} `{verify-lastmoderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> {verify-lastdate}"
 
   LogVerifyCancelled:
     Title: "Верификация Отменена"
-    Description: "<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-lastmoderator} `{verify-lastmoderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> {verify-lastdate}"
+
+  LogVerifyRemoved:
+    Title: "Верификация Отменена"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-lastmoderator} `{verify-lastmoderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> {verify-lastdate}"
