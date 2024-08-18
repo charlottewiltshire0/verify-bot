@@ -9,33 +9,37 @@ import asyncio
 import disnake
 from disnake.ext import commands
 from loguru import logger
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy import update, select
+from sqlalchemy.exc import NoResultFound, SQLAlchemyError
 from sqlalchemy.orm import Session, scoped_session
+from sqlalchemy.sql.elements import and_
 
 from src.module import Yml, SessionLocal
 from .models import *
 
 
 class TextFormatter:
-    def __init__(self):
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
         self.start_time = datetime.utcnow()
         self.version_cache = None
         self.version_cache_time = None
         self.cache = {}
         self.verify_utils = VerifyUtils()
 
-    async def format_text(self, text: str, user: Optional[disnake.Member] = None, channel: Optional[disnake.TextChannel] = None, bot: Optional[commands.Bot] = None) -> str:
+    async def format_text(self, text: str, user: Optional[disnake.Member] = None, channel: Optional[disnake.TextChannel] = None) -> str:
         placeholders = {
-            '{api-ping}': round(bot.latency * 1000),
-            '{bot-pfp}': bot.user.avatar.url if bot.user.avatar else '',
-            '{bot-displayname}': bot.user.name,
-            '{bot-id}': str(bot.user.id),
+            '{api-ping}': round(self.bot.latency * 1000),
+            '{bot-pfp}': self.bot.user.avatar.url if self.bot.user.avatar else '',
+            '{bot-displayname}': self.bot.user.name,
+            '{bot-id}': str(self.bot.user.id),
             '{prefix}': get_prefix(),
             '{user-pfp}': user.avatar.url if user and user.avatar else '',
             '{user-displayname}': user.display_name if user else '',
             '{user-id}': str(user.id) if user else '',
             '{user-creation}': f"<t:{int(user.created_at.timestamp())}:R>" if user else '',
             '{user-join}': f"<t:{int(user.joined_at.timestamp())}:R>" if user and user.joined_at else '',
+            '{user-mention}': f"<@{int(user.id)}>" if user else '',
             '{total-members-local}': str(user.guild.member_count) if user else '0',
             '{total-messages}': self.get_total_messages(),
             '{uptime}': self.get_uptime(),
@@ -47,7 +51,10 @@ class TextFormatter:
             '{verify-rejection}': self.verify_utils.get_verify_rejection(user_id=user.id, guild_id=user.guild.id) if user else '',
             '{verify-moderator}': self.verify_utils.get_verify_moderator(user_id=user.id, guild_id=user.guild.id) if user else '',
             '{verify-moderator-id}': self.verify_utils.get_verify_moderator_id(user_id=user.id, guild_id=user.guild.id) if user else '',
+            '{verify-lastmoderator}': self.verify_utils.get_verify_last_moderator(user_id=user.id, guild_id=user.guild.id) if user else '',
+            '{verify-lastmoderator-id}': self.verify_utils.get_verify_last_moderator_id(user_id=user.id, guild_id=user.guild.id) if user else '',
             '{verify-date}': self.verify_utils.get_verify_date(user_id=user.id, guild_id=user.guild.id) if user else '',
+            '{verify-lastdate}': self.verify_utils.get_verify_last_date(user_id=user.id, guild_id=user.guild.id) if user else '',
             '{guild-name}': str(user.guild.name) if user else '',
             '{guild-id}': str(user.guild.id) if user else '',
             '{guild-owner-displayname}': str(user.guild.owner) if user else '',
@@ -115,6 +122,110 @@ class TextFormatter:
         return f"{days}д {hours}ч {minutes}м {seconds}с"
 
 
+class ReportUtils:
+    def __init__(self):
+        self.session = scoped_session(SessionLocal)
+
+    def create_report(self, victim_id, perpetrator_id, guild_id, voice_id=None, channel_id=None):
+        existing_report = self.session.execute(
+            select(Report).where(
+                and_(
+                    Report.victim_id == victim_id,
+                    Report.perpetrator_id == perpetrator_id,
+                    Report.guild_id == guild_id,
+                    Report.status.in_([ReportStatus.PENDING, ReportStatus.IN_PROGRESS])
+                )
+            )
+        ).scalar_one_or_none()
+
+        if existing_report:
+            return None
+
+        new_report = Report(
+            victim_id=victim_id,
+            perpetrator_id=perpetrator_id,
+            guild_id=guild_id,
+            voice_id=voice_id,
+            channel_id=channel_id
+        )
+        self.session.add(new_report)
+        self.session.commit()
+        return new_report
+
+    def get_report_status(self, report_id):
+        try:
+            report = self.session.execute(
+                select(Report).where(Report.id == report_id)
+            ).scalar_one()
+            return report.status
+        except NoResultFound:
+            return None
+
+    def format_status(self, status):
+        status_map = {
+            ReportStatus.PENDING: "Pending",
+            ReportStatus.IN_PROGRESS: "In Progress",
+            ReportStatus.RESOLVED: "Resolved",
+            ReportStatus.CLOSED: "Closed"
+        }
+        return status_map.get(status, "Unknown Status")
+
+    def claim_report(self, report_id: int, moderator_id: int) -> bool:
+        try:
+            report = self.session.query(Report).filter_by(id=report_id).first()
+            if report:
+                report.status = ReportStatus.IN_PROGRESS
+                report.claimed = True
+                report.claimed_by = moderator_id
+                self.session.commit()
+                return True
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            logger.info(f"Ошибка базы данных: {e}")
+        return False
+
+    def get_moderator_id(self, report_id):
+        try:
+            report = self.session.execute(
+                select(Report).where(Report.id == report_id)
+            ).scalar_one()
+            return report.claimed_by
+        except NoResultFound:
+            return None
+
+    def get_victim_id(self, report_id):
+        try:
+            report = self.session.execute(
+                select(Report).where(Report.id == report_id)
+            ).scalar_one()
+            return report.victim_id
+        except NoResultFound:
+            return None
+
+    def get_perpetrator_id(self, report_id):
+        try:
+            report = self.session.execute(
+                select(Report).where(Report.id == report_id)
+            ).scalar_one()
+            return report.perpetrator_id
+        except NoResultFound:
+            return None
+
+    def add_member_to_report(self, report_id, member_id):
+        report = self.session.execute(
+            select(Report).where(Report.id == report_id)
+        ).scalar_one_or_none()
+
+        if report:
+            if report.members_id:
+                report.members_id.append(member_id)
+            else:
+                report.members_id = [member_id]
+            self.session.commit()
+            return True
+        return False
+
+
 class VerifyUtils:
     def __init__(self):
         self.session = scoped_session(SessionLocal)
@@ -156,10 +267,27 @@ class VerifyUtils:
         user = self._get_or_create_user(user_id, guild_id)
         return user.moder_id
 
+    def get_verify_last_moderator(self, user_id: int, guild_id: int) -> str:
+        """Получение упоминания модератора, который верифицировал пользователя."""
+        user = self._get_or_create_user(user_id, guild_id)
+        if user.last_moder_id:
+            return f"<@{user.last_moder_id}>"
+        return "`Нету`"
+
+    def get_verify_last_moderator_id(self, user_id: int, guild_id: int) -> Optional[int]:
+        """Получение ID модератора, который верифицировал пользователя."""
+        user = self._get_or_create_user(user_id, guild_id)
+        return user.last_moder_id
+
     def get_verify_date(self, user_id: int, guild_id: int) -> Optional[datetime]:
         """Получение даты верификации пользователя."""
         user = self._get_or_create_user(user_id, guild_id)
         return user.verification_date
+
+    def get_verify_last_date(self, user_id: int, guild_id: int) -> Optional[datetime]:
+        """Получение даты верификации пользователя."""
+        user = self._get_or_create_user(user_id, guild_id)
+        return user.last_verification_date
 
     def verify_user(self, user_id: int, guild_id: int, moder_id: Optional[int] = None):
         """Утверждение пользователя."""
@@ -167,6 +295,13 @@ class VerifyUtils:
         user.status = Status.APPROVED
         user.moder_id = moder_id
         user.verification_date = datetime.utcnow()
+        self.session.commit()
+
+    def last_moder(self, user_id: int, guild_id: int, moder_id: Optional[int] = None):
+        """Утверждение пользователя."""
+        user = self._get_or_create_user(user_id, guild_id)
+        user.last_moder_id = moder_id
+        user.last_verification_date = datetime.utcnow()
         self.session.commit()
 
     def unverify_user(self, user_id: int, guild_id: int):
@@ -205,6 +340,10 @@ class VerifyUtils:
         }
         return status_mapping.get(status, "<a:404:1274017785541955676>")
 
+    def is_user_verified(self, user_id: int, guild_id: int) -> bool:
+        user = self._get_or_create_user(user_id, guild_id)
+        return user and user.status == Status.APPROVED
+
 
 def loadExtensions(bot: commands.Bot, *directories: str):
     """Load extensions (cogs) from specified directories."""
@@ -225,8 +364,7 @@ def loadExtensions(bot: commands.Bot, *directories: str):
 
 
 def get_prefix() -> str:
-    config = Yml('./config/config.yml')
-    return config.read().get('Prefix', 'Unknown')
+    return '/'
 
 
 def add_channel_mention(db: Session, guild_id: int, channel_mention: int) -> bool:
