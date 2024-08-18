@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, BigInteger, ARRAY
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, BigInteger, ARRAY, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from enum import Enum as PyEnum
@@ -53,3 +53,33 @@ class VerifyUsers(Base):
         return (f"<VerifyUsers(id={self.id}, user_id={self.user_id}, moder_id={self.moder_id}, "
                 f"guild_id={self.guild_id}, status={self.status}, rejection={self.rejection}, "
                 f"verification_date={self.verification_date})>")
+
+
+class ReportStatus(PyEnum):
+    PENDING = "pending"
+    IN_PROGRESS = "in_progress"
+    RESOLVED = "resolved"
+    CLOSED = "closed"
+
+
+class Report(Base):
+    __tablename__ = 'report'
+
+    id = Column(BigInteger, primary_key=True)
+    status = Column(Enum(ReportStatus), nullable=False, default=ReportStatus.PENDING)
+    victim_id = Column(BigInteger, nullable=False)
+    perpetrator_id = Column(BigInteger, nullable=False)
+    members_id = Column(ARRAY(BigInteger), nullable=True)
+    guild_id = Column(BigInteger, nullable=False)
+    voice_id = Column(BigInteger, nullable=True)
+    channel_id = Column(BigInteger, nullable=True)
+    claimed = Column(Boolean, nullable=False, default=False)
+    claimed_by = Column(BigInteger, nullable=True)
+
+    def __repr__(self):
+        return (
+            f"<Report(id={self.id}, status={self.status}, victim_id={self.victim_id}, "
+            f"perpetrator_id={self.perpetrator_id}, members_id={self.members_id}, "
+            f"guild_id={self.guild_id}, voice_id={self.voice_id}, channel_id={self.channel_id}, "
+            f"claimed={self.claimed}, claimed_by={self.claimed_by})>"
+        )
