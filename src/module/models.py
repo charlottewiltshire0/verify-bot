@@ -89,6 +89,17 @@ class Report(Base):
         )
 
 
+class Member(Base):
+    __tablename__ = "members"
+
+    id = Column(Integer, primary_key=True)
+    report_id = Column(Integer, ForeignKey("report.id"))
+    member_id = Column(Integer, nullable=False)
+
+    def __repr__(self):
+        return f"<Member(id={self.member_id}, report_id={self.report_id})>"
+
+
 class BanStatus(PyEnum):
     ACTIVE = "active"
     EXPIRED = "expired"
