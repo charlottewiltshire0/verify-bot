@@ -275,5 +275,9 @@ Embeds:
     Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-lastmoderator} `{verify-lastmoderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> {verify-lastdate}"
 
   LogAutoBanRejection:
-      Title: "Превышен лимит отказов"
-      Description: "<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Отказы**: `{verify-rejection}`"
+      Title: "Автобан: Превышен лимит отказов"
+      Description: "<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Отказы**: `{verify-rejection}`\n<:arrow:1274280332304322611> {date}"
+
+  LogAutoBanAccountAge:
+    Title: "Автобан: Недостаточный возраст аккаунта"
+    Description: "<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Создание**: {user-creation}\n<:arrow:1274280332304322611> **Возраст аккаунта** {user-age-days}\n<:arrow:1274280332304322611> {date}"
