@@ -101,7 +101,7 @@ class ReportModal(disnake.ui.Modal):
             description=f"<:profile:1272248323280994345> **Автор жалобы**: <@{interaction.author.id}>\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {interaction.author.id}\n<:report:1274406261814722761> **Нарушитель**: <@{user.id}>\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {user.id}\n<:text:1274281670459133962> **Описание**: \n{description}"
         )
 
-        buttons = ReportButton(self.report_utils, report.id)
+        buttons = ReportButton(self.report_utils, report.id, bot=self.bot)
 
         await channel.send(content=content, embed=embed, view=buttons)
 
