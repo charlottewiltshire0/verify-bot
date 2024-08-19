@@ -87,3 +87,32 @@ class Report(Base):
             f"guild_id={self.guild_id}, voice_id={self.voice_id}, channel_id={self.channel_id}, "
             f"claimed={self.claimed}, claimed_by={self.claimed_by})>"
         )
+
+
+class BanStatus(PyEnum):
+    ACTIVE = "active"
+    EXPIRED = "expired"
+    REVOKED = "revoked"
+
+
+class Ban(Base):
+    __tablename__ = 'ban'
+
+    id = Column(BigInteger, primary_key=True)
+    user_id = Column(BigInteger, nullable=False)
+    guild_id = Column(BigInteger, nullable=False)
+    ban_date = Column(DateTime, nullable=False)
+    expiration_date = Column(DateTime, nullable=True)
+    reason = Column(String, nullable=True)
+    moderator_id = Column(BigInteger, nullable=False)
+    status = Column(Enum(BanStatus), nullable=False, default=BanStatus.ACTIVE)
+    revoked_by = Column(BigInteger, nullable=True)
+    revoked_date = Column(DateTime, nullable=True)
+
+    def __repr__(self):
+        return (
+            f"<Ban(id={self.id}, user_id={self.user_id}, guild_id={self.guild_id}, "
+            f"ban_date={self.ban_date}, expiration_date={self.expiration_date}, "
+            f"reason={self.reason}, moderator_id={self.moderator_id}, "
+            f"status={self.status}, revoked_by={self.revoked_by}, revoked_date={self.revoked_date})>"
+        )
