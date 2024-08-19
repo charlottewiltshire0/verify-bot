@@ -246,6 +246,12 @@ Embeds:
     Title: "<a:hello:1275023730589958154> Добро пожаловать на сервер!"
     Description: "Приветствуем {user-mention} на сервере {guild-name}! Мы рады видеть вас здесь. Не забудьте пройти верификацию, чтобы получить полный доступ к нашему серверу."
 
+  NoAvatar:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Аватар не установлен!"
+    Description: "Пожалуйста, установите аватар, чтобы продолжить пользоваться сервером."
+
   LogMentionAdd:
     Title: "Канал для упоминания добавлен"
     Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Канал**: {channelmention}\n<:arrow:1274280332304322611> {date}"
@@ -281,3 +287,8 @@ Embeds:
   LogAutoBanAccountAge:
     Title: "Автобан: Недостаточный возраст аккаунта"
     Description: "<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Создание**: {user-creation}\n<:arrow:1274280332304322611> **Возраст аккаунта** {user-age-days}\n<:arrow:1274280332304322611> {date}"
+
+  LogAutoBanNoAvatar:
+    Title: "Автобан: Отсутствие аватара"
+    Description: "<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Создание**: {user-creation}\n<:arrow:1274280332304322611> **Возраст аккаунта** {user-age-days}\n<:arrow:1274280332304322611> {date}"
+
