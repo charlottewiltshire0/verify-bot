@@ -9,7 +9,7 @@ from src.module import Yml, ReportUtils, EmbedFactory
 class ReportModal(disnake.ui.Modal):
     def __init__(self, bot):
         self.bot = bot
-        self.embed_factory = EmbedFactory('./config/embeds.yml', './config/config.yml')
+        self.embed_factory = EmbedFactory('./config/embeds.yml', './config/config.yml', bot=bot)
 
         self.report_settings = Yml("./config/config.yml").load().get("Report", {})
         self.channel_settings = Yml("./config/config.yml").load().get("Channels", {})
@@ -48,7 +48,7 @@ class ReportModal(disnake.ui.Modal):
         channel = interaction.guild.get_channel(channel_id)
 
         if channel is None:
-            embed = self.embed_factory.create_embed(preset="ReportMissingChannel", color_type="Error")
+            embed = await self.embed_factory.create_embed(preset="ReportMissingChannel", color_type="Error")
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
 
@@ -60,19 +60,19 @@ class ReportModal(disnake.ui.Modal):
             user = interaction.guild.get_member(user_id)
 
             if user is None:
-                embed = self.embed_factory.create_embed(preset="ReportUserNotFound", color_type="Error",
-                                                        user_id=user_id)
+                embed = await self.embed_factory.create_embed(preset="ReportUserNotFound", color_type="Error",
+                                                              user_id=user_id)
                 await interaction.response.send_message(embed=embed, ephemeral=True)
                 return
 
         except ValueError:
-            embed = self.embed_factory.create_embed(preset="ReportInvalidUserID", color_type="Error",
-                                                    user_id=user_id)
+            embed = await self.embed_factory.create_embed(preset="ReportInvalidUserID", color_type="Error",
+                                                          user_id=user_id)
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
 
         if user.id == interaction.author.id:
-            embed = self.embed_factory.create_embed(preset="ReportSelfReport", color_type="Error")
+            embed = await self.embed_factory.create_embed(preset="ReportSelfReport", color_type="Error")
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
 
@@ -83,7 +83,7 @@ class ReportModal(disnake.ui.Modal):
         )
 
         if report is None:
-            embed = self.embed_factory.create_embed(preset="ReportExists", color_type="Error")
+            embed = await self.embed_factory.create_embed(preset="ReportExists", color_type="Error")
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
 
@@ -105,5 +105,5 @@ class ReportModal(disnake.ui.Modal):
 
         await channel.send(content=content, embed=embed, view=buttons)
 
-        embed = self.embed_factory.create_embed(preset="ReportSuccess", color_type="Success")
+        embed = await self.embed_factory.create_embed(preset="ReportSuccess", color_type="Success")
         await interaction.response.send_message(embed=embed, ephemeral=True)
