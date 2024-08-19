@@ -197,8 +197,14 @@ Embeds:
   MentionSet:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
-    Title: "<:checkmark:1272260131677278208> Успех!"
+    Title: "<:checkmark:1272260131677278209> Успех!"
     Description: "Канал для упоминания новых пользователей изменен на {channel-mention}"
+
+  MentionSetFailed:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Не удалось установить канал {channel-mention} для упоминания новых пользователей. Проверьте настройки и повторите попытку."
 
   NoPermissions:
     Author: "{bot-displayname}"
