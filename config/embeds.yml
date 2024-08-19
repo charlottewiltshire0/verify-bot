@@ -240,6 +240,12 @@ Embeds:
     Description: "К сожалению, вам был выдан отказ в проверке из-за превышения допустимого количества отказов."
     Timestamp: True
 
+  MemberJoin:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<a:hello:1275023730589958154> Добро пожаловать на сервер!"
+    Description: "Пользователь {user-mention} присоединился к серверу {guild-name}. Пожалуйста, пройдите верификацию, чтобы получить доступ ко всем каналам."
+
   LogMentionAdd:
     Title: "Канал для упоминания добавлен"
     Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Канал**: {channelmention}\n<:arrow:1274280332304322611> {date}"
