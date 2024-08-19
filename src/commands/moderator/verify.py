@@ -72,17 +72,18 @@ class Verify(commands.Cog):
 
         if view.value is True:
             self.verify_utils.verify_user(member.id, interaction.guild.id, interaction.user.id)
-            await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id, embed_factory=self.embed_factory,
-                             action='LogVerifySuccess', member=member, color="Success")
-
+            if self.logging_enabled:
+                await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id, embed_factory=self.embed_factory,
+                                 action='LogVerifySuccess', member=member, color="Success")
             if self.dm_user_enabled:
                 await send_embed_to_member(embed_factory=self.embed_factory, member=member, preset="UserVerifySuccess",
                                            color_type="Success")
 
         elif view.value is False:
             self.verify_utils.give_rejection(member.id, interaction.guild.id)
-            await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id, embed_factory=self.embed_factory,
-                             action='LogVerifyRejection', member=member, color="Error")
+            if self.logging_enabled:
+                await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id, embed_factory=self.embed_factory,
+                                 action='LogVerifyRejection', member=member, color="Error")
             if self.dm_user_enabled:
                 await send_embed_to_member(embed_factory=self.embed_factory, member=member,
                                            preset="UserVerifyRejection", color_type="Error")
@@ -123,12 +124,12 @@ class Verify(commands.Cog):
         embed = await self.embed_factory.create_embed(preset='VerifyRemoved', user=member, color_type="Success")
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
+        if self.logging_enabled:
+            await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id, embed_factory=self.embed_factory,
+                             action='LogVerifyRemoved', member=member, color="Error")
         if self.dm_user_enabled:
             await send_embed_to_member(embed_factory=self.embed_factory, member=member,
                                        preset="UserVerifyRemoved", color_type="Success")
-
-        await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id, embed_factory=self.embed_factory,
-                         action='LogVerifyRemoved', member=member, color="Error")
 
     @verify_add_slash.error
     @verify_remove_slash.error

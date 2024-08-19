@@ -1,6 +1,7 @@
 import importlib
 import os
-from datetime import datetime
+import re
+from datetime import datetime, timedelta
 
 import aiohttp
 from typing import Optional
@@ -9,9 +10,9 @@ import asyncio
 import disnake
 from disnake.ext import commands
 from loguru import logger
-from sqlalchemy import update, select
-from sqlalchemy.exc import NoResultFound, SQLAlchemyError
-from sqlalchemy.orm import Session, scoped_session
+from sqlalchemy import select
+from sqlalchemy.exc import NoResultFound, SQLAlchemyError, IntegrityError
+from sqlalchemy.orm import scoped_session
 from sqlalchemy.sql.elements import and_
 
 from src.module import Yml, SessionLocal
@@ -26,6 +27,7 @@ class TextFormatter:
         self.version_cache_time = None
         self.cache = {}
         self.verify_utils = VerifyUtils()
+        self.mention_utils = MentionUtils()
 
     async def format_text(self, text: str, user: Optional[disnake.Member] = None, channel: Optional[disnake.TextChannel] = None) -> str:
         placeholders = {
@@ -40,6 +42,7 @@ class TextFormatter:
             '{user-creation}': f"<t:{int(user.created_at.timestamp())}:R>" if user else '',
             '{user-join}': f"<t:{int(user.joined_at.timestamp())}:R>" if user and user.joined_at else '',
             '{user-mention}': f"<@{int(user.id)}>" if user else '',
+            '{user-age-days}': str((datetime.utcnow() - user.created_at.replace(tzinfo=None)).days) if user else '',
             '{total-members-local}': str(user.guild.member_count) if user else '0',
             '{total-messages}': self.get_total_messages(),
             '{uptime}': self.get_uptime(),
@@ -67,6 +70,8 @@ class TextFormatter:
             '{guild-totalvoice}': str(
                 len([c for c in user.guild.channels if isinstance(c, disnake.VoiceChannel)])) if user else '0',
             '{guild-totalrole}': str(len(user.guild.roles)) if user else '0',
+            '{channelmention}': f'<#{self.mention_utils.get_channel_mention(user.guild.id)}>' if user else '',
+            '{date}': datetime.utcnow()
         }
 
         async_replacements = {
@@ -357,6 +362,38 @@ class VerifyUtils:
         return user and user.status == Status.APPROVED
 
 
+class BanUtils:
+    def __init__(self):
+        self.session = scoped_session(SessionLocal)
+
+    def record_ban(self, member, guild, moderator, reason):
+        session = self.session()
+        try:
+            ban = Ban(
+                user_id=member.id,
+                guild_id=guild.id,
+                ban_date=datetime.utcnow(),
+                reason=reason,
+                moderator_id=moderator.id,
+                status=BanStatus.ACTIVE
+            )
+            session.add(ban)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            print(f"Ошибка записи бана в базу данных: {e}")
+        finally:
+            session.close()
+
+    def parse_time(self, time_str):
+        pattern = re.compile(r'((?P<hours>\d+)h)?\s*((?P<minutes>\d+)m)?')
+        match = pattern.match(time_str)
+        if not match:
+            return None
+        time_params = {name: int(param) for name, param in match.groupdict().items() if param}
+        return timedelta(**time_params)
+
+
 def loadExtensions(bot: commands.Bot, *directories: str):
     """Load extensions (cogs) from specified directories."""
     for directory in directories:
@@ -379,36 +416,66 @@ def get_prefix() -> str:
     return '/'
 
 
-def add_channel_mention(db: Session, guild_id: int, channel_mention: int) -> bool:
-    verify_entry = db.query(Verify).filter_by(guild=guild_id).first()
-    if verify_entry:
-        if verify_entry.channel_mention == channel_mention:
+class MentionUtils:
+    def __init__(self):
+        self.session = scoped_session(SessionLocal)
+
+    def get_channel_mention(self, guild_id):
+        """Получить канал channel_mention для указанного guild_id."""
+        try:
+            verify_entry = self.session.query(Verify).filter(Verify.guild == guild_id).one_or_none()
+            return verify_entry.channel_mention if verify_entry else None
+        except Exception as e:
+            logger.error(f"Error fetching channel_mention: {e}")
+            return None
+
+    def add_channel_mention(self, guild_id, channel_mention) -> bool:
+        try:
+            verify_entry = self.session.query(Verify).filter(Verify.guild == guild_id).one_or_none()
+            if verify_entry:
+                if verify_entry.channel_mention:
+                    return False
+                verify_entry.channel_mention = channel_mention
+            else:
+                new_entry = Verify(guild=guild_id, channel_mention=channel_mention)
+                self.session.add(new_entry)
+            self.session.commit()
+            return True
+        except IntegrityError:
+            self.session.rollback()
             return False
-        verify_entry.channel_mention = channel_mention
-    else:
-        verify_entry = Verify(guild=guild_id, channel_mention=channel_mention)
-        db.add(verify_entry)
-    db.commit()
-    return True
+        except Exception as e:
+            self.session.rollback()
+            logger.error(f"Error adding channel_mention: {e}")
+            return False
 
+    def remove_channel_mention(self, guild_id):
+        try:
+            verify_entry = self.session.query(Verify).filter(Verify.guild == guild_id).one_or_none()
+            if verify_entry and verify_entry.channel_mention:
+                verify_entry.channel_mention = None
+                self.session.commit()
+                return True
+            return False
+        except Exception as e:
+            self.session.rollback()
+            logger.error(f"Error removing channel_mention: {e}")
+            return False
 
-def remove_channel_mention(db: Session, guild_id: int) -> bool:
-    verify_entry = db.query(Verify).filter_by(guild=guild_id).first()
-    if verify_entry and verify_entry.channel_mention:
-        verify_entry.channel_mention = None
-        db.commit()
-        return True
-    return False
-
-
-def set_channel_mention(db: Session, guild_id: int, channel_mention: int):
-    verify_entry = db.query(Verify).filter_by(guild=guild_id).first()
-    if verify_entry:
-        verify_entry.channel_mention = channel_mention
-    else:
-        verify_entry = Verify(guild=guild_id, channel_mention=channel_mention)
-        db.add(verify_entry)
-    db.commit()
+    def set_channel_mention(self, guild_id, channel_mention):
+        try:
+            verify_entry = self.session.query(Verify).filter(Verify.guild == guild_id).one_or_none()
+            if verify_entry:
+                verify_entry.channel_mention = channel_mention
+            else:
+                new_entry = Verify(guild=guild_id, channel_mention=channel_mention)
+                self.session.add(new_entry)
+            self.session.commit()
+            return True
+        except Exception as e:
+            self.session.rollback()
+            logger.error(f"Error setting channel_mention: {e}")
+            return False
 
 
 def get_button_style(color: str) -> disnake.ButtonStyle:

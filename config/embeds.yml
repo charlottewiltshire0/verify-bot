@@ -197,8 +197,14 @@ Embeds:
   MentionSet:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
-    Title: "<:checkmark:1272260131677278208> Успех!"
+    Title: "<:checkmark:1272260131677278209> Успех!"
     Description: "Канал для упоминания новых пользователей изменен на {channel-mention}"
+
+  MentionSetFailed:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Не удалось установить канал {channel-mention} для упоминания новых пользователей. Проверьте настройки и повторите попытку."
 
   NoPermissions:
     Author: "{bot-displayname}"
@@ -234,6 +240,30 @@ Embeds:
     Description: "К сожалению, вам был выдан отказ в проверке из-за превышения допустимого количества отказов."
     Timestamp: True
 
+  MemberJoin:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<a:hello:1275023730589958154> Добро пожаловать на сервер!"
+    Description: "Приветствуем {user-mention} на сервере {guild-name}! Мы рады видеть вас здесь. Не забудьте пройти верификацию, чтобы получить полный доступ к нашему серверу."
+
+  NoAvatar:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Аватар не установлен!"
+    Description: "Пожалуйста, установите аватар, чтобы продолжить пользоваться сервером."
+
+  LogMentionAdd:
+    Title: "Канал для упоминания добавлен"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Канал**: {channelmention}\n<:arrow:1274280332304322611> {date}"
+
+  LogMentionSet:
+    Title: "Канал для упоминания изменен"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Канал**: {channelmention}\n<:arrow:1274280332304322611> {date}"
+
+  LogMentionRemove:
+    Title: "Канал для упоминания удален"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Канал**: {channelmention}\n<:arrow:1274280332304322611> {date}"
+
   LogVerifySuccess:
     Title: "Пользователь Верифицирован"
     Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-moderator} `{verify-moderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Роль**: <@&{verify-role}> `{verify-role}`\n<:arrow:1274280332304322611> {verify-date}"
@@ -251,5 +281,14 @@ Embeds:
     Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-lastmoderator} `{verify-lastmoderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> {verify-lastdate}"
 
   LogAutoBanRejection:
-      Title: "Превышен лимит отказов"
-      Description: "<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Отказы**: `{verify-rejection}`"
+      Title: "Автобан: Превышен лимит отказов"
+      Description: "<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Отказы**: `{verify-rejection}`\n<:arrow:1274280332304322611> {date}"
+
+  LogAutoBanAccountAge:
+    Title: "Автобан: Недостаточный возраст аккаунта"
+    Description: "<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Создание**: {user-creation}\n<:arrow:1274280332304322611> **Возраст аккаунта** {user-age-days}\n<:arrow:1274280332304322611> {date}"
+
+  LogAutoBanNoAvatar:
+    Title: "Автобан: Отсутствие аватара"
+    Description: "<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Создание**: {user-creation}\n<:arrow:1274280332304322611> **Возраст аккаунта** {user-age-days}\n<:arrow:1274280332304322611> {date}"
+

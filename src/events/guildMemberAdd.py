@@ -4,17 +4,29 @@ from loguru import logger
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import scoped_session
 
-from src.module import SessionLocal, VerifyUsers, Verify, Status
+from src.module import SessionLocal, VerifyUsers, Verify, Status, MentionUtils, EmbedFactory
 
 
 class GuildMemberAdd(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.session = scoped_session(SessionLocal)
+        self.embed_factory = EmbedFactory('./config/embeds.yml', './config/config.yml', bot=bot)
+        self.mention_utils = MentionUtils()
 
     @commands.Cog.listener()
     async def on_member_join(self, member: disnake.Member):
         logger.info(f"{member.name} joined {member.guild}")
+
+        guild_id = member.guild.id
+        channel_id = self.mention_utils.get_channel_mention(guild_id)
+
+        if channel_id:
+            channel = self.bot.get_channel(channel_id)
+            if channel:
+                embed = await self.embed_factory.create_embed(preset='MemberJoin', user=member)
+                await channel.send(embed=embed)
+
         await self.add_user_to_db(member)
 
     async def add_user_to_db(self, member):
