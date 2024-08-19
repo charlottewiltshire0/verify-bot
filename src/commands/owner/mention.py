@@ -3,7 +3,7 @@ from disnake import Interaction
 from disnake.ext import commands
 from sqlalchemy.orm import Session
 
-from src.module import EmbedFactory, SessionLocal, Yml, MentionUtils
+from src.module import EmbedFactory, SessionLocal, Yml, MentionUtils, log_action
 
 
 class ChannelMention(commands.Cog):
@@ -27,12 +27,21 @@ class ChannelMention(commands.Cog):
         if channel_added:
             embed = await self.embed_factory.create_embed(preset='MentionAdd', channel=channel, color_type="Success")
             await interaction.response.send_message(embed=embed, ephemeral=True)
+            if self.logging_enabled:
+                await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id,
+                                 embed_factory=self.embed_factory,
+                                 action='LogMentionAdd', member=interaction.author, color="Success")
         else:
             embed = await self.embed_factory.create_embed(preset='MentionAlreadyAdded', channel=channel, color_type="Error")
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @mention_slash.sub_command(name="remove", description="Удалить канал для упоминания новых пользователей")
     async def mention_slash_remove(self, interaction: disnake.AppCmdInter):
+        if self.logging_enabled:
+            await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id,
+                             embed_factory=self.embed_factory,
+                             action='LogMentionRemove', member=interaction.author, color="Error")
+
         channel_removed = self.mention_utils.remove_channel_mention(interaction.guild.id)
         if channel_removed:
             embed = await self.embed_factory.create_embed(preset='MentionDelete', color_type="Success")
@@ -46,6 +55,11 @@ class ChannelMention(commands.Cog):
         success = self.mention_utils.set_channel_mention(interaction.guild.id, channel.id)
         if success:
             embed = await self.embed_factory.create_embed(preset='MentionSet', channel=channel, color_type="Success")
+            if self.logging_enabled:
+                await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id,
+                                 embed_factory=self.embed_factory,
+                                 action='LogMentionSet', member=interaction.author, color="Success")
+
         else:
             embed = await self.embed_factory.create_embed(preset='MentionSetFailed', color_type="Error")
         await interaction.response.send_message(embed=embed, ephemeral=True)
