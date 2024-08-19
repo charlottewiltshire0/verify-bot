@@ -1,9 +1,7 @@
 import disnake
-from disnake import Interaction
 from disnake.ext import commands
-from sqlalchemy.orm import Session
 
-from src.module import EmbedFactory, SessionLocal, Yml, MentionUtils, log_action
+from src.module import EmbedFactory, Yml, MentionUtils, log_action
 
 
 class ChannelMention(commands.Cog):
@@ -13,11 +11,12 @@ class ChannelMention(commands.Cog):
         self.mention_utils = MentionUtils()
 
         self.logging_enabled = Yml("./config/config.yml").load().get('Logging', {}).get('AutoBan', {}).get('Enabled',
-                                                                                                          False)
+                                                                                                           False)
         self.logging_channel_id = int(Yml("./config/config.yml").load().get('Logging', {}).get('AutoBan', {})
                                       .get('ChannelID', 0))
 
-    @commands.slash_command(name="mention", description="Отправляет упоминание новым пользователям, уведомляя их о необходимости пройти верификацию на сервер")
+    @commands.slash_command(name="mention",
+                            description="Отправляет упоминание новым пользователям, уведомляя их о необходимости пройти верификацию на сервер")
     async def mention_slash(self, interaction: disnake.AppCmdInter):
         pass
 
@@ -32,7 +31,8 @@ class ChannelMention(commands.Cog):
                                  embed_factory=self.embed_factory,
                                  action='LogMentionAdd', member=interaction.author, color="Success")
         else:
-            embed = await self.embed_factory.create_embed(preset='MentionAlreadyAdded', channel=channel, color_type="Error")
+            embed = await self.embed_factory.create_embed(preset='MentionAlreadyAdded', channel=channel,
+                                                          color_type="Error")
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @mention_slash.sub_command(name="remove", description="Удалить канал для упоминания новых пользователей")
