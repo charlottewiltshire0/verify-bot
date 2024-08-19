@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, BigInteger, ARRAY, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, BigInteger, ARRAY, Boolean, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from enum import Enum as PyEnum
@@ -80,13 +80,16 @@ class Report(Base):
     text_channel_id = Column(BigInteger, nullable=True)
     is_claimed = Column(Boolean, nullable=False, default=False)
     claimed_by_user_id = Column(BigInteger, nullable=True)
+    closed_by_user_id = Column(BigInteger, nullable=True)
+    closed_at = Column(DateTime, nullable=True, default=func.now())
 
     def __repr__(self):
         return (
             f"<Report(id={self.id}, status={self.status}, victim_id={self.victim_id}, "
             f"perpetrator_id={self.perpetrator_id}, member_ids={self.member_ids}, "
             f"guild_id={self.guild_id}, voice_channel_id={self.voice_channel_id}, text_channel_id={self.text_channel_id}, "
-            f"is_claimed={self.is_claimed}, claimed_by_user_id={self.claimed_by_user_id})>"
+            f"is_claimed={self.is_claimed}, claimed_by_user_id={self.claimed_by_user_id}, "
+            f"closed_by_user_id={self.closed_by_user_id}, closed_at={self.closed_at})>"
         )
 
 
