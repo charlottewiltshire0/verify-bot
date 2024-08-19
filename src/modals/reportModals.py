@@ -1,14 +1,17 @@
 import disnake
 from disnake import TextInputStyle
+from disnake.ext import commands
 
 from src.buttons.reportButton import ReportButton
-from src.module import Yml, ReportUtils
+from src.module import Yml, ReportUtils, EmbedFactory
 
 
 class ReportModal(disnake.ui.Modal):
-    def __init__(self):
+    def __init__(self, bot):
+        self.bot = bot
+        self.embed_factory = EmbedFactory('./config/embeds.yml', './config/config.yml')
+
         self.report_settings = Yml("./config/config.yml").load().get("Report", {})
-        self.embed_color = Yml("./config/config.yml").load().get("EmbedColors", {})
         self.channel_settings = Yml("./config/config.yml").load().get("Channels", {})
         self.staff_roles = self.report_settings.get("StaffRoles", [])
         self.ping_support = self.report_settings.get("PingSupport", False)
@@ -45,12 +48,8 @@ class ReportModal(disnake.ui.Modal):
         channel = interaction.guild.get_channel(channel_id)
 
         if channel is None:
-            embed = disnake.Embed(
-                title="<:crossmark:1272260131677278209> Ошибка!",
-                color=int(self.embed_color.get("Error", "#ff6161").lstrip("#"), 16),
-                description="Не удалось найти канал для репортов!"
-            )
-            await interaction.send(embed=embed, ephemeral=True)
+            embed = self.embed_factory.create_embed(preset="ReportMissingChannel", color_type="Error")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
             return
 
         user_id = interaction.text_values["username"]
@@ -61,30 +60,20 @@ class ReportModal(disnake.ui.Modal):
             user = interaction.guild.get_member(user_id)
 
             if user is None:
-                embed = disnake.Embed(
-                    title="<:crossmark:1272260131677278209> Ошибка!",
-                    color=int(self.embed_color.get("Error", "#ff6161").lstrip("#"), 16),
-                    description=f"Пользователь с ID `{user_id}` не найден."
-                )
-                await interaction.send(embed=embed, ephemeral=True)
+                embed = self.embed_factory.create_embed(preset="ReportUserNotFound", color_type="Error",
+                                                        user_id=user_id)
+                await interaction.response.send_message(embed=embed, ephemeral=True)
                 return
 
         except ValueError:
-            embed = disnake.Embed(
-                title="<:crossmark:1272260131677278209> Ошибка!",
-                color=int(self.embed_color.get("Error", "#ff6161").lstrip("#"), 16),
-                description="Неверный формат ID пользователя."
-            )
-            await interaction.send(embed=embed, ephemeral=True)
+            embed = self.embed_factory.create_embed(preset="ReportInvalidUserID", color_type="Error",
+                                                    user_id=user_id)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
             return
 
         if user.id == interaction.author.id:
-            embed = disnake.Embed(
-                title="<:crossmark:1272260131677278209> Ошибка!",
-                color=int(self.embed_color.get("Error", "#ff6161").lstrip("#"), 16),
-                description="Вы не можете подать репорт на самого себя."
-            )
-            await interaction.send(embed=embed, ephemeral=True)
+            embed = self.embed_factory.create_embed(preset="ReportSelfReport", color_type="Error")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
             return
 
         report = self.report_utils.create_report(
@@ -94,12 +83,8 @@ class ReportModal(disnake.ui.Modal):
         )
 
         if report is None:
-            embed = disnake.Embed(
-                title="<:crossmark:1272260131677278209> Ошибка!",
-                color=int(self.embed_color.get("Error", "#ff6161").lstrip("#"), 16),
-                description="Репорт уже существует и находится в ожидании или в процессе рассмотрения."
-            )
-            await interaction.send(embed=embed, ephemeral=True)
+            embed = self.embed_factory.create_embed(preset="ReportExists", color_type="Error")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
             return
 
         if self.ping_support:
@@ -108,9 +93,11 @@ class ReportModal(disnake.ui.Modal):
         else:
             content = ""
 
+        default_color = "#242424"
+        color_int = int(default_color.lstrip("#"), 16)
         embed = disnake.Embed(
             title=interaction.text_values["subject"],
-            color=int(self.embed_color.get("Default", "#242424").lstrip("#"), 16),
+            color=color_int,
             description=f"<:profile:1272248323280994345> **Автор жалобы**: <@{interaction.author.id}>\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {interaction.author.id}\n<:report:1274406261814722761> **Нарушитель**: <@{user.id}>\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {user.id}\n<:text:1274281670459133962> **Описание**: \n{description}"
         )
 
@@ -118,9 +105,5 @@ class ReportModal(disnake.ui.Modal):
 
         await channel.send(content=content, embed=embed, view=buttons)
 
-        embed = disnake.Embed(
-            title="<:tick:1272260155190546584> Успех!",
-            color=int(self.embed_color.get("Success", "#6cff61").lstrip("#"), 16),
-            description="Ваш репорт был отправлен!"
-        )
-        await interaction.send(embed=embed, ephemeral=True)
+        embed = self.embed_factory.create_embed(preset="ReportSuccess", color_type="Success")
+        await interaction.response.send_message(embed=embed, ephemeral=True)
