@@ -10,9 +10,9 @@ import asyncio
 import disnake
 from disnake.ext import commands
 from loguru import logger
-from sqlalchemy import update, select
+from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound, SQLAlchemyError, IntegrityError
-from sqlalchemy.orm import Session, scoped_session
+from sqlalchemy.orm import scoped_session
 from sqlalchemy.sql.elements import and_
 
 from src.module import Yml, SessionLocal
@@ -42,6 +42,7 @@ class TextFormatter:
             '{user-creation}': f"<t:{int(user.created_at.timestamp())}:R>" if user else '',
             '{user-join}': f"<t:{int(user.joined_at.timestamp())}:R>" if user and user.joined_at else '',
             '{user-mention}': f"<@{int(user.id)}>" if user else '',
+            '{user-age-days}': str((datetime.utcnow() - user.created_at.replace(tzinfo=None)).days) if user else '',
             '{total-members-local}': str(user.guild.member_count) if user else '0',
             '{total-messages}': self.get_total_messages(),
             '{uptime}': self.get_uptime(),
