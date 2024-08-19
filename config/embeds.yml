@@ -240,6 +240,18 @@ Embeds:
     Description: "К сожалению, вам был выдан отказ в проверке из-за превышения допустимого количества отказов."
     Timestamp: True
 
+  LogMentionAdd:
+    Title: "Канал для упоминания добавлен"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Канал**: {channelmention}\n<:arrow:1274280332304322611> {date}"
+
+  LogMentionSet:
+    Title: "Канал для упоминания изменен"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Канал**: {channelmention}\n<:arrow:1274280332304322611> {date}"
+
+  LogMentionRemove:
+    Title: "Канал для упоминания удален"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Канал**: {channelmention}\n<:arrow:1274280332304322611> {date}"
+
   LogVerifySuccess:
     Title: "Пользователь Верифицирован"
     Description: "<:arrow:1274280332304322611> **Ответственный**: {verify-moderator} `{verify-moderator-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Роль**: <@&{verify-role}> `{verify-role}`\n<:arrow:1274280332304322611> {verify-date}"
