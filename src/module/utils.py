@@ -27,6 +27,7 @@ class TextFormatter:
         self.version_cache_time = None
         self.cache = {}
         self.verify_utils = VerifyUtils()
+        self.mention_utils = MentionUtils()
 
     async def format_text(self, text: str, user: Optional[disnake.Member] = None, channel: Optional[disnake.TextChannel] = None) -> str:
         placeholders = {
@@ -68,6 +69,8 @@ class TextFormatter:
             '{guild-totalvoice}': str(
                 len([c for c in user.guild.channels if isinstance(c, disnake.VoiceChannel)])) if user else '0',
             '{guild-totalrole}': str(len(user.guild.roles)) if user else '0',
+            '{channelmention}': f'<#{self.mention_utils.get_channel_mention(user.guild.id)}>' if user else '',
+            '{date}': datetime.utcnow()
         }
 
         async_replacements = {
