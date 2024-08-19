@@ -10,7 +10,7 @@ import asyncio
 import disnake
 from disnake.ext import commands
 from loguru import logger
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.exc import NoResultFound, SQLAlchemyError, IntegrityError
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.sql.elements import and_
@@ -189,6 +189,21 @@ class ReportUtils:
         except Exception as e:
             self.session.rollback()
             logger.error(f"Error claiming report: {e}")
+        return False
+
+    def close_report(self, report_id: int, moderator_id: int) -> bool:
+        """Marks a report as closed by a moderator."""
+        try:
+            report = self.session.query(Report).filter_by(id=report_id).first()
+            if report and report.status != ReportStatus.CLOSED:
+                report.status = ReportStatus.CLOSED
+                report.closed_by_user_id = moderator_id
+                report.closed_at = func.now()
+                self.session.commit()
+                return True
+        except Exception as e:
+            self.session.rollback()
+            logger.error(f"Error closing report: {e}")
         return False
 
     def get_claimed_by_user_id(self, report_id: int) -> int:
