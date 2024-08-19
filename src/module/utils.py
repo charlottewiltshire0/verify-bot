@@ -132,17 +132,17 @@ class ReportUtils:
     def __init__(self):
         self.session = scoped_session(SessionLocal)
 
-    def create_report(self, victim_id, perpetrator_id, guild_id, voice_id=None, channel_id=None):
-        existing_report = self.session.execute(
-            select(Report).where(
-                and_(
-                    Report.victim_id == victim_id,
-                    Report.perpetrator_id == perpetrator_id,
-                    Report.guild_id == guild_id,
-                    Report.status.in_([ReportStatus.PENDING, ReportStatus.IN_PROGRESS])
-                )
+    def create_report(self, victim_id: int, perpetrator_id: int, guild_id: int, voice_channel_id: int = None,
+                      text_channel_id: int = None) -> Report:
+        """Creates a new report if it doesn't already exist."""
+        existing_report = self.session.query(Report).filter(
+            and_(
+                Report.victim_id == victim_id,
+                Report.perpetrator_id == perpetrator_id,
+                Report.guild_id == guild_id,
+                Report.status.in_([ReportStatus.PENDING, ReportStatus.IN_PROGRESS]),
             )
-        ).scalar_one_or_none()
+        ).first()
 
         if existing_report:
             return None
@@ -151,55 +151,58 @@ class ReportUtils:
             victim_id=victim_id,
             perpetrator_id=perpetrator_id,
             guild_id=guild_id,
-            voice_id=voice_id,
-            channel_id=channel_id
+            voice_channel_id=voice_channel_id,
+            text_channel_id=text_channel_id,
         )
         self.session.add(new_report)
         self.session.commit()
         return new_report
 
-    def get_report_status(self, report_id):
+    def get_report_status(self, report_id: int) -> ReportStatus:
+        """Retrieves the status of a report."""
         try:
-            report = self.session.execute(
-                select(Report).where(Report.id == report_id)
-            ).scalar_one()
-            return report.status
+            report = self.session.query(Report).get(report_id)
+            return report.status if report else None
         except NoResultFound:
             return None
 
-    def format_status(self, status):
+    def format_status(self, status: ReportStatus) -> str:
+        """Converts a report status to a human-readable string."""
         status_map = {
             ReportStatus.PENDING: "Pending",
             ReportStatus.IN_PROGRESS: "In Progress",
             ReportStatus.RESOLVED: "Resolved",
-            ReportStatus.CLOSED: "Closed"
+            ReportStatus.CLOSED: "Closed",
         }
         return status_map.get(status, "Unknown Status")
 
     def claim_report(self, report_id: int, moderator_id: int) -> bool:
+        """Marks a report as claimed by a moderator."""
         try:
             report = self.session.query(Report).filter_by(id=report_id).first()
             if report:
                 report.status = ReportStatus.IN_PROGRESS
-                report.claimed = True
-                report.claimed_by = moderator_id
+                report.is_claimed = True
+                report.claimed_by_user_id = moderator_id
                 self.session.commit()
                 return True
-        except SQLAlchemyError as e:
+        except Exception as e:
             self.session.rollback()
-            logger.info(f"Ошибка базы данных: {e}")
+            logger.error(f"Error claiming report: {e}")
         return False
 
-    def get_moderator_id(self, report_id):
+    def get_claimed_by_user_id(self, report_id: int) -> int:
+        """Retrieves the ID of the user who claimed the report."""
         try:
             report = self.session.execute(
                 select(Report).where(Report.id == report_id)
             ).scalar_one()
-            return report.claimed_by
+            return report.claimed_by_user_id
         except NoResultFound:
             return None
 
-    def get_victim_id(self, report_id):
+    def get_victim_id(self, report_id: int) -> int:
+        """Retrieves the victim ID from the report."""
         try:
             report = self.session.execute(
                 select(Report).where(Report.id == report_id)
@@ -208,7 +211,8 @@ class ReportUtils:
         except NoResultFound:
             return None
 
-    def get_perpetrator_id(self, report_id):
+    def get_perpetrator_id(self, report_id: int) -> int:
+        """Retrieves the perpetrator ID from the report."""
         try:
             report = self.session.execute(
                 select(Report).where(Report.id == report_id)
@@ -217,18 +221,53 @@ class ReportUtils:
         except NoResultFound:
             return None
 
-    def add_member_to_report(self, report_id, member_id):
-        report = self.session.execute(
-            select(Report).where(Report.id == report_id)
-        ).scalar_one_or_none()
+    def add_member_to_report(self, report_id: int, member_id: int) -> bool:
+        """Adds a member to the report's member list."""
+        try:
+            report = self.session.execute(
+                select(Report).where(Report.id == report_id)
+            ).scalar_one_or_none()
 
-        if report:
-            if report.members_id:
-                report.members_id.append(member_id)
-            else:
-                report.members_id = [member_id]
-            self.session.commit()
-            return True
+            if report:
+                if report.member_ids:
+                    report.member_ids.append(member_id)
+                else:
+                    report.member_ids = [member_id]
+                self.session.commit()
+                return True
+        except Exception as e:
+            self.session.rollback()
+            logger.error(f"Error adding member to report: {e}")
+        return False
+
+    def delete_report(self, report_id: int) -> bool:
+        """Deletes the report by its ID."""
+        try:
+            report = self.session.query(Report).filter_by(id=report_id).first()
+            if report:
+                self.session.delete(report)
+                self.session.commit()
+                return True
+        except Exception as e:
+            self.session.rollback()
+            logger.error(f"Error deleting report: {e}")
+        return False
+
+    def remove_member_from_report(self, report_id: int, member_id: int) -> bool:
+        """Removes the participant from the list of report participants."""
+        try:
+            report = self.session.execute(
+                select(Report).where(Report.id == report_id)
+            ).scalar_one_or_none()
+
+            if report and report.member_ids:
+                if member_id in report.member_ids:
+                    report.member_ids.remove(member_id)
+                    self.session.commit()
+                    return True
+        except Exception as e:
+            self.session.rollback()
+            logger.error(f"Error removing member from report: {e}")
         return False
 
 
