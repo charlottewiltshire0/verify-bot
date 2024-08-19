@@ -67,25 +67,26 @@ class ReportStatus(PyEnum):
 
 
 class Report(Base):
-    __tablename__ = 'report'
+    __tablename__ = 'reports'
 
     id = Column(BigInteger, primary_key=True)
     status = Column(Enum(ReportStatus), nullable=False, default=ReportStatus.PENDING)
     victim_id = Column(BigInteger, nullable=False)
     perpetrator_id = Column(BigInteger, nullable=False)
-    members_id = Column(ARRAY(BigInteger), nullable=True)
+    member_ids = Column(ARRAY(BigInteger), nullable=True)
+    message_id = Column(BigInteger, nullable=True)
     guild_id = Column(BigInteger, nullable=False)
-    voice_id = Column(BigInteger, nullable=True)
-    channel_id = Column(BigInteger, nullable=True)
-    claimed = Column(Boolean, nullable=False, default=False)
-    claimed_by = Column(BigInteger, nullable=True)
+    voice_channel_id = Column(BigInteger, nullable=True)
+    text_channel_id = Column(BigInteger, nullable=True)
+    is_claimed = Column(Boolean, nullable=False, default=False)
+    claimed_by_user_id = Column(BigInteger, nullable=True)
 
     def __repr__(self):
         return (
             f"<Report(id={self.id}, status={self.status}, victim_id={self.victim_id}, "
-            f"perpetrator_id={self.perpetrator_id}, members_id={self.members_id}, "
-            f"guild_id={self.guild_id}, voice_id={self.voice_id}, channel_id={self.channel_id}, "
-            f"claimed={self.claimed}, claimed_by={self.claimed_by})>"
+            f"perpetrator_id={self.perpetrator_id}, member_ids={self.member_ids}, "
+            f"guild_id={self.guild_id}, voice_channel_id={self.voice_channel_id}, text_channel_id={self.text_channel_id}, "
+            f"is_claimed={self.is_claimed}, claimed_by_user_id={self.claimed_by_user_id})>"
         )
 
 
@@ -93,7 +94,7 @@ class Member(Base):
     __tablename__ = "members"
 
     id = Column(Integer, primary_key=True)
-    report_id = Column(Integer, ForeignKey("report.id"))
+    report_id = Column(Integer, ForeignKey("reports.id"))
     member_id = Column(Integer, nullable=False)
 
     def __repr__(self):
