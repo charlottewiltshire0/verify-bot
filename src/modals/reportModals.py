@@ -103,7 +103,8 @@ class ReportModal(disnake.ui.Modal):
 
         buttons = ReportButton(self.report_utils, report.id, bot=self.bot)
 
-        await channel.send(content=content, embed=embed, view=buttons)
+        message = await channel.send(content=content, embed=embed, view=buttons)
+        self.report_utils.set_message_id(report.id, message.id)
 
         embed = await self.embed_factory.create_embed(preset="ReportSuccess", color_type="Success")
         await interaction.response.send_message(embed=embed, ephemeral=True)
