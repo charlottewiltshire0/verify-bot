@@ -206,6 +206,27 @@ class ReportUtils:
             logger.error(f"Error closing report: {e}")
         return False
 
+    def set_message_id(self, report_id: int, message_id: int) -> bool:
+        try:
+            report = self.session.query(Report).filter_by(id=report_id).first()
+            if report:
+                report.message_id = message_id
+                self.session.commit()
+                return True
+        except Exception as e:
+            self.session.rollback()
+            logger.error(f"Error claiming report: {e}")
+        return False
+
+    def get_message_id(self, report_id: int) -> int:
+        try:
+            report = self.session.execute(
+                select(Report).where(Report.id == report_id)
+            ).scalar_one()
+            return report.message_id
+        except NoResultFound:
+            return None
+
     def get_claimed_by_user_id(self, report_id: int) -> int:
         """Retrieves the ID of the user who claimed the report."""
         try:
