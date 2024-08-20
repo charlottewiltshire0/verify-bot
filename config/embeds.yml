@@ -288,6 +288,18 @@ Embeds:
     Title: "<:tick:1272260155190546584> Успех!"
     Description: "Ваш репорт был отправлен!"
 
+  ReportReject:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:tick:1272260155190546584> Успех!"
+    Description: "Вы успешно отклонили репорт. Он был удален из системы."
+
+  ReportRejectError:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Ошибка при отклонении репорта. Пожалуйста, попробуйте снова или свяжитесь с администратором."
+
   LogMentionAdd:
     Title: "Канал для упоминания добавлен"
     Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Канал**: {channelmention}\n<:arrow:1274280332304322611> {date}"
