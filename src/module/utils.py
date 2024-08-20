@@ -79,6 +79,7 @@ class TextFormatter:
             '{report-perpetrator-id}': self.report_utils.get_perpetrator_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
             '{report-status}': self.report_utils.get_report_status(victim_id=user.id, guild_id=user.guild.id) if user else '',
             '{report-reason}': self.report_utils.get_reason(victim_id=user.id, guild_id=user.guild.id) if user else '',
+            '{report-id}': self.report_utils.get_report_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
         }
 
         async_replacements = {
@@ -250,6 +251,24 @@ class ReportUtils:
             self.session.rollback()
             logger.error(f"Error setting message ID: {e}")
         return False
+
+    def get_report_id(self, victim_id: int = None, perpetrator_id: int = None, guild_id: int = None) -> int:
+        """Retrieves the report ID by victim ID, perpetrator ID, and guild ID."""
+        try:
+            query = self.session.query(Report.id)
+
+            if victim_id:
+                query = query.filter(Report.victim_id == victim_id)
+            if perpetrator_id:
+                query = query.filter(Report.perpetrator_id == perpetrator_id)
+            if guild_id:
+                query = query.filter(Report.guild_id == guild_id)
+
+            report_id = query.scalar()
+
+            return report_id
+        except NoResultFound:
+            return None
 
     def get_message_id(self, report_id: int = None, victim_id: int = None, guild_id: int = None) -> int:
         """Retrieves the message ID associated with the report by report ID or by victim ID and guild ID."""
