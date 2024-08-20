@@ -3,7 +3,7 @@ from disnake import TextInputStyle
 from disnake.ext import commands
 
 from src.buttons.reportButton import ReportButton
-from src.module import Yml, ReportUtils, EmbedFactory
+from src.module import Yml, ReportUtils, EmbedFactory, log_action, send_embed_to_member
 
 
 class ReportModal(disnake.ui.Modal):
@@ -16,6 +16,13 @@ class ReportModal(disnake.ui.Modal):
         self.staff_roles = self.report_settings.get("StaffRoles", [])
         self.ping_support = self.report_settings.get("PingSupport", False)
         self.report_utils = ReportUtils()
+
+        self.logging_enabled = Yml("./config/config.yml").load().get('Logging', {}).get('Report', {}).get('Enabled',
+                                                                                                           False)
+        self.logging_channel_id = int(Yml("./config/config.yml").load().get('Logging', {}).get('Report', {})
+                                      .get('ChannelID', 0))
+
+        self.dm_user_enabled = self.report_settings.get('DMUser', False)
 
         components = [
             disnake.ui.TextInput(
@@ -108,3 +115,13 @@ class ReportModal(disnake.ui.Modal):
 
         embed = await self.embed_factory.create_embed(preset="ReportSuccess", color_type="Success")
         await interaction.response.send_message(embed=embed, ephemeral=True)
+
+        if self.logging_enabled:
+            await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id,
+                             embed_factory=self.embed_factory,
+                             action='LogReportSuccess', member=interaction.author, color="Success")
+
+        if self.dm_user_enabled:
+            member = interaction.author
+            await send_embed_to_member(embed_factory=self.embed_factory, member=member,
+                                       preset="DMReportSuccess", color_type="Success")
