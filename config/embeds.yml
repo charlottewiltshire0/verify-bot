@@ -370,7 +370,7 @@ Embeds:
 
   LogReportSuccess:
     Title: "Новый репорт создан"
-    Description: "<:arrow:1274280332304322611> **Автор Репорта**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-pertrator} `{report-pertrator-id}`\n<:arrow:1274280332304322611> {date}"
+    Description: "<:arrow:1274280332304322611> **Автор Репорта**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-perpetrator} `{report-perpetrator-id}`\n<:arrow:1274280332304322611> {date}"
 
 
 
