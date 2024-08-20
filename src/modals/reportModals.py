@@ -1,6 +1,5 @@
 import disnake
 from disnake import TextInputStyle
-from disnake.ext import commands
 
 from src.buttons.reportButton import ReportButton
 from src.module import Yml, ReportUtils, EmbedFactory, log_action, send_embed_to_member
@@ -86,7 +85,8 @@ class ReportModal(disnake.ui.Modal):
         report = self.report_utils.create_report(
             victim_id=interaction.author.id,
             perpetrator_id=user.id,
-            guild_id=interaction.guild.id
+            guild_id=interaction.guild.id,
+            reason=description
         )
 
         if report is None:
@@ -105,7 +105,7 @@ class ReportModal(disnake.ui.Modal):
         embed = disnake.Embed(
             title=interaction.text_values["subject"],
             color=color_int,
-            description=f"<:profile:1272248323280994345> **Автор жалобы**: <@{interaction.author.id}>\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {interaction.author.id}\n<:report:1274406261814722761> **Нарушитель**: <@{user.id}>\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {user.id}\n<:text:1274281670459133962> **Описание**: \n{description}"
+            description=f"<:profile:1272248323280994345> **Автор Репорта**: <@{interaction.author.id}>\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {interaction.author.id}\n<:report:1274406261814722761> **Виновник**: <@{user.id}>\n<:space:1272248683903189084><:arrowright:1272249470297440417> ID: {user.id}\n<:text:1274281670459133962> **Описание**: \n{description}"
         )
 
         buttons = ReportButton(self.report_utils, report.id, bot=self.bot)
