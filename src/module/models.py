@@ -90,7 +90,7 @@ class Report(Base):
             f"perpetrator_id={self.perpetrator_id}, member_ids={self.member_ids}, "
             f"guild_id={self.guild_id}, voice_channel_id={self.voice_channel_id}, text_channel_id={self.text_channel_id}, "
             f"is_claimed={self.is_claimed}, claimed_by_user_id={self.claimed_by_user_id}, "
-            f"closed_by_user_id={self.closed_by_user_id}, closed_at={self.closed_at})>"
+            f"closed_by_user_id={self.closed_by_user_id}, closed_at={self.closed_at})>, reason={self.reason}"
         )
 
 
