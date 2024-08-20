@@ -159,3 +159,7 @@ Logging:
   Mention:
     Enabled: True
     ChannelID: "channel_id"
+
+  Report:
+    Enabled: True
+    ChannelID: "channel_id"
