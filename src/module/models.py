@@ -76,6 +76,7 @@ class Report(Base):
     member_ids = Column(ARRAY(BigInteger), nullable=True)
     message_id = Column(BigInteger, nullable=True)
     guild_id = Column(BigInteger, nullable=False)
+    reason = Column(String, nullable=True)
     voice_channel_id = Column(BigInteger, nullable=True)
     text_channel_id = Column(BigInteger, nullable=True)
     is_claimed = Column(Boolean, nullable=False, default=False)
@@ -91,17 +92,6 @@ class Report(Base):
             f"is_claimed={self.is_claimed}, claimed_by_user_id={self.claimed_by_user_id}, "
             f"closed_by_user_id={self.closed_by_user_id}, closed_at={self.closed_at})>"
         )
-
-
-class Member(Base):
-    __tablename__ = "members"
-
-    id = Column(Integer, primary_key=True)
-    report_id = Column(Integer, ForeignKey("reports.id"))
-    member_id = Column(Integer, nullable=False)
-
-    def __repr__(self):
-        return f"<Member(id={self.member_id}, report_id={self.report_id})>"
 
 
 class BanStatus(PyEnum):
