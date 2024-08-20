@@ -27,6 +27,7 @@ class TextFormatter:
         self.version_cache_time = None
         self.cache = {}
         self.verify_utils = VerifyUtils()
+        self.report_utils = ReportUtils()
         self.mention_utils = MentionUtils()
 
     async def format_text(self, text: str, user: Optional[disnake.Member] = None, channel: Optional[disnake.TextChannel] = None) -> str:
@@ -71,7 +72,13 @@ class TextFormatter:
                 len([c for c in user.guild.channels if isinstance(c, disnake.VoiceChannel)])) if user else '0',
             '{guild-totalrole}': str(len(user.guild.roles)) if user else '0',
             '{channelmention}': f'<#{self.mention_utils.get_channel_mention(user.guild.id)}>' if user else '',
-            '{date}': datetime.utcnow()
+            '{date}': datetime.utcnow(),
+            '{report-victim}': f'<@{self.report_utils.get_victim_id(victim_id=user.id, guild_id=user.guild.id)}>' if user else '',
+            '{report-victim-id}': self.report_utils.get_victim_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
+            '{report-perpetrator}': f'<@{self.report_utils.get_perpetrator_id(victim_id=user.id, guild_id=user.guild.id)}>' if user else '',
+            '{report-perpetrator-id}': self.report_utils.get_perpetrator_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
+            '{report-status}': self.report_utils.get_report_status(victim_id=user.id, guild_id=user.guild.id) if user else '',
+            '{report-reason}': self.report_utils.get_reason(victim_id=user.id, guild_id=user.guild.id) if user else '',
         }
 
         async_replacements = {
@@ -132,7 +139,7 @@ class ReportUtils:
     def __init__(self):
         self.session = scoped_session(SessionLocal)
 
-    def create_report(self, victim_id: int, perpetrator_id: int, guild_id: int, voice_channel_id: int = None,
+    def create_report(self, victim_id: int, perpetrator_id: int, guild_id: int, reason: str = None, voice_channel_id: int = None,
                       text_channel_id: int = None) -> Report:
         """Creates a new report if it doesn't already exist."""
         existing_report = self.session.query(Report).filter(
@@ -151,6 +158,7 @@ class ReportUtils:
             victim_id=victim_id,
             perpetrator_id=perpetrator_id,
             guild_id=guild_id,
+            reason=reason,
             voice_channel_id=voice_channel_id,
             text_channel_id=text_channel_id,
         )
@@ -158,10 +166,16 @@ class ReportUtils:
         self.session.commit()
         return new_report
 
-    def get_report_status(self, report_id: int) -> ReportStatus:
-        """Retrieves the status of a report."""
+    def get_report_status(self, report_id: int = None, victim_id: int = None, guild_id: int = None) -> ReportStatus:
+        """Retrieves the status of a report by its ID or by victim ID and guild ID."""
         try:
-            report = self.session.query(Report).get(report_id)
+            if report_id:
+                report = self.session.query(Report).get(report_id)
+            else:
+                report = self.session.query(Report).filter(
+                    and_(Report.victim_id == victim_id, Report.guild_id == guild_id)
+                ).first()
+
             return report.status if report else None
         except NoResultFound:
             return None
@@ -176,10 +190,16 @@ class ReportUtils:
         }
         return status_map.get(status, "Unknown Status")
 
-    def claim_report(self, report_id: int, moderator_id: int) -> bool:
-        """Marks a report as claimed by a moderator."""
+    def claim_report(self, moderator_id: int, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
+        """Marks a report as claimed by a moderator by report ID or by victim ID and guild ID."""
         try:
-            report = self.session.query(Report).filter_by(id=report_id).first()
+            if report_id:
+                report = self.session.query(Report).filter_by(id=report_id).first()
+            else:
+                report = self.session.query(Report).filter(
+                    and_(Report.victim_id == victim_id, Report.guild_id == guild_id)
+                ).first()
+
             if report:
                 report.status = ReportStatus.IN_PROGRESS
                 report.is_claimed = True
@@ -191,10 +211,16 @@ class ReportUtils:
             logger.error(f"Error claiming report: {e}")
         return False
 
-    def close_report(self, report_id: int, moderator_id: int) -> bool:
-        """Marks a report as closed by a moderator."""
+    def close_report(self, moderator_id: int, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
+        """Marks a report as closed by a moderator by report ID or by victim ID and guild ID."""
         try:
-            report = self.session.query(Report).filter_by(id=report_id).first()
+            if report_id:
+                report = self.session.query(Report).filter_by(id=report_id).first()
+            else:
+                report = self.session.query(Report).filter(
+                    and_(Report.victim_id == victim_id, Report.guild_id == guild_id)
+                ).first()
+
             if report and report.status != ReportStatus.CLOSED:
                 report.status = ReportStatus.CLOSED
                 report.closed_by_user_id = moderator_id
@@ -206,63 +232,128 @@ class ReportUtils:
             logger.error(f"Error closing report: {e}")
         return False
 
-    def set_message_id(self, report_id: int, message_id: int) -> bool:
+    def set_message_id(self, message_id: int, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
+        """Sets the message ID associated with the report by report ID or by victim ID and guild ID."""
         try:
-            report = self.session.query(Report).filter_by(id=report_id).first()
+            if report_id:
+                report = self.session.query(Report).filter_by(id=report_id).first()
+            else:
+                report = self.session.query(Report).filter(
+                    and_(Report.victim_id == victim_id, Report.guild_id == guild_id)
+                ).first()
+
             if report:
                 report.message_id = message_id
                 self.session.commit()
                 return True
         except Exception as e:
             self.session.rollback()
-            logger.error(f"Error claiming report: {e}")
+            logger.error(f"Error setting message ID: {e}")
         return False
 
-    def get_message_id(self, report_id: int) -> int:
+    def get_message_id(self, report_id: int = None, victim_id: int = None, guild_id: int = None) -> int:
+        """Retrieves the message ID associated with the report by report ID or by victim ID and guild ID."""
         try:
-            report = self.session.execute(
-                select(Report).where(Report.id == report_id)
-            ).scalar_one()
+            if report_id:
+                report = self.session.execute(
+                    select(Report).where(Report.id == report_id)
+                ).scalar_one()
+            else:
+                report = self.session.execute(
+                    select(Report).where(
+                        and_(Report.victim_id == victim_id, Report.guild_id == guild_id)
+                    )
+                ).scalar_one()
+
             return report.message_id
         except NoResultFound:
             return None
 
-    def get_claimed_by_user_id(self, report_id: int) -> int:
-        """Retrieves the ID of the user who claimed the report."""
+    def get_reason(self, report_id: int = None, victim_id: int = None, guild_id: int = None) -> str:
+        """Retrieves the reason for the report by report ID or by victim ID and guild ID."""
         try:
-            report = self.session.execute(
-                select(Report).where(Report.id == report_id)
-            ).scalar_one()
+            if report_id:
+                report = self.session.execute(
+                    select(Report).where(Report.id == report_id)
+                ).scalar_one_or_none()
+            else:
+                report = self.session.execute(
+                    select(Report).where(
+                        and_(Report.victim_id == victim_id, Report.guild_id == guild_id)
+                    )
+                ).scalar_one_or_none()
+
+            return report.reason if report else None
+        except NoResultFound:
+            return None
+
+    def get_claimed_by_user_id(self, report_id: int = None, victim_id: int = None, guild_id: int = None) -> int:
+        """Retrieves the ID of the user who claimed the report by report ID or by victim ID and guild ID."""
+        try:
+            if report_id:
+                report = self.session.execute(
+                    select(Report).where(Report.id == report_id)
+                ).scalar_one()
+            else:
+                report = self.session.execute(
+                    select(Report).where(
+                        and_(Report.victim_id == victim_id, Report.guild_id == guild_id)
+                    )
+                ).scalar_one()
+
             return report.claimed_by_user_id
         except NoResultFound:
             return None
 
-    def get_victim_id(self, report_id: int) -> int:
-        """Retrieves the victim ID from the report."""
+    def get_victim_id(self, report_id: int = None, victim_id: int = None, guild_id: int = None) -> int:
+        """Retrieves the victim ID from the report by report ID or by victim ID and guild ID."""
         try:
-            report = self.session.execute(
-                select(Report).where(Report.id == report_id)
-            ).scalar_one()
+            if report_id:
+                report = self.session.execute(
+                    select(Report).where(Report.id == report_id)
+                ).scalar_one()
+            else:
+                report = self.session.execute(
+                    select(Report).where(
+                        and_(Report.victim_id == victim_id, Report.guild_id == guild_id)
+                    )
+                ).scalar_one()
+
             return report.victim_id
         except NoResultFound:
             return None
 
-    def get_perpetrator_id(self, report_id: int) -> int:
-        """Retrieves the perpetrator ID from the report."""
+    def get_perpetrator_id(self, report_id: int = None, victim_id: int = None, guild_id: int = None) -> int:
+        """Retrieves the perpetrator ID from the report by report ID or by victim ID and guild ID."""
         try:
-            report = self.session.execute(
-                select(Report).where(Report.id == report_id)
-            ).scalar_one()
+            if report_id:
+                report = self.session.execute(
+                    select(Report).where(Report.id == report_id)
+                ).scalar_one()
+            else:
+                report = self.session.execute(
+                    select(Report).where(
+                        and_(Report.victim_id == victim_id, Report.guild_id == guild_id)
+                    )
+                ).scalar_one()
+
             return report.perpetrator_id
         except NoResultFound:
             return None
 
-    def add_member_to_report(self, report_id: int, member_id: int) -> bool:
-        """Adds a member to the report's member list."""
+    def add_member_to_report(self, member_id: int, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
+        """Adds a member to the report's member list by report ID or by victim ID and guild ID."""
         try:
-            report = self.session.execute(
-                select(Report).where(Report.id == report_id)
-            ).scalar_one_or_none()
+            if report_id:
+                report = self.session.execute(
+                    select(Report).where(Report.id == report_id)
+                ).scalar_one_or_none()
+            else:
+                report = self.session.execute(
+                    select(Report).where(
+                        and_(Report.victim_id == victim_id, Report.guild_id == guild_id)
+                    )
+                ).scalar_one_or_none()
 
             if report:
                 if report.member_ids:
@@ -276,10 +367,16 @@ class ReportUtils:
             logger.error(f"Error adding member to report: {e}")
         return False
 
-    def delete_report(self, report_id: int) -> bool:
-        """Deletes the report by its ID."""
+    def delete_report(self, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
+        """Deletes the report by its ID or by victim ID and guild ID."""
         try:
-            report = self.session.query(Report).filter_by(id=report_id).first()
+            if report_id:
+                report = self.session.query(Report).filter_by(id=report_id).first()
+            else:
+                report = self.session.query(Report).filter(
+                    and_(Report.victim_id == victim_id, Report.guild_id == guild_id)
+                ).first()
+
             if report:
                 self.session.delete(report)
                 self.session.commit()
@@ -289,12 +386,19 @@ class ReportUtils:
             logger.error(f"Error deleting report: {e}")
         return False
 
-    def remove_member_from_report(self, report_id: int, member_id: int) -> bool:
-        """Removes the participant from the list of report participants."""
+    def remove_member_from_report(self, member_id: int, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
+        """Removes the participant from the list of report participants by report ID or by victim ID and guild ID."""
         try:
-            report = self.session.execute(
-                select(Report).where(Report.id == report_id)
-            ).scalar_one_or_none()
+            if report_id:
+                report = self.session.execute(
+                    select(Report).where(Report.id == report_id)
+                ).scalar_one_or_none()
+            else:
+                report = self.session.execute(
+                    select(Report).where(
+                        and_(Report.victim_id == victim_id, Report.guild_id == guild_id)
+                    )
+                ).scalar_one_or_none()
 
             if report and report.member_ids:
                 if member_id in report.member_ids:
