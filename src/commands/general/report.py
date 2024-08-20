@@ -15,7 +15,7 @@ class Report(commands.Cog):
         description="Сообщить о проблеме или нарушении"
     )
     async def report_slash(self, interaction: disnake.AppCmdInter):
-        modal = ReportModal()
+        modal = ReportModal(self.bot)
         await interaction.response.send_modal(modal=modal)
 
 
