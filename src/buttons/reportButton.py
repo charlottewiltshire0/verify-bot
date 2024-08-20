@@ -2,7 +2,7 @@ from typing import Optional
 
 import disnake
 
-from src.module import ReportUtils, Yml, EmbedFactory
+from src.module import ReportUtils, Yml, EmbedFactory, log_action, send_embed_to_member
 
 
 class ReportButton(disnake.ui.View):
@@ -16,6 +16,13 @@ class ReportButton(disnake.ui.View):
         self.report_utils = report_utils
         self.report_id = report_id
         self.value = Optional[bool]
+
+        self.logging_enabled = Yml("./config/config.yml").load().get('Logging', {}).get('Report', {}).get('Enabled',
+                                                                                                           False)
+        self.logging_channel_id = int(Yml("./config/config.yml").load().get('Logging', {}).get('Report', {})
+                                      .get('ChannelID', 0))
+
+        self.dm_user_enabled = self.report_settings.get('DMUser', False)
 
     @disnake.ui.button(label="Принять", style=disnake.ButtonStyle.green, custom_id="report_accept", emoji="✅")
     async def report_accept(self, button: disnake.ui.Button, interaction: disnake.CommandInteraction):
@@ -62,6 +69,7 @@ class ReportButton(disnake.ui.View):
 
     @disnake.ui.button(label="Отклонить", style=disnake.ButtonStyle.red, custom_id="report_reject", emoji="⛔")
     async def report_reject(self, button: disnake.ui.Button, interaction: disnake.CommandInteraction):
+        await interaction.response.defer()
         success = self.report_utils.close_report(self.report_id, interaction.user.id)
 
         if success:
@@ -74,11 +82,22 @@ class ReportButton(disnake.ui.View):
                     await message.delete()
                 except disnake.NotFound:
                     pass
+
+            if self.logging_enabled:
+                await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id,
+                                 embed_factory=self.embed_factory,
+                                 action='LogReportRejection', member=interaction.author, color="Error")
+
+            if self.dm_user_enabled:
+                member = await self.bot.fetch_user(self.report_utils.get_victim_id(self.report_id))
+                await send_embed_to_member(embed_factory=self.embed_factory, member=member,
+                                           preset="DMReportReject", color_type="Error")
+
             embed = await self.embed_factory.create_embed(preset="ReportReject", color_type="Success")
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.followup.send(embed=embed, ephemeral=True)
         else:
             embed = await self.embed_factory.create_embed(preset="ReportRejectError", color_type="Success")
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.followup.send(embed=embed, ephemeral=True)
 
         self.value = False
         self.stop()
