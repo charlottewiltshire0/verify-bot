@@ -300,6 +300,18 @@ Embeds:
     Title: "<:crossmark:1272260131677278209> Ошибка!"
     Description: "Ошибка при отклонении репорта. Пожалуйста, попробуйте снова или свяжитесь с администратором."
 
+  ReportMissingCategory:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Не удалось найти категорию для каналов!"
+
+  ReportClaimed:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:tick:1272260155190546584> Успех!"
+    Description: "Репорт принят и назначен вам."
+
   DMReportReject:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
@@ -310,7 +322,7 @@ Embeds:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
     Title: "<:tick:1272260155190546584> Ваш репорт принят!"
-    Description: "Ваш отчет успешно создан и находится в обработке. Спасибо за ваше сотрудничество! Администрация рассмотрит ваш отчет в ближайшее время."
+    Description: "Ваш репорт успешно создан и находится в обработке. Спасибо за ваше сотрудничество! Администрация рассмотрит ваш отчет в ближайшее время."
 
   LogMentionAdd:
     Title: "Канал для упоминания добавлен"
@@ -354,11 +366,11 @@ Embeds:
 
   LogReportRejection:
     Title: "Репорт отклонен"
-    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Автор Репорта**: `{report-victim}`\n<:arrow:1274280332304322611> {date}"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Автор Репорта**: {report-victim} `{report-victim-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-perpetrator} `{report-perpetrator-id}`\n<:arrow:1274280332304322611> {date}"
 
   LogReportSuccess:
     Title: "Новый репорт создан"
-    Description: "<:arrow:1274280332304322611> **Цель**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Цель**: {user-mention} `{report-id}`\n<:arrow:1274280332304322611> **Виновный**: {report-pertrator} `{report-pertrator-id}`\n<:arrow:1274280332304322611> {date}"
+    Description: "<:arrow:1274280332304322611> **Автор Репорт**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-pertrator} `{report-pertrator-id}`\n<:arrow:1274280332304322611> {date}"
 
 
 
