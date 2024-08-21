@@ -54,19 +54,37 @@ class ReportButton(disnake.ui.View):
             **staff_permissions
         }
 
+        voice_channel = None
         if self.report_settings.get("Channel", {}).get("VC", False):
-            await interaction.guild.create_voice_channel(
+            voice_channel = await interaction.guild.create_voice_channel(
                 name=f"🔊・{self.report_id}-{member.display_name}",
                 category=category,
                 overwrites=permissions
             )
 
-        await interaction.guild.create_text_channel(
+        text_channel = await interaction.guild.create_text_channel(
             name=f"🎫・беседа-{self.report_id}-{member.display_name}",
             category=category,
-            topic=await self.formatter.format_text(self.report_settings.get("Channel", {}).get("Topic", ""), user=member),
+            topic=await self.formatter.format_text(self.report_settings.get("Channel", {}).get("Topic", ""),
+                                                   user=member),
             overwrites=permissions
         )
+
+        self.report_utils.set_channels_id(
+            text_channel_id=text_channel.id,
+            voice_channel_id=voice_channel.id if voice_channel else None,
+            report_id=self.report_id
+        )
+
+        if self.logging_enabled:
+            await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id,
+                             embed_factory=self.embed_factory,
+                             action='LogReportClaimed', member=interaction.author, color="Success")
+
+        if self.dm_user_enabled:
+            member = await self.bot.fetch_user(self.report_utils.get_victim_id(self.report_id))
+            await send_embed_to_member(embed_factory=self.embed_factory, member=member,
+                                       preset="DMReportClaimed", color_type="Success")
 
         embed = await self.embed_factory.create_embed(preset="ReportClaimed", color_type="Success")
         await interaction.response.send_message(embed=embed, ephemeral=True)
