@@ -99,7 +99,9 @@ Report:
     PingSupport: True
     PingUser: True
     DMUser: True
-    DMClosureReason: False
+    SendReview: True
+    # Удаление репорта, когда пользователь покидает сервер
+    RemoveLeave: False
 
     StaffRoles:
       - "role_id"
@@ -107,11 +109,11 @@ Report:
     Channel:
       VC: True
       Category: "category_id"
-      Topic: "**Пользователь** {user-displayname} **Причина** {report-reason} **Время** {date} **ID** {report-id}"
-      
+      Topic: "**Модератор** {user-displayname} **Причина** {report-reason} **Время** {date} **ID** {report-id}"
+
     Transcripts:
       Enabled: True
-      Channel: "transcript_id"
+      Channel: "transcripts"
       DMToUser: True
 
 ########################################
