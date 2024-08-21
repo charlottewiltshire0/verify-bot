@@ -28,8 +28,10 @@ class ReportButton(disnake.ui.View):
 
     @disnake.ui.button(label="Принять", style=disnake.ButtonStyle.green, custom_id="report_accept", emoji="✅")
     async def report_accept(self, button: disnake.ui.Button, interaction: disnake.AppCmdInter):
+        await interaction.response.defer()
+
         if not self.report_utils.claim_report(report_id=self.report_id, moderator_id=interaction.user.id):
-            await interaction.response.send_message("Ошибка принятия репорта.", ephemeral=True)
+            await interaction.followup.send("Ошибка принятия репорта.", ephemeral=True)
             return
 
         category_id = int(self.report_settings.get("Channel", {}).get("Category", 0))
@@ -37,7 +39,7 @@ class ReportButton(disnake.ui.View):
 
         if category is None:
             embed = await self.embed_factory.create_embed(preset="ReportMissingCategory", color_type="Error")
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.followup.send(embed=embed, ephemeral=True)
             return
 
         member = interaction.guild.get_member(self.report_utils.get_victim_id(self.report_id))
@@ -87,7 +89,7 @@ class ReportButton(disnake.ui.View):
                                        preset="DMReportClaimed", color_type="Success")
 
         embed = await self.embed_factory.create_embed(preset="ReportClaimed", color_type="Success")
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        await interaction.followup.send(embed=embed, ephemeral=True)
 
         staff_mentions = ' '.join(role.mention for role in staff_roles)
         content = f"{member.mention} {reporter.mention} {staff_mentions}"
