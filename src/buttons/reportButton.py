@@ -93,7 +93,7 @@ class ReportButton(disnake.ui.View):
 
         staff_mentions = ' '.join(role.mention for role in staff_roles)
         content = f"{member.mention} {reporter.mention} {staff_mentions}"
-        embed = await self.embed_factory.create_embed(preset="ReportClaimedDetails", color_type="Success")
+        embed = await self.embed_factory.create_embed(preset="ReportClaimedDetails", color_type="Success", user=interaction.author)
 
         message = await text_channel.send(content=content, embed=embed)
         await message.pin()
