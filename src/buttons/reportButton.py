@@ -2,7 +2,7 @@ from typing import Optional
 
 import disnake
 
-from src.module import ReportUtils, Yml, EmbedFactory, log_action, send_embed_to_member
+from src.module import ReportUtils, Yml, EmbedFactory, log_action, send_embed_to_member, TextFormatter
 
 
 class ReportButton(disnake.ui.View):
@@ -10,65 +10,80 @@ class ReportButton(disnake.ui.View):
         super().__init__(timeout=20.0)
         self.bot = bot
         self.embed_factory = EmbedFactory('./config/embeds.yml', './config/config.yml', bot=bot)
+        self.formatter = TextFormatter(bot)
 
         self.report_settings = Yml("./config/config.yml").load().get("Report", {})
         self.embed_color = Yml("./config/config.yml").load().get("EmbedColors", {})
+        self.staff_roles = [int(role_id) for role_id in self.report_settings.get("StaffRoles", [])]
         self.report_utils = report_utils
         self.report_id = report_id
         self.value = Optional[bool]
 
         self.logging_enabled = Yml("./config/config.yml").load().get('Logging', {}).get('Report', {}).get('Enabled',
-                                                                                                           False)
+                                                                                                          False)
         self.logging_channel_id = int(Yml("./config/config.yml").load().get('Logging', {}).get('Report', {})
                                       .get('ChannelID', 0))
 
         self.dm_user_enabled = self.report_settings.get('DMUser', False)
 
     @disnake.ui.button(label="Принять", style=disnake.ButtonStyle.green, custom_id="report_accept", emoji="✅")
-    async def report_accept(self, button: disnake.ui.Button, interaction: disnake.CommandInteraction):
-        if not self.report_utils.claim_report(self.report_id, interaction.user.id):
+    async def report_accept(self, button: disnake.ui.Button, interaction: disnake.AppCmdInter):
+        if not self.report_utils.claim_report(report_id=self.report_id, moderator_id=interaction.user.id):
             await interaction.response.send_message("Ошибка принятия репорта.", ephemeral=True)
             return
 
-        # category_id = int(self.report_settings.get("Channel", {}).get("Category", 0))
-        # category = interaction.guild.get_channel(category_id)
-        #
-        # if category is None:
-        #     embed = disnake.Embed(
-        #         title="<:crossmark:1272260131677278209> Ошибка!",
-        #         color=int(self.embed_color.get("Error", "#ff6161").lstrip("#"), 16),
-        #         description="Не удалось найти категорию для каналов!"
-        #     )
-        #     await interaction.response.send_message(embed=embed, ephemeral=True)
-        #     return
-        #
-        # vc_channel = None
-        # if self.report_settings.get("Channel", {}).get("VC", False):
-        #     vc_channel = await interaction.guild.create_voice_channel(
-        #         name=f"Репорт-{interaction.user.display_name}",
-        #         category=category
-        #     )
-        #
-        # await interaction.guild.create_text_channel(
-        #     name=f"репорт-{interaction.user.display_name}",
-        #     category=category,
-        #     topic=self.report_settings.get("Channel", {}).get(
-        #         "Topic", ""
-        #     )
-        # )
-        #
-        # embed = disnake.Embed(
-        #     title="<:tick:1272260155190546584> Успех!",
-        #     color=int(self.embed_color.get("Success", "#6cff61").lstrip("#"), 16),
-        #     description=f"Репорт принят и назначен вам. Созданы каналы: {vc_channel.mention if vc_channel else ''} {text_channel.mention}."
-        # )
-        #
-        # await interaction.response.send_message(embed=embed, ephemeral=True)
+        category_id = int(self.report_settings.get("Channel", {}).get("Category", 0))
+        category = interaction.guild.get_channel(category_id)
+
+        if category is None:
+            embed = await self.embed_factory.create_embed(preset="ReportMissingCategory", color_type="Error")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+
+        member = interaction.guild.get_member(self.report_utils.get_victim_id(self.report_id))
+
+        staff_roles = [interaction.guild.get_role(role_id) for role_id in self.staff_roles]
+        staff_permissions = {role: disnake.PermissionOverwrite(read_messages=True) for role in staff_roles}
+
+        permissions = {
+            interaction.guild.default_role: disnake.PermissionOverwrite(read_messages=False),
+            interaction.user: disnake.PermissionOverwrite(read_messages=True),
+            member: disnake.PermissionOverwrite(read_messages=True),
+            **staff_permissions
+        }
+
+        if self.report_settings.get("Channel", {}).get("VC", False):
+            await interaction.guild.create_voice_channel(
+                name=f"🔊・{self.report_id}-{member.display_name}",
+                category=category,
+                overwrites=permissions
+            )
+
+        await interaction.guild.create_text_channel(
+            name=f"🎫・беседа-{self.report_id}-{member.display_name}",
+            category=category,
+            topic=await self.formatter.format_text(self.report_settings.get("Channel", {}).get("Topic", ""), user=member),
+            overwrites=permissions
+        )
+
+        embed = await self.embed_factory.create_embed(preset="ReportClaimed", color_type="Success")
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+        message_id = self.report_utils.get_message_id(self.report_id)
+
+        if message_id:
+            try:
+                channel = interaction.channel
+                message = await channel.fetch_message(message_id)
+                await message.delete()
+            except disnake.NotFound:
+                pass
+
         self.value = True
         self.stop()
 
     @disnake.ui.button(label="Отклонить", style=disnake.ButtonStyle.red, custom_id="report_reject", emoji="⛔")
-    async def report_reject(self, button: disnake.ui.Button, interaction: disnake.CommandInteraction):
+    async def report_reject(self, button: disnake.ui.Button, interaction: disnake.AppCmdInter):
         await interaction.response.defer()
         success = self.report_utils.close_report(self.report_id, interaction.user.id)
 
