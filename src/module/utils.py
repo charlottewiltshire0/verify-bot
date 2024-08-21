@@ -83,6 +83,7 @@ class TextFormatter:
             '{report-text-channel-id}': self.report_utils.get_text_channel_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
             '{report-voice-channel-id}': self.report_utils.get_voice_channel_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
             '{report-claimed-by-user-id}': self.report_utils.get_claimed_by_user_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
+            '{report-member-ids}': self.report_utils.get_member_ids(victim_id=user.id, guild_id=user.guild.id) if user else '',
         }
 
         async_replacements = {
@@ -284,6 +285,23 @@ class ReportUtils:
         """Retrieves the reason for the report by report ID or by victim ID and guild ID."""
         report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
         return report.reason if report else None
+
+    def get_formatted_member_ids(self, report_id: int = None, victim_id: int = None, guild_id: int = None) -> str:
+        """Returns formatted member_ids as strings with mentions of members and their IDs."""
+        report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
+        if not report or not report.member_ids:
+            return "Нет участников"
+
+        formatted_ids = []
+        for member_id in report.member_ids:
+            formatted_ids.append(f"<@{member_id}> `{member_id}`")
+
+        return '\n'.join(formatted_ids)
+
+    def get_member_ids(self, report_id: int = None, victim_id: int = None, guild_id: int = None):
+        """Retrieves the member IDs associated with a report."""
+        report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
+        return report.member_ids if report else None
 
     def get_claimed_by_user_id(self, report_id: int = None, victim_id: int = None, guild_id: int = None) -> int:
         """Retrieves the ID of the user who claimed the report by report ID or by victim ID and guild ID."""
