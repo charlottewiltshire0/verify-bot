@@ -270,8 +270,8 @@ class ReportUtils:
             if guild_id:
                 query = query.filter(Report.guild_id == guild_id)
 
-            report_id = query.scalar()
-            return report_id
+            report_id = query.first()
+            return report_id.id if report_id else None
         except NoResultFound:
             return None
 
