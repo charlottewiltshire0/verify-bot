@@ -89,6 +89,13 @@ class ReportButton(disnake.ui.View):
         embed = await self.embed_factory.create_embed(preset="ReportClaimed", color_type="Success")
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
+        staff_mentions = ' '.join(role.mention for role in staff_roles)
+        content = f"{member.mention} {reporter.mention} {staff_mentions}"
+        embed = await self.embed_factory.create_embed(preset="ReportClaimedDetails", color_type="Success")
+
+        message = await text_channel.send(content=content, embed=embed)
+        await message.pin()
+
         message_id = self.report_utils.get_message_id(self.report_id)
 
         if message_id:
