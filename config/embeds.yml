@@ -333,7 +333,7 @@ Embeds:
   ReportClaimedDetails:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp} Информация"
-    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Автор Репорта**: {report-victim} `{report-victim-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-perpetrator} `{report-perpetrator-id}`\n<:arrow:1274280332304322611> **ID Репорта**: `{report-id}`<:arrow:1274280332304322611> **Причина**: {report-reason}"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Автор Репорта**: {report-victim} `{report-victim-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-perpetrator} `{report-perpetrator-id}`\n<:arrow:1274280332304322611> **ID Репорта**: `{report-id}`\n<:arrow:1274280332304322611> **Причина**: {report-reason}"
     Timestamp: True
 
   DMReportReject:
@@ -411,7 +411,7 @@ Embeds:
 
   LogReportClaimed:
     Title: "Репорт принят"
-    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Автор Репорта**: {report-victim} `{report-victim-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-perpetrator} `{report-perpetrator-id}`\n<:arrow:1274280332304322611> **ID Репорта**: `{report-id}`<:arrow:1274280332304322611> **Причина**: {report-reason}\n<:arrow:1274280332304322611> {date}"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Автор Репорта**: {report-victim} `{report-victim-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-perpetrator} `{report-perpetrator-id}`\n<:arrow:1274280332304322611> **ID Репорта**: `{report-id}`\n<:arrow:1274280332304322611> **Причина**: {report-reason}\n<:arrow:1274280332304322611> {date}"
 
 
 
