@@ -41,6 +41,7 @@ class ReportButton(disnake.ui.View):
             return
 
         member = interaction.guild.get_member(self.report_utils.get_victim_id(self.report_id))
+        reporter = interaction.guild.get_member(self.report_utils.get_perpetrator_id(self.report_id))
 
         staff_roles = [interaction.guild.get_role(role_id) for role_id in self.staff_roles]
         staff_permissions = {role: disnake.PermissionOverwrite(read_messages=True) for role in staff_roles}
@@ -49,6 +50,7 @@ class ReportButton(disnake.ui.View):
             interaction.guild.default_role: disnake.PermissionOverwrite(read_messages=False),
             interaction.user: disnake.PermissionOverwrite(read_messages=True),
             member: disnake.PermissionOverwrite(read_messages=True),
+            reporter: disnake.PermissionOverwrite(read_messages=True),
             **staff_permissions
         }
 
