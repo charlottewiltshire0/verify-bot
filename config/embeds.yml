@@ -408,7 +408,7 @@ Embeds:
 
   LogReportAddedSuccess:
     Title: "Успешное добавление в репорт"
-    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **ID Репорта**: `{report-id}`\n<:arrow:1274280332304322611> {date}"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Список Участников**: \n{report-member-ids}\n<:arrow:1274280332304322611> **ID Репорта**: `{report-id}`\n<:arrow:1274280332304322611> {date}"
 
   LogReportClaimed:
     Title: "Репорт принят"
