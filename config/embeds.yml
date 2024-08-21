@@ -312,6 +312,24 @@ Embeds:
     Title: "<:tick:1272260155190546584> Успех!"
     Description: "Репорт принят и назначен вам."
 
+  SelfReportError:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Вы не можете добавить самого себя в репорт. Пожалуйста, выберите другого пользователя."
+
+  ReportAdd:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:tick:1272260155190546584> Успех!"
+    Description: "Пользователь успешно добавлен в репорт."
+
+  ReportAddAlreadyExists:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Этот участник уже добавлен в репорт или является жертвой/преступником."
+
   DMReportReject:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
@@ -366,11 +384,13 @@ Embeds:
 
   LogReportRejection:
     Title: "Репорт отклонен"
-    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Автор Репорта**: {report-victim} `{report-victim-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-perpetrator} `{report-perpetrator-id}`\n<:arrow:1274280332304322611> {date}"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Автор Репорта**: {report-victim} `{report-victim-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-perpetrator} `{report-perpetrator-id}`\n<:arrow:1274280332304322611> **ID Репорта**: `{report-id}`\n<:arrow:1274280332304322611> {date}"
 
   LogReportSuccess:
     Title: "Новый репорт создан"
-    Description: "<:arrow:1274280332304322611> **Автор Репорта**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-perpetrator} `{report-perpetrator-id}`\n<:arrow:1274280332304322611> {date}"
+    Description: "<:arrow:1274280332304322611> **Автор Репорта**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-perpetrator} `{report-perpetrator-id}`\n<:arrow:1274280332304322611> **ID Репорта**: `{report-id}`\n<:arrow:1274280332304322611> {date}"
 
-
+  LogReportAddedSuccess:
+    Title: "Успешное добавление в репорт"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **ID Репорта**: `{report-id}`\n<:arrow:1274280332304322611> {date}"
 
