@@ -318,7 +318,7 @@ Embeds:
     Title: "<:crossmark:1272260131677278209> Ошибка!"
     Description: "Вы не можете добавить самого себя в репорт. Пожалуйста, выберите другого пользователя."
 
-  ReportAdd:
+  ReportAdded:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
     Title: "<:tick:1272260155190546584> Успех!"
