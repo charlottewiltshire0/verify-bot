@@ -80,6 +80,8 @@ class TextFormatter:
             '{report-status}': self.report_utils.get_report_status(victim_id=user.id, guild_id=user.guild.id) if user else '',
             '{report-reason}': self.report_utils.get_reason(victim_id=user.id, guild_id=user.guild.id) if user else '',
             '{report-id}': self.report_utils.get_report_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
+            '{report-text-channel-id}': self.report_utils.get_text_channel_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
+            '{report-voice-channel-id}': self.report_utils.get_voice_channel_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
         }
 
         async_replacements = {
@@ -241,6 +243,20 @@ class ReportUtils:
             logger.error(f"Error setting message ID: {e}")
         return False
 
+    def set_channels_id(self, text_channel_id: int, voice_channel_id: int, report_id: int = None, victim_id: int = None, guild_id: int = None):
+        """Sets the text and voice channel IDs associated with the report by report ID or by victim ID and guild ID."""
+        try:
+            report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
+            if report:
+                report.text_channel_id = text_channel_id
+                report.voice_channel_id = voice_channel_id
+                self.session.commit()
+                return True
+        except Exception as e:
+            self.session.rollback()
+            logger.error(f"Error setting channel IDs: {e}")
+        return False
+
     def get_report_id(self, victim_id: int = None, perpetrator_id: int = None, guild_id: int = None) -> int:
         """Retrieves the report ID by victim ID, perpetrator ID, and guild ID."""
         try:
@@ -282,6 +298,16 @@ class ReportUtils:
         """Retrieves the perpetrator ID from the report by report ID or by victim ID and guild ID."""
         report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
         return report.perpetrator_id if report else None
+
+    def get_text_channel_id(self, report_id: int = None, victim_id: int = None, guild_id: int = None) -> int:
+        """Retrieves the ID of the text channel associated with a report"""
+        report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
+        return report.text_channel_id if report else None
+
+    def get_voice_channel_id(self, report_id: int = None, victim_id: int = None, guild_id: int = None):
+        """Retrieves the ID of the voice channel associated with a report."""
+        report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
+        return report.voice_channel_id if report else None
 
     def add_member_to_report(self, member_id: int, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
         """Adds a member to the report's member list by report ID or by victim ID and guild ID."""
