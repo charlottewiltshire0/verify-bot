@@ -288,6 +288,11 @@ class ReportUtils:
         try:
             report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
             if report:
+                if member_id in report.member_ids:
+                    return False
+                if report.victim_id == member_id or report.perpetrator_id == member_id:
+                    return False
+
                 if report.member_ids:
                     report.member_ids.append(member_id)
                 else:
