@@ -82,6 +82,7 @@ class TextFormatter:
             '{report-id}': self.report_utils.get_report_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
             '{report-text-channel-id}': self.report_utils.get_text_channel_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
             '{report-voice-channel-id}': self.report_utils.get_voice_channel_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
+            '{report-claimed-by-user-id}': self.report_utils.get_claimed_by_user_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
         }
 
         async_replacements = {
