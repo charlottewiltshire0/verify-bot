@@ -144,41 +144,44 @@ class ReportUtils:
         """Retrieves a report by its ID or by victim ID and guild ID."""
         try:
             if report_id:
-                return self.session.query(Report).filter_by(id=report_id).first()
+                report = self.session.query(Report).filter_by(id=report_id).first()
             else:
-                return self.session.query(Report).filter(
+                report = self.session.query(Report).filter(
                     and_(Report.victim_id == victim_id, Report.guild_id == guild_id)
                 ).first()
+
+            if report:
+                self.session.refresh(report)
+            return report
         except NoResultFound:
             return None
 
     def create_report(self, victim_id: int, perpetrator_id: int, guild_id: int, reason: str = None,
                       voice_channel_id: int = None, text_channel_id: int = None) -> Report:
         """Creates a new report if it doesn't already exist."""
-        with self.session() as session:
-            existing_report = session.query(Report).filter(
-                and_(
-                    Report.victim_id == victim_id,
-                    Report.perpetrator_id == perpetrator_id,
-                    Report.guild_id == guild_id,
-                    Report.status.in_([ReportStatus.PENDING, ReportStatus.IN_PROGRESS]),
-                )
-            ).first()
-
-            if existing_report:
-                return None
-
-            new_report = Report(
-                victim_id=victim_id,
-                perpetrator_id=perpetrator_id,
-                guild_id=guild_id,
-                reason=reason,
-                voice_channel_id=voice_channel_id,
-                text_channel_id=text_channel_id,
+        existing_report = self.session.query(Report).filter(
+            and_(
+                Report.victim_id == victim_id,
+                Report.perpetrator_id == perpetrator_id,
+                Report.guild_id == guild_id,
+                Report.status.in_([ReportStatus.PENDING, ReportStatus.IN_PROGRESS]),
             )
-            session.add(new_report)
-            session.commit()
-            return new_report
+        ).first()
+
+        if existing_report:
+            return None
+
+        new_report = Report(
+            victim_id=victim_id,
+            perpetrator_id=perpetrator_id,
+            guild_id=guild_id,
+            reason=reason,
+            voice_channel_id=voice_channel_id,
+            text_channel_id=text_channel_id,
+        )
+        self.session.add(new_report)
+        self.session.commit()
+        return new_report
 
     def get_report_status(self, report_id: int = None, victim_id: int = None, guild_id: int = None) -> ReportStatus:
         """Retrieves the status of a report by its ID or by victim ID and guild ID."""
@@ -198,64 +201,60 @@ class ReportUtils:
     def claim_report(self, moderator_id: int, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
         """Marks a report as claimed by a moderator by report ID or by victim ID and guild ID."""
         try:
-            with self.session() as session:
-                report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
-                if report:
-                    report.status = ReportStatus.IN_PROGRESS
-                    report.is_claimed = True
-                    report.claimed_by_user_id = moderator_id
-                    session.commit()
-                    return True
+            report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
+            if report:
+                report.status = ReportStatus.IN_PROGRESS
+                report.is_claimed = True
+                report.claimed_by_user_id = moderator_id
+                self.session.commit()
+                return True
         except Exception as e:
-            session.rollback()
+            self.session.rollback()
             logger.error(f"Error claiming report: {e}")
         return False
 
     def close_report(self, moderator_id: int, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
         """Marks a report as closed by a moderator by report ID or by victim ID and guild ID."""
         try:
-            with self.session() as session:
-                report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
-                if report and report.status != ReportStatus.CLOSED:
-                    report.status = ReportStatus.CLOSED
-                    report.closed_by_user_id = moderator_id
-                    report.closed_at = func.now()
-                    session.commit()
-                    return True
+            report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
+            if report and report.status != ReportStatus.CLOSED:
+                report.status = ReportStatus.CLOSED
+                report.closed_by_user_id = moderator_id
+                report.closed_at = func.now()
+                self.session.commit()
+                return True
         except Exception as e:
-            session.rollback()
+            self.session.rollback()
             logger.error(f"Error closing report: {e}")
         return False
 
     def set_message_id(self, message_id: int, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
         """Sets the message ID associated with the report by report ID or by victim ID and guild ID."""
         try:
-            with self.session() as session:
-                report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
-                if report:
-                    report.message_id = message_id
-                    session.commit()
-                    return True
+            report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
+            if report:
+                report.message_id = message_id
+                self.session.commit()
+                return True
         except Exception as e:
-            session.rollback()
+            self.session.rollback()
             logger.error(f"Error setting message ID: {e}")
         return False
 
     def get_report_id(self, victim_id: int = None, perpetrator_id: int = None, guild_id: int = None) -> int:
         """Retrieves the report ID by victim ID, perpetrator ID, and guild ID."""
         try:
-            with self.session() as session:
-                query = session.query(Report.id)
+            query = self.session.query(Report.id)
 
-                if victim_id:
-                    query = query.filter(Report.victim_id == victim_id)
-                if perpetrator_id:
-                    query = query.filter(Report.perpetrator_id == perpetrator_id)
-                if guild_id:
-                    query = query.filter(Report.guild_id == guild_id)
+            if victim_id:
+                query = query.filter(Report.victim_id == victim_id)
+            if perpetrator_id:
+                query = query.filter(Report.perpetrator_id == perpetrator_id)
+            if guild_id:
+                query = query.filter(Report.guild_id == guild_id)
 
-                report_id = query.scalar()
-                return report_id
+            report_id = query.scalar()
+            return report_id
         except NoResultFound:
             return None
 
@@ -287,46 +286,43 @@ class ReportUtils:
     def add_member_to_report(self, member_id: int, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
         """Adds a member to the report's member list by report ID or by victim ID and guild ID."""
         try:
-            with self.session() as session:
-                report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
-                if report:
-                    if report.member_ids:
-                        report.member_ids.append(member_id)
-                    else:
-                        report.member_ids = [member_id]
-                    session.commit()
-                    return True
+            report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
+            if report:
+                if report.member_ids:
+                    report.member_ids.append(member_id)
+                else:
+                    report.member_ids = [member_id]
+                self.session.commit()
+                return True
         except Exception as e:
-            session.rollback()
+            self.session.rollback()
             logger.error(f"Error adding member to report: {e}")
         return False
 
     def delete_report(self, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
         """Deletes the report by its ID or by victim ID and guild ID."""
         try:
-            with self.session() as session:
-                report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
-                if report:
-                    session.delete(report)
-                    session.commit()
-                    return True
+            report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
+            if report:
+                self.session.delete(report)
+                self.session.commit()
+                return True
         except Exception as e:
-            session.rollback()
+            self.session.rollback()
             logger.error(f"Error deleting report: {e}")
         return False
 
     def remove_member_from_report(self, member_id: int, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
         """Removes the participant from the list of report participants by report ID or by victim ID and guild ID."""
         try:
-            with self.session() as session:
-                report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
-                if report and report.member_ids:
-                    if member_id in report.member_ids:
-                        report.member_ids.remove(member_id)
-                        session.commit()
-                        return True
+            report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
+            if report and report.member_ids:
+                if member_id in report.member_ids:
+                    report.member_ids.remove(member_id)
+                    self.session.commit()
+                    return True
         except Exception as e:
-            session.rollback()
+            self.session.rollback()
             logger.error(f"Error removing member from report: {e}")
         return False
 
