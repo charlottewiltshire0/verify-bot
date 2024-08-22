@@ -330,20 +330,29 @@ class ReportUtils:
 
     def add_member_to_report(self, member_id: int, report_id: int = None, victim_id: int = None,
                              guild_id: int = None) -> bool:
-        """Adds a participant to the list of report participants by report ID, or by victim ID and server ID."""
+        """Adds a member to the report by report ID, victim ID, or guild ID."""
         try:
-            report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
+            report = self.get_report_by_id_or_victim(report_id=report_id, victim_id=victim_id, guild_id=guild_id)
+
             if report:
+                # Initialize member_ids if it's None
                 if report.member_ids is None:
                     report.member_ids = []
+
                 if member_id not in report.member_ids:
                     report.member_ids.append(member_id)
                     self.session.commit()
+                    logger.info(f"Successfully added user {member_id} to report {report.id}.")
                     return True
+                else:
+                    logger.info(f"User {member_id} is already in report {report.id}.")
+            else:
+                logger.info(
+                    f"Report not found with parameters: report_id={report_id}, victim_id={victim_id}, guild_id={guild_id}.")
             return False
         except Exception as e:
             self.session.rollback()
-            logger.error(f"Error adding member to report: {e}")
+            logger.error(f"Error adding member {member_id} to report: {e}")
             return False
 
     def delete_report(self, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
