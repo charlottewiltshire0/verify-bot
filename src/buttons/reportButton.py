@@ -96,7 +96,9 @@ class ReportButton(disnake.ui.View):
         staff_mentions = ' '.join(role.mention for role in staff_roles) if self.ping_support_enabled else ''
         user_mentions = f"{member.mention} {reporter.mention}" if self.ping_user_enabled else ''
         content = f"{user_mentions} {staff_mentions}".strip()
-        embed = await self.embed_factory.create_embed(preset="ReportClaimedDetails", user=interaction.author)
+
+        view = ReportPanel(report_id=self.report_id, report_utils=self.report_utils, bot=self.bot)
+        embed = await self.embed_factory.create_embed(preset="ReportClaimedDetails", user=interaction.author,  view=view)
 
         message = await text_channel.send(content=content if content else None, embed=embed)
         await message.pin()
@@ -117,7 +119,7 @@ class ReportButton(disnake.ui.View):
     @disnake.ui.button(label="Отклонить", style=disnake.ButtonStyle.red, custom_id="report_reject", emoji="⛔")
     async def report_reject(self, button: disnake.ui.Button, interaction: disnake.AppCmdInter):
         await interaction.response.defer()
-        success = self.report_utils.close_report(self.report_id, interaction.user.id)
+        success = self.report_utils.close_report(report_id=self.report_id, moderator_id=interaction.user.id)
 
         if success:
             message_id = self.report_utils.get_message_id(self.report_id)
@@ -144,6 +146,66 @@ class ReportButton(disnake.ui.View):
             await interaction.followup.send(embed=embed, ephemeral=True)
         else:
             embed = await self.embed_factory.create_embed(preset="ReportRejectError", color_type="Error")
+            await interaction.followup.send(embed=embed, ephemeral=True)
+
+        self.value = False
+        self.stop()
+
+
+class ReportPanel(disnake.ui.View):
+    def __init__(self, report_utils: ReportUtils, report_id: int, bot):
+        super().__init__(timeout=20.0)
+        self.bot = bot
+        self.embed_factory = EmbedFactory('./config/embeds.yml', './config/config.yml', bot=bot)
+        self.formatter = TextFormatter(bot)
+
+        self.report_settings = Yml("./config/config.yml").load().get("Report", {})
+        self.embed_color = Yml("./config/config.yml").load().get("EmbedColors", {})
+        self.staff_roles = [int(role_id) for role_id in self.report_settings.get("StaffRoles", [])]
+        self.report_utils = report_utils
+        self.report_id = report_id
+        self.value = Optional[bool]
+
+        self.logging_enabled = Yml("./config/config.yml").load().get('Logging', {}).get('Report', {}).get('Enabled',
+                                                                                                          False)
+        self.logging_channel_id = int(Yml("./config/config.yml").load().get('Logging', {}).get('Report', {})
+                                      .get('ChannelID', 0))
+
+        self.dm_user_enabled = self.report_settings.get('DMUser', False)
+
+    @disnake.ui.button(label="Закрыть", style=disnake.ButtonStyle.red, custom_id="report_reject", emoji="⛔")
+    async def report_reject(self, button: disnake.ui.Button, interaction: disnake.AppCmdInter):
+        await interaction.response.defer()
+        success = self.report_utils.close_report(report_id=self.report_id, moderator_id=interaction.user.id)
+
+        if success:
+            text_channel_id = self.report_utils.get_text_channel_id(self.report_id)
+            voice_channel_id = self.report_utils.get_voice_channel_id(self.report_id)
+
+            if text_channel_id:
+                text_channel = interaction.guild.get_channel(text_channel_id)
+                if text_channel:
+                    await text_channel.set_permissions(interaction.guild.default_role, send_messages=False)
+
+            if voice_channel_id:
+                voice_channel = interaction.guild.get_channel(voice_channel_id)
+                if voice_channel:
+                    await voice_channel.set_permissions(interaction.guild.default_role, speak=False)
+
+            if self.logging_enabled:
+                await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id,
+                                 embed_factory=self.embed_factory,
+                                 action='LogReportClosed', member=interaction.author, color="Error")
+
+            if self.dm_user_enabled:
+                member = await self.bot.fetch_user(self.report_utils.get_victim_id(self.report_id))
+                await send_embed_to_member(embed_factory=self.embed_factory, member=member,
+                                           preset="DMReportClosed", color_type="Error")
+
+            embed = await self.embed_factory.create_embed(preset="ReportClosed", color_type="Success")
+            await interaction.followup.send(embed=embed, ephemeral=True)
+        else:
+            embed = await self.embed_factory.create_embed(preset="ReportClosedError", color_type="Error")
             await interaction.followup.send(embed=embed, ephemeral=True)
 
         self.value = False
