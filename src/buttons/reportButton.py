@@ -32,6 +32,11 @@ class ReportButton(disnake.ui.View):
     async def report_accept(self, button: disnake.ui.Button, interaction: disnake.AppCmdInter):
         await interaction.response.defer()
 
+        if not any(role.id in self.staff_roles for role in interaction.user.roles):
+            embed = await self.embed_factory.create_embed(preset="NoPermission", color_type="Error")
+            await interaction.followup.send(embed=embed, ephemeral=True)
+            return
+
         if not self.report_utils.claim_report(report_id=self.report_id, moderator_id=interaction.user.id):
             await interaction.followup.send("Ошибка принятия репорта.", ephemeral=True)
             return
@@ -174,7 +179,7 @@ class ReportPanel(disnake.ui.View):
         self.dm_user_enabled = self.report_settings.get('DMUser', False)
 
     @disnake.ui.button(label="Закрыть", style=disnake.ButtonStyle.red, custom_id="report_reject", emoji="⛔")
-    async def report_reject(self, button: disnake.ui.Button, interaction: disnake.AppCmdInter):
+    async def report_closed(self, button: disnake.ui.Button, interaction: disnake.AppCmdInter):
         await interaction.response.defer()
         success = self.report_utils.close_report(report_id=self.report_id, moderator_id=interaction.user.id)
 
@@ -182,15 +187,41 @@ class ReportPanel(disnake.ui.View):
             text_channel_id = self.report_utils.get_text_channel_id(self.report_id)
             voice_channel_id = self.report_utils.get_voice_channel_id(self.report_id)
 
+            member = interaction.guild.get_member(self.report_utils.get_victim_id(self.report_id))
+            reporter = interaction.guild.get_member(self.report_utils.get_perpetrator_id(self.report_id))
+
+            staff_roles = [interaction.guild.get_role(role_id) for role_id in self.staff_roles]
+            staff_permissions = {role: disnake.PermissionOverwrite(read_messages=True) for role in staff_roles}
+
+            permissions = {
+                interaction.guild.default_role: disnake.PermissionOverwrite(
+                    read_messages=True,
+                    send_messages=False
+                ),
+                interaction.user: disnake.PermissionOverwrite(
+                    read_messages=True,
+                    send_messages=False
+                ),
+                member: disnake.PermissionOverwrite(
+                    read_messages=True,
+                    send_messages=False
+                ),
+                reporter: disnake.PermissionOverwrite(
+                    read_messages=True,
+                    send_messages=False
+                ),
+                **staff_permissions
+            }
+
             if text_channel_id:
                 text_channel = interaction.guild.get_channel(text_channel_id)
                 if text_channel:
-                    await text_channel.set_permissions(interaction.guild.default_role, send_messages=False)
+                    await text_channel.set_permissions(overwrite=permissions)
 
             if voice_channel_id:
                 voice_channel = interaction.guild.get_channel(voice_channel_id)
                 if voice_channel:
-                    await voice_channel.set_permissions(interaction.guild.default_role, speak=False)
+                    await voice_channel.set_permissions(overwrite=permissions)
 
             if self.logging_enabled:
                 await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id,
