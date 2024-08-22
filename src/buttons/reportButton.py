@@ -98,9 +98,9 @@ class ReportButton(disnake.ui.View):
         content = f"{user_mentions} {staff_mentions}".strip()
 
         view = ReportPanel(report_id=self.report_id, report_utils=self.report_utils, bot=self.bot)
-        embed = await self.embed_factory.create_embed(preset="ReportClaimedDetails", user=interaction.author,  view=view)
+        embed = await self.embed_factory.create_embed(preset="ReportClaimedDetails", user=interaction.author)
 
-        message = await text_channel.send(content=content if content else None, embed=embed)
+        message = await text_channel.send(content=content if content else None, embed=embed, view=view)
         await message.pin()
 
         message_id = self.report_utils.get_message_id(self.report_id)
