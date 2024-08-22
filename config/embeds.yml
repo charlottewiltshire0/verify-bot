@@ -349,6 +349,25 @@ Embeds:
     Title: "<:crossmark:1272260131677278209> Репорт не найден!"
     Description: "Репорт с указанным ID не был найден. Пожалуйста, проверьте правильность введенных данных и попробуйте снова."
 
+  ReportClosed:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:tick:1272260155190546584> Успех!"
+    Description: "Репорт был успешно закрыт."
+
+  ReportClosedError:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Не удалось закрыть репорт."
+
+  DMReportClosed:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:tick:1272260155190546584> Ваш репорт закрыт"
+    Description: "Ваш репорт #{report-id} был закрыт модератором."
+    Timestamp: True
+
   DMReportReject:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
@@ -426,5 +445,6 @@ Embeds:
     Title: "Репорт принят"
     Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Автор Репорта**: {report-victim} `{report-victim-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-perpetrator} `{report-perpetrator-id}`\n<:arrow:1274280332304322611> **ID Репорта**: `{report-id}`\n<:arrow:1274280332304322611> **Причина**: {report-reason}\n<:arrow:1274280332304322611> {date}"
 
-
-
+  LogReportClosed:
+    Title: "Репорт закрыт"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Автор Репорта**: {report-victim} `{report-victim-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-perpetrator} `{report-perpetrator-id}`\n<:arrow:1274280332304322611> **ID Репорта**: `{report-id}`\n<:arrow:1274280332304322611> **Причина**: {report-reason}\n<:arrow:1274280332304322611> {date}"
