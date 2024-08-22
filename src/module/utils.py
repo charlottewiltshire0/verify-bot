@@ -83,7 +83,7 @@ class TextFormatter:
             '{report-text-channel-id}': self.report_utils.get_text_channel_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
             '{report-voice-channel-id}': self.report_utils.get_voice_channel_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
             '{report-claimed-by-user-id}': self.report_utils.get_claimed_by_user_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
-            '{report-member-ids}': self.report_utils.get_member_ids(victim_id=user.id, guild_id=user.guild.id) if user else '',
+            '{report-member-ids}': self.report_utils.get_formatted_member_ids(victim_id=user.id, guild_id=user.guild.id) if user else '',
         }
 
         async_replacements = {
@@ -333,24 +333,30 @@ class ReportUtils:
         try:
             report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
             if report:
+                if not report:
+                    logger.error(
+                        f"Report not found for report_id={report_id}, victim_id={victim_id}, guild_id={guild_id}")
+                    return False
+
                 if report.member_ids is None:
                     report.member_ids = []
 
                 if member_id in report.member_ids:
-                    return False
-                if report.victim_id == member_id or report.perpetrator_id == member_id:
+                    logger.info(f"Member {member_id} is already in the report {report_id}")
                     return False
 
-                if report.member_ids:
-                    report.member_ids.append(member_id)
-                else:
-                    report.member_ids = [member_id]
+                if report.victim_id == member_id or report.perpetrator_id == member_id:
+                    logger.info(f"Member {member_id} is either the victim or perpetrator of report {report_id}")
+                    return False
+
+                report.member_ids.append(member_id)
                 self.session.commit()
                 return True
+
         except Exception as e:
             self.session.rollback()
             logger.error(f"Error adding member to report: {e}")
-        return False
+            return False
 
     def delete_report(self, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
         """Deletes the report by its ID or by victim ID and guild ID."""
