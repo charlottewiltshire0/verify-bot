@@ -328,31 +328,19 @@ class ReportUtils:
         report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
         return report.voice_channel_id if report else None
 
-    def add_member_to_report(self, member_id: int, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
-        """Adds a member to the report's member list by report ID or by victim ID and guild ID."""
+    def add_member_to_report(self, member_id: int, report_id: int = None, victim_id: int = None,
+                             guild_id: int = None) -> bool:
+        """Adds a participant to the list of report participants by report ID, or by victim ID and server ID."""
         try:
             report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
             if report:
-                if not report:
-                    logger.error(
-                        f"Report not found for report_id={report_id}, victim_id={victim_id}, guild_id={guild_id}")
-                    return False
-
                 if report.member_ids is None:
                     report.member_ids = []
-
-                if member_id in report.member_ids:
-                    logger.info(f"Member {member_id} is already in the report {report_id}")
-                    return False
-
-                if report.victim_id == member_id or report.perpetrator_id == member_id:
-                    logger.info(f"Member {member_id} is either the victim or perpetrator of report {report_id}")
-                    return False
-
-                report.member_ids.append(member_id)
-                self.session.commit()
-                return True
-
+                if member_id not in report.member_ids:
+                    report.member_ids.append(member_id)
+                    self.session.commit()
+                    return True
+            return False
         except Exception as e:
             self.session.rollback()
             logger.error(f"Error adding member to report: {e}")
