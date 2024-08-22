@@ -143,7 +143,7 @@ class ReportButton(disnake.ui.View):
             embed = await self.embed_factory.create_embed(preset="ReportReject", color_type="Success")
             await interaction.followup.send(embed=embed, ephemeral=True)
         else:
-            embed = await self.embed_factory.create_embed(preset="ReportRejectError", color_type="Success")
+            embed = await self.embed_factory.create_embed(preset="ReportRejectError", color_type="Error")
             await interaction.followup.send(embed=embed, ephemeral=True)
 
         self.value = False
