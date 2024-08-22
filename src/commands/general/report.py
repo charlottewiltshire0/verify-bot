@@ -13,6 +13,7 @@ class Report(commands.Cog):
         self.report_settings = Yml("./config/config.yml").load().get("Report", {})
         self.report_utils = ReportUtils()
         self.staff_roles = [int(role_id) for role_id in self.report_settings.get("StaffRoles", [])]
+        self.limit_per_user = self.report_settings.get("LimitPerUser", 5)
 
         self.logging_enabled = Yml("./config/config.yml").load().get('Logging', {}).get('Report', {}).get('Enabled',
                                                                                                           False)
@@ -62,6 +63,18 @@ class Report(commands.Cog):
         if await self.check_self_report(interaction, member):
             return
 
+        report = self.report_utils.get_report_id(report_id)
+        if not report:
+            embed = await self.embed_factory.create_embed(preset="ReportNotFound", color_type="Error")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+
+        member_ids = self.report_utils.get_member_ids(report_id=report_id)
+        if member_ids and len(member_ids) >= self.limit_per_user:
+            embed = await self.embed_factory.create_embed(preset="ReportAddLimitExceeded", color_type="Error")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+
         success = self.report_utils.add_member_to_report(member_id=member.id, report_id=report_id)
         if success:
             if self.logging_enabled:
@@ -70,10 +83,10 @@ class Report(commands.Cog):
                                  action='LogReportAddedSuccess', member=interaction.author, color="Success")
 
             embed = await self.embed_factory.create_embed(preset="ReportAdded", color_type="Success")
-            await interaction.response.send_message(embed=embed)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
         else:
             embed = await self.embed_factory.create_embed(preset="ReportAddAlreadyExists", color_type="Error")
-            await interaction.response.send_message(embed=embed)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
             logger.info(f"Failed to add user {member} to report #{report_id}.")
 
 
