@@ -312,17 +312,82 @@ Embeds:
     Title: "<:tick:1272260155190546584> Успех!"
     Description: "Репорт принят и назначен вам."
 
+  SelfReportError:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Вы не можете добавить самого себя в репорт. Пожалуйста, выберите другого пользователя."
+
+  ReportAdded:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:tick:1272260155190546584> Успех!"
+    Description: "Пользователь успешно добавлен в репорт."
+
+  ReportAddAlreadyExists:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Этот участник уже добавлен в репорт или является жертвой/преступником."
+
+  ReportClaimedDetails:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:roles:1274285161256718429> Информация"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Автор Репорта**: {report-victim} `{report-victim-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-perpetrator} `{report-perpetrator-id}`\n<:arrow:1274280332304322611> **ID Репорта**: `{report-id}`\n<:arrow:1274280332304322611> **Причина**: {report-reason}"
+    Timestamp: True
+
+  ReportAddLimitExceeded:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Вы достигли лимита участников для этого репорта."
+
+  ReportNotFound:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Репорт не найден!"
+    Description: "Репорт с указанным ID не был найден. Пожалуйста, проверьте правильность введенных данных и попробуйте снова."
+
+  ReportClosed:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:tick:1272260155190546584> Успех!"
+    Description: "Репорт был успешно закрыт."
+
+  ReportClosedError:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Не удалось закрыть репорт."
+
+  DMReportClosed:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:tick:1272260155190546584> Ваш репорт закрыт"
+    Description: "Ваш репорт #{report-id} был закрыт модератором."
+    Timestamp: True
+
   DMReportReject:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
     Title: "<:crossmark:1272260131677278209> Ваш репорт отклонен!"
     Description: "Ваш репорт был отклонен и удален из системы. Если у вас есть вопросы, пожалуйста, свяжитесь с администратором."
+    Timestamp: True
 
   DMReportSuccess:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
     Title: "<:tick:1272260155190546584> Ваш репорт принят!"
     Description: "Ваш репорт успешно создан и находится в обработке. Спасибо за ваше сотрудничество! Администрация рассмотрит ваш отчет в ближайшее время."
+    Timestamp: True
+
+  DMReportClaimed:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:tick:1272260155190546584> Репорт принят модератором!"
+    Description: "Ваш репорт был принят модератором. Пожалуйста, следите за дальнейшими обновлениями."
+    Timestamp: True
 
   LogMentionAdd:
     Title: "Канал для упоминания добавлен"
@@ -366,11 +431,20 @@ Embeds:
 
   LogReportRejection:
     Title: "Репорт отклонен"
-    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Автор Репорта**: {report-victim} `{report-victim-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-perpetrator} `{report-perpetrator-id}`\n<:arrow:1274280332304322611> {date}"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Автор Репорта**: {report-victim} `{report-victim-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-perpetrator} `{report-perpetrator-id}`\n<:arrow:1274280332304322611> **ID Репорта**: `{report-id}`\n<:arrow:1274280332304322611> {date}"
 
   LogReportSuccess:
     Title: "Новый репорт создан"
-    Description: "<:arrow:1274280332304322611> **Автор Репорта**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-pertrator} `{report-pertrator-id}`\n<:arrow:1274280332304322611> {date}"
+    Description: "<:arrow:1274280332304322611> **Автор Репорта**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-perpetrator} `{report-perpetrator-id}`\n<:arrow:1274280332304322611> **ID Репорта**: `{report-id}`\n<:arrow:1274280332304322611> {date}"
 
+  LogReportAddedSuccess:
+    Title: "Успешное добавление в репорт"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Список Участников**: \n{report-member-ids}\n<:arrow:1274280332304322611> **ID Репорта**: `{report-id}`\n<:arrow:1274280332304322611> {date}"
 
+  LogReportClaimed:
+    Title: "Репорт принят"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Автор Репорта**: {report-victim} `{report-victim-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-perpetrator} `{report-perpetrator-id}`\n<:arrow:1274280332304322611> **ID Репорта**: `{report-id}`\n<:arrow:1274280332304322611> **Причина**: {report-reason}\n<:arrow:1274280332304322611> {date}"
 
+  LogReportClosed:
+    Title: "Репорт закрыт"
+    Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Автор Репорта**: {report-victim} `{report-victim-id}`\n<:arrow:1274280332304322611> **Виновник**: {report-perpetrator} `{report-perpetrator-id}`\n<:arrow:1274280332304322611> **ID Репорта**: `{report-id}`\n<:arrow:1274280332304322611> **Причина**: {report-reason}\n<:arrow:1274280332304322611> {date}"
