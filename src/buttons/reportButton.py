@@ -25,6 +25,8 @@ class ReportButton(disnake.ui.View):
                                       .get('ChannelID', 0))
 
         self.dm_user_enabled = self.report_settings.get('DMUser', False)
+        self.ping_support_enabled = self.report_settings.get('PingSupport', True)
+        self.ping_user_enabled = self.report_settings.get('PingUser', True)
 
     @disnake.ui.button(label="Принять", style=disnake.ButtonStyle.green, custom_id="report_accept", emoji="✅")
     async def report_accept(self, button: disnake.ui.Button, interaction: disnake.AppCmdInter):
@@ -91,11 +93,12 @@ class ReportButton(disnake.ui.View):
         embed = await self.embed_factory.create_embed(preset="ReportClaimed", color_type="Success")
         await interaction.followup.send(embed=embed, ephemeral=True)
 
-        staff_mentions = ' '.join(role.mention for role in staff_roles)
-        content = f"{member.mention} {reporter.mention} {staff_mentions}"
+        staff_mentions = ' '.join(role.mention for role in staff_roles) if self.ping_support_enabled else ''
+        user_mentions = f"{member.mention} {reporter.mention}" if self.ping_user_enabled else ''
+        content = f"{user_mentions} {staff_mentions}".strip()
         embed = await self.embed_factory.create_embed(preset="ReportClaimedDetails", user=interaction.author)
 
-        message = await text_channel.send(content=content, embed=embed)
+        message = await text_channel.send(content=content if content else None, embed=embed)
         await message.pin()
 
         message_id = self.report_utils.get_message_id(self.report_id)
