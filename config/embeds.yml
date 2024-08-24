@@ -389,6 +389,30 @@ Embeds:
     Description: "Ваш репорт был принят модератором. Пожалуйста, следите за дальнейшими обновлениями."
     Timestamp: True
 
+  SelfBanError:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Вы не можете забанить самого себя."
+
+  RequireReasonError:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Причина обязательна!"
+    Description: "Вы должны указать причину для выдачи бана."
+
+  RequireProofError:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Доказательства обязательны!"
+    Description: "Вы должны предоставить доказательства для выдачи бана."
+
+  BanSuccess:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:ban:1272608029883502612> Результат бана:"
+    Description: "<:arrow:1274280332304322611> **Причина**: {banned-reason}\n**Модератор** {user-mention}\n<:arrow:1274280332304322611> **Забанен**: {banned-user} `{banned-id}`"
+
   LogMentionAdd:
     Title: "Канал для упоминания добавлен"
     Description: "<:arrow:1274280332304322611> **Ответственный**: {user-mention} `{user-id}`\n<:arrow:1274280332304322611> **Канал**: {channelmention}\n<:arrow:1274280332304322611> {date}"
