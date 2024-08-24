@@ -14,8 +14,8 @@ class Server(commands.Cog):
         description="Показать информацию о сервере"
     )
     async def server_slash(self, interaction: disnake.AppCmdInter):
-        embed = await self.embed_factory.create_embed(preset='Server', user=interaction.user)
         await interaction.response.defer()
+        embed = await self.embed_factory.create_embed(preset='Server', user=interaction.user)
         await interaction.followup.send(embed=embed)
 
 

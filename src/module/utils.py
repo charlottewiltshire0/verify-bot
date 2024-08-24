@@ -517,32 +517,54 @@ class BanUtils:
     def __init__(self):
         self.session = scoped_session(SessionLocal)
 
-    def record_ban(self, member, guild, moderator, reason):
-        session = self.session()
-        try:
-            ban = Ban(
-                user_id=member.id,
-                guild_id=guild.id,
-                ban_date=datetime.utcnow(),
-                reason=reason,
-                moderator_id=moderator.id,
-                status=BanStatus.ACTIVE
-            )
-            session.add(ban)
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            print(f"Ошибка записи бана в базу данных: {e}")
-        finally:
-            session.close()
+    def issue_ban(self, user_id: int, guild_id: int, moderator_id: int, reason: str = None, proof: str = None, expiration_date: datetime = None):
+        ban = Ban(
+            user_id=user_id,
+            guild_id=guild_id,
+            ban_date=datetime.utcnow(),
+            expiration_date=expiration_date,
+            reason=reason,
+            proof=proof,
+            moderator_id=moderator_id,
+            status=BanStatus.ACTIVE
+        )
+        self.session.add(ban)
+        self.session.commit()
+        return ban
 
-    def parse_time(self, time_str):
-        pattern = re.compile(r'((?P<hours>\d+)h)?\s*((?P<minutes>\d+)m)?')
-        match = pattern.match(time_str)
-        if not match:
-            return None
-        time_params = {name: int(param) for name, param in match.groupdict().items() if param}
-        return timedelta(**time_params)
+    def revoke_ban(self, ban_id: int, revoked_by: int):
+        ban = self.db.query(Ban).filter(Ban.id == ban_id, Ban.status == BanStatus.ACTIVE).first()
+        if ban:
+            ban.status = BanStatus.REVOKED
+            ban.revoked_by = revoked_by
+            ban.revoked_date = datetime.utcnow()
+            self.session.commit()
+        return ban
+
+    def get_ban(self, user_id: int, guild_id: int):
+        return self.session.query(Ban).filter(Ban.user_id == user_id, Ban.guild_id == guild_id).first()
+
+    def get_ban_end_date(self, user_id: int, guild_id: int):
+        ban = self.get_ban(user_id, guild_id)
+        return ban.expiration_date if ban else None
+
+    def get_proof(self, user_id: int, guild_id: int):
+        ban = self.get_ban(user_id, guild_id)
+        return ban.proof if ban else None
+
+    def get_moderator_id(self, user_id: int, guild_id: int):
+        ban = self.get_ban(user_id, guild_id)
+        return ban.moderator_id if ban else None
+
+    def get_ban_status(self, user_id: int, guild_id: int):
+        ban = self.get_ban(user_id, guild_id)
+        return ban.status if ban else None
+
+    def format_ban_status(self, user_id: int, guild_id: int):
+        ban = self.get_ban(user_id, guild_id)
+        if ban:
+            return ban.status.value.capitalize()
+        return "Бан не найден."
 
 
 def loadExtensions(bot: commands.Bot, *directories: str):

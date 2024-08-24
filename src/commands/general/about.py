@@ -14,8 +14,8 @@ class About(commands.Cog):
         description="Основная информация о боте.",
     )
     async def about_slash(self, interaction: disnake.AppCmdInter):
-        embed = await self.embed_factory.create_embed(preset='About', user=interaction.user)
         await interaction.response.defer()
+        embed = await self.embed_factory.create_embed(preset='About', user=interaction.user)
         await interaction.followup.send(embed=embed)
 
 

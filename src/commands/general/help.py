@@ -16,8 +16,9 @@ class Help(commands.Cog):
 
     )
     async def help_slash(self, interaction: disnake.AppCmdInter):
+        await interaction.response.defer()
         embed = await self.embed_factory.create_embed(preset='Help', user=interaction.user)
-        await interaction.response.send_message(embed=embed)
+        await interaction.followup.send(embed=embed)
 
 
 def setup(bot: commands.Bot):
