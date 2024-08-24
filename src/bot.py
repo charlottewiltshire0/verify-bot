@@ -34,14 +34,6 @@ class Bot(commands.AutoShardedBot):
 
         loadExtensions(self, 'src/events', 'src/commands/moderator', 'src/commands/general', 'src/commands/owner')
 
-    async def success(self, preset: str, interaction: disnake.AppCmdInter, ephemeral: Optional[bool], embed_factory):
-        embed = await embed_factory.create_embed(preset=preset, color_type="Success")
-        await interaction.response.send_message(embed=embed, ephemeral=ephemeral)
-
-    async def error(self, preset: str, interaction: disnake.AppCmdInter, ephemeral: Optional[bool], embed_factory):
-        embed = await embed_factory.create_embed(preset=preset, color_type="Error")
-        await interaction.response.send_message(embed=embed, ephemeral=ephemeral)
-
     async def __aenter__(self):
         token = data.get('BotToken')
         if not token:
