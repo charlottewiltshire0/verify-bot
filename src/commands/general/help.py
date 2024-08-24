@@ -12,8 +12,6 @@ class Help(commands.Cog):
     @commands.slash_command(
         name="help",
         description="Нужна помощь? Показывает все команды бота.",
-        aliases=["cmd", "command", "commands", "cmds", "commmands", "commmnd"],
-
     )
     async def help_slash(self, interaction: disnake.AppCmdInter):
         await interaction.response.defer()
