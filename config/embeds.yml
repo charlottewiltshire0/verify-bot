@@ -6,7 +6,7 @@ Embeds:
     Title: "Example Title"
     Description: "Example Description"
     Url: "https://example.com"
-    Timestamp: true
+    Timestamp: True
     Footer: "Ticket System"
     FooterIcon: "https://i.pinimg.com/736x/86/6b/e4/866be4dc8c9ce51aa87bf07cf3dad15e.jpg"
     Thumbnail: "https://i.pinimg.com/736x/86/6b/e4/866be4dc8c9ce51aa87bf07cf3dad15e.jpg"
@@ -14,7 +14,7 @@ Embeds:
     Fields:
       - name: "Example Fields"
         value: "Example"
-        inline: false
+        inline: False
   About:
     Footer: "© {developer-displayname}"
     FooterIcon: "{developer-pfp}"
