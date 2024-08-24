@@ -22,9 +22,8 @@ class Ban(commands.Cog):
 
     async def check_self_ban(self, interaction: disnake.AppCmdInter, member: disnake.Member) -> bool:
         if member.id == interaction.author.id:
-            embed = await self.embed_factory.create_embed(preset='SelfBanError', color_type="Error")
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-            self.bot.error(preset='SelfBanError', ephemeral=True, interaction=interaction, embed_factory=self.embed_factory)
+            self.bot.error(preset='SelfBanError', ephemeral=True, interaction=interaction,
+                           embed_factory=self.embed_factory)
             return True
         return False
 
@@ -50,18 +49,17 @@ class Ban(commands.Cog):
             return
 
         if self.require_reason and not reason:
-            embed = await self.embed_factory.create_embed(preset='RequireReasonError', color_type="Error")
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            self.bot.error(preset='RequireReasonError', ephemeral=True, interaction=interaction,
+                           embed_factory=self.embed_factory)
             return
 
         if self.require_proof and not proof:
-            embed = await self.embed_factory.create_embed(preset='RequireProofError', color_type="Error")
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            self.bot.error(preset='RequireProofError', ephemeral=True, interaction=interaction,
+                           embed_factory=self.embed_factory)
             return
 
-        embed = await self.embed_factory.create_embed(preset='BanSuccess', color_type="Error")
-        await interaction.followup.send(embed=embed, ephemeral=True)
-
+        self.bot.success(preset='BanSuccess', ephemeral=True, interaction=interaction,
+                         embed_factory=self.embed_factory)
 
 def setup(bot: commands.Bot):
     bot.add_cog(Ban(bot))
