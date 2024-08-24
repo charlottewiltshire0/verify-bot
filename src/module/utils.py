@@ -607,10 +607,6 @@ def loadExtensions(bot: commands.Bot, *directories: str):
                     logger.error(f"Failed to load extension {module_name}: {e}")
 
 
-def get_prefix() -> str:
-    return '/'
-
-
 class MentionUtils:
     def __init__(self):
         self.session = scoped_session(SessionLocal)
@@ -714,3 +710,7 @@ async def check_staff_roles(interaction: disnake.AppCmdInter, staff_roles: list,
     embed = await embed_factory.create_embed(preset='NoPermissions', color_type="Error")
     await interaction.response.send_message(embed=embed, ephemeral=True)
     return False
+
+
+def get_prefix() -> str:
+    return '/'
