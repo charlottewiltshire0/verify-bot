@@ -6,7 +6,7 @@ Embeds:
     Title: "Example Title"
     Description: "Example Description"
     Url: "https://example.com"
-    Timestamp: true
+    Timestamp: True
     Footer: "Ticket System"
     FooterIcon: "https://i.pinimg.com/736x/86/6b/e4/866be4dc8c9ce51aa87bf07cf3dad15e.jpg"
     Thumbnail: "https://i.pinimg.com/736x/86/6b/e4/866be4dc8c9ce51aa87bf07cf3dad15e.jpg"
@@ -14,7 +14,7 @@ Embeds:
     Fields:
       - name: "Example Fields"
         value: "Example"
-        inline: false
+        inline: False
   About:
     Footer: "© {developer-displayname}"
     FooterIcon: "{developer-pfp}"
@@ -388,6 +388,30 @@ Embeds:
     Title: "<:tick:1272260155190546584> Репорт принят модератором!"
     Description: "Ваш репорт был принят модератором. Пожалуйста, следите за дальнейшими обновлениями."
     Timestamp: True
+
+  SelfBanError:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Вы не можете забанить самого себя."
+
+  RequireReasonError:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Причина обязательна!"
+    Description: "Вы должны указать причину для выдачи бана."
+
+  RequireProofError:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Доказательства обязательны!"
+    Description: "Вы должны предоставить доказательства для выдачи бана."
+
+  BanSuccess:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:ban:1272608029883502612> Результат бана:"
+    Description: "<:arrow:1274280332304322611> **Причина**: {banned-reason}\n**Модератор** {user-mention}\n<:arrow:1274280332304322611> **Забанен**: {banned-user} `{banned-id}`"
 
   LogMentionAdd:
     Title: "Канал для упоминания добавлен"

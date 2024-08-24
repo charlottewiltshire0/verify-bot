@@ -30,7 +30,8 @@ class TextFormatter:
         self.report_utils = ReportUtils()
         self.mention_utils = MentionUtils()
 
-    async def format_text(self, text: str, user: Optional[disnake.Member] = None, channel: Optional[disnake.TextChannel] = None) -> str:
+    async def format_text(self, text: str, user: Optional[disnake.Member] = None,
+                          channel: Optional[disnake.TextChannel] = None) -> str:
         placeholders = {
             '{api-ping}': round(self.bot.latency * 1000),
             '{bot-pfp}': self.bot.user.avatar.url if self.bot.user.avatar else '',
@@ -51,14 +52,21 @@ class TextFormatter:
             '{developer-displayname}': "@charlottewiltshire0",
             '{developer-pfp}': "https://cdn.discordapp.com/attachments/1098234521721241660/1273630739262603295/logo.gif?ex=66bf508f&is=66bdff0f&hm=c19083e5f5e62dab94d9358c72e0fc8b29cc4c6128675ab5f53342b0cbc59317&",
             '{channel-mention}': f"<#{channel.id}>" if channel else '',
-            '{verify-status}': self.verify_utils.get_verify_status(user_id=user.id, guild_id=user.guild.id) if user else '',
-            '{verify-rejection}': self.verify_utils.get_verify_rejection(user_id=user.id, guild_id=user.guild.id) if user else '',
-            '{verify-moderator}': self.verify_utils.get_verify_moderator(user_id=user.id, guild_id=user.guild.id) if user else '',
-            '{verify-moderator-id}': self.verify_utils.get_verify_moderator_id(user_id=user.id, guild_id=user.guild.id) if user else '',
-            '{verify-lastmoderator}': self.verify_utils.get_verify_last_moderator(user_id=user.id, guild_id=user.guild.id) if user else '',
-            '{verify-lastmoderator-id}': self.verify_utils.get_verify_last_moderator_id(user_id=user.id, guild_id=user.guild.id) if user else '',
+            '{verify-status}': self.verify_utils.get_verify_status(user_id=user.id,
+                                                                   guild_id=user.guild.id) if user else '',
+            '{verify-rejection}': self.verify_utils.get_verify_rejection(user_id=user.id,
+                                                                         guild_id=user.guild.id) if user else '',
+            '{verify-moderator}': self.verify_utils.get_verify_moderator(user_id=user.id,
+                                                                         guild_id=user.guild.id) if user else '',
+            '{verify-moderator-id}': self.verify_utils.get_verify_moderator_id(user_id=user.id,
+                                                                               guild_id=user.guild.id) if user else '',
+            '{verify-lastmoderator}': self.verify_utils.get_verify_last_moderator(user_id=user.id,
+                                                                                  guild_id=user.guild.id) if user else '',
+            '{verify-lastmoderator-id}': self.verify_utils.get_verify_last_moderator_id(user_id=user.id,
+                                                                                        guild_id=user.guild.id) if user else '',
             '{verify-date}': self.verify_utils.get_verify_date(user_id=user.id, guild_id=user.guild.id) if user else '',
-            '{verify-lastdate}': self.verify_utils.get_verify_last_date(user_id=user.id, guild_id=user.guild.id) if user else '',
+            '{verify-lastdate}': self.verify_utils.get_verify_last_date(user_id=user.id,
+                                                                        guild_id=user.guild.id) if user else '',
             '{verify-role}': self.verify_utils.get_verify_role(user_id=user.id, guild_id=user.guild.id) if user else '',
             '{guild-name}': str(user.guild.name) if user else '',
             '{guild-id}': str(user.guild.id) if user else '',
@@ -74,16 +82,23 @@ class TextFormatter:
             '{channelmention}': f'<#{self.mention_utils.get_channel_mention(user.guild.id)}>' if user else '',
             '{date}': datetime.utcnow(),
             '{report-victim}': f'<@{self.report_utils.get_victim_id(victim_id=user.id, guild_id=user.guild.id)}>' if user else '',
-            '{report-victim-id}': self.report_utils.get_victim_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
+            '{report-victim-id}': self.report_utils.get_victim_id(victim_id=user.id,
+                                                                  guild_id=user.guild.id) if user else '',
             '{report-perpetrator}': f'<@{self.report_utils.get_perpetrator_id(victim_id=user.id, guild_id=user.guild.id)}>' if user else '',
-            '{report-perpetrator-id}': self.report_utils.get_perpetrator_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
-            '{report-status}': self.report_utils.get_report_status(victim_id=user.id, guild_id=user.guild.id) if user else '',
+            '{report-perpetrator-id}': self.report_utils.get_perpetrator_id(victim_id=user.id,
+                                                                            guild_id=user.guild.id) if user else '',
+            '{report-status}': self.report_utils.get_report_status(victim_id=user.id,
+                                                                   guild_id=user.guild.id) if user else '',
             '{report-reason}': self.report_utils.get_reason(victim_id=user.id, guild_id=user.guild.id) if user else '',
             '{report-id}': self.report_utils.get_report_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
-            '{report-text-channel-id}': self.report_utils.get_text_channel_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
-            '{report-voice-channel-id}': self.report_utils.get_voice_channel_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
-            '{report-claimed-by-user-id}': self.report_utils.get_claimed_by_user_id(victim_id=user.id, guild_id=user.guild.id) if user else '',
-            '{report-member-ids}': self.report_utils.get_formatted_member_ids(victim_id=user.id, guild_id=user.guild.id) if user else '',
+            '{report-text-channel-id}': self.report_utils.get_text_channel_id(victim_id=user.id,
+                                                                              guild_id=user.guild.id) if user else '',
+            '{report-voice-channel-id}': self.report_utils.get_voice_channel_id(victim_id=user.id,
+                                                                                guild_id=user.guild.id) if user else '',
+            '{report-claimed-by-user-id}': self.report_utils.get_claimed_by_user_id(victim_id=user.id,
+                                                                                    guild_id=user.guild.id) if user else '',
+            '{report-member-ids}': self.report_utils.get_formatted_member_ids(victim_id=user.id,
+                                                                              guild_id=user.guild.id) if user else '',
         }
 
         async_replacements = {
@@ -114,7 +129,8 @@ class TextFormatter:
 
         async with aiohttp.ClientSession() as session:
             try:
-                async with session.get('https://api.github.com/repos/charlottewiltshire0/verify-bot/releases/latest') as response:
+                async with session.get(
+                        'https://api.github.com/repos/charlottewiltshire0/verify-bot/releases/latest') as response:
                     response.raise_for_status()
                     current_version = (await response.json()).get('tag_name', version)
             except aiohttp.ClientError:
@@ -202,7 +218,8 @@ class ReportUtils:
         }
         return status_map.get(status, "Unknown Status")
 
-    def claim_report(self, moderator_id: int, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
+    def claim_report(self, moderator_id: int, report_id: int = None, victim_id: int = None,
+                     guild_id: int = None) -> bool:
         """Marks a report as claimed by a moderator by report ID or by victim ID and guild ID."""
         try:
             report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
@@ -217,7 +234,8 @@ class ReportUtils:
             logger.error(f"Error claiming report: {e}")
         return False
 
-    def close_report(self, moderator_id: int, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
+    def close_report(self, moderator_id: int, report_id: int = None, victim_id: int = None,
+                     guild_id: int = None) -> bool:
         """Marks a report as closed by a moderator by report ID or by victim ID and guild ID."""
         try:
             report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
@@ -232,7 +250,8 @@ class ReportUtils:
             logger.error(f"Error closing report: {e}")
         return False
 
-    def set_message_id(self, message_id: int, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
+    def set_message_id(self, message_id: int, report_id: int = None, victim_id: int = None,
+                       guild_id: int = None) -> bool:
         """Sets the message ID associated with the report by report ID or by victim ID and guild ID."""
         try:
             report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
@@ -245,7 +264,8 @@ class ReportUtils:
             logger.error(f"Error setting message ID: {e}")
         return False
 
-    def set_channels_id(self, text_channel_id: int, voice_channel_id: int, report_id: int = None, victim_id: int = None, guild_id: int = None):
+    def set_channels_id(self, text_channel_id: int, voice_channel_id: int, report_id: int = None, victim_id: int = None,
+                        guild_id: int = None):
         """Sets the text and voice channel IDs associated with the report by report ID or by victim ID and guild ID."""
         try:
             report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
@@ -368,7 +388,8 @@ class ReportUtils:
             logger.error(f"Error deleting report: {e}")
         return False
 
-    def remove_member_from_report(self, member_id: int, report_id: int = None, victim_id: int = None, guild_id: int = None) -> bool:
+    def remove_member_from_report(self, member_id: int, report_id: int = None, victim_id: int = None,
+                                  guild_id: int = None) -> bool:
         """Removes the participant from the list of report participants by report ID or by victim ID and guild ID."""
         try:
             report = self.get_report_by_id_or_victim(report_id, victim_id, guild_id)
@@ -517,32 +538,82 @@ class BanUtils:
     def __init__(self):
         self.session = scoped_session(SessionLocal)
 
-    def record_ban(self, member, guild, moderator, reason):
-        session = self.session()
-        try:
-            ban = Ban(
-                user_id=member.id,
-                guild_id=guild.id,
-                ban_date=datetime.utcnow(),
-                reason=reason,
-                moderator_id=moderator.id,
-                status=BanStatus.ACTIVE
-            )
-            session.add(ban)
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            print(f"Ошибка записи бана в базу данных: {e}")
-        finally:
-            session.close()
-
-    def parse_time(self, time_str):
-        pattern = re.compile(r'((?P<hours>\d+)h)?\s*((?P<minutes>\d+)m)?')
-        match = pattern.match(time_str)
+    def parse_duration(self, duration_str: str):
+        units = {
+            's': 'seconds',
+            'm': 'minutes',
+            'h': 'hours',
+            'd': 'days',
+            'y': 'years'
+        }
+        match = re.findall(r'(\d+)([smhdy])', duration_str)
         if not match:
             return None
-        time_params = {name: int(param) for name, param in match.groupdict().items() if param}
-        return timedelta(**time_params)
+
+        duration_kwargs = {}
+        for value, unit in match:
+            if unit == 'y':
+                duration_kwargs['days'] = int(value) * 365
+            else:
+                duration_kwargs[units[unit]] = int(value)
+
+        return timedelta(**duration_kwargs)
+
+    def issue_ban(self, user_id: int, guild_id: int, moderator_id: int, reason: str = None, proof: str = None,
+                  duration: str = None):
+        expiration_date = None
+        if duration:
+            delta = self.parse_duration(duration)
+            if delta:
+                expiration_date = datetime.utcnow() + delta
+
+        ban = Ban(
+            user_id=user_id,
+            guild_id=guild_id,
+            ban_date=datetime.utcnow(),
+            expiration_date=expiration_date,
+            reason=reason,
+            proof=proof,
+            moderator_id=moderator_id,
+            status=BanStatus.ACTIVE
+        )
+        self.session.add(ban)
+        self.session.commit()
+        return ban
+
+    def revoke_ban(self, ban_id: int, revoked_by: int):
+        ban = self.session.query(Ban).filter(Ban.id == ban_id, Ban.status == BanStatus.ACTIVE).first()
+        if ban:
+            ban.status = BanStatus.REVOKED
+            ban.revoked_by = revoked_by
+            ban.revoked_date = datetime.utcnow()
+            self.session.commit()
+        return ban
+
+    def get_ban(self, user_id: int, guild_id: int):
+        return self.session.query(Ban).filter(Ban.user_id == user_id, Ban.guild_id == guild_id).first()
+
+    def get_ban_end_date(self, user_id: int, guild_id: int):
+        ban = self.get_ban(user_id, guild_id)
+        return ban.expiration_date if ban else None
+
+    def get_proof(self, user_id: int, guild_id: int):
+        ban = self.get_ban(user_id, guild_id)
+        return ban.proof if ban else None
+
+    def get_moderator_id(self, user_id: int, guild_id: int):
+        ban = self.get_ban(user_id, guild_id)
+        return ban.moderator_id if ban else None
+
+    def get_ban_status(self, user_id: int, guild_id: int):
+        ban = self.get_ban(user_id, guild_id)
+        return ban.status if ban else None
+
+    def format_ban_status(self, user_id: int, guild_id: int):
+        ban = self.get_ban(user_id, guild_id)
+        if ban:
+            return ban.status.value.capitalize()
+        return "Бан не найден."
 
 
 def loadExtensions(bot: commands.Bot, *directories: str):
@@ -561,10 +632,6 @@ def loadExtensions(bot: commands.Bot, *directories: str):
                     logger.info(f"Loaded extension: {module_name}")
                 except Exception as e:
                     logger.error(f"Failed to load extension {module_name}: {e}")
-
-
-def get_prefix() -> str:
-    return '/'
 
 
 class MentionUtils:
@@ -639,7 +706,8 @@ def get_button_style(color: str) -> disnake.ButtonStyle:
     return color_map.get(color, disnake.ButtonStyle.grey)
 
 
-async def log_action(bot: commands.Bot, logging_channel_id: int, embed_factory, action: str, member: disnake.Member, color: str = None):
+async def log_action(bot: commands.Bot, logging_channel_id: int, embed_factory, action: str, member: disnake.Member,
+                     color: str = None):
     if not logging_channel_id:
         return
 
@@ -657,3 +725,19 @@ async def send_embed_to_member(embed_factory, member, preset, color_type):
         await member.send(embed=embed)
     except Exception as e:
         logger.error(f"Failed to send DM to {member}: {e}")
+
+
+async def check_staff_roles(interaction: disnake.AppCmdInter, staff_roles: list, embed_factory) -> bool:
+    user_roles = [role.id for role in interaction.author.roles]
+    is_admin = any(role.permissions.administrator for role in interaction.author.roles)
+
+    if is_admin or any(role_id in staff_roles for role_id in user_roles):
+        return True
+
+    embed = await embed_factory.create_embed(preset='NoPermissions', color_type="Error")
+    await interaction.response.send_message(embed=embed, ephemeral=True)
+    return False
+
+
+def get_prefix() -> str:
+    return '/'

@@ -109,6 +109,7 @@ class Ban(Base):
     ban_date = Column(DateTime, nullable=False)
     expiration_date = Column(DateTime, nullable=True)
     reason = Column(String, nullable=True)
+    proof = Column(String, nullable=True)
     moderator_id = Column(BigInteger, nullable=False)
     status = Column(Enum(BanStatus), nullable=False, default=BanStatus.ACTIVE)
     revoked_by = Column(BigInteger, nullable=True)
@@ -118,6 +119,6 @@ class Ban(Base):
         return (
             f"<Ban(id={self.id}, user_id={self.user_id}, guild_id={self.guild_id}, "
             f"ban_date={self.ban_date}, expiration_date={self.expiration_date}, "
-            f"reason={self.reason}, moderator_id={self.moderator_id}, "
+            f"reason={self.reason}, proof={self.proof}, moderator_id={self.moderator_id}, "
             f"status={self.status}, revoked_by={self.revoked_by}, revoked_date={self.revoked_date})>"
         )

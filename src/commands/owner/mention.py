@@ -10,9 +10,9 @@ class ChannelMention(commands.Cog):
         self.embed_factory = EmbedFactory('./config/embeds.yml', './config/config.yml', bot=bot)
         self.mention_utils = MentionUtils()
 
-        self.logging_enabled = Yml("./config/config.yml").load().get('Logging', {}).get('AutoBan', {}).get('Enabled',
+        self.logging_enabled = Yml("./config/config.yml").load().get('Logging', {}).get('Mention', {}).get('Enabled',
                                                                                                            False)
-        self.logging_channel_id = int(Yml("./config/config.yml").load().get('Logging', {}).get('AutoBan', {})
+        self.logging_channel_id = int(Yml("./config/config.yml").load().get('Logging', {}).get('Mention', {})
                                       .get('ChannelID', 0))
 
     @commands.slash_command(name="mention",
