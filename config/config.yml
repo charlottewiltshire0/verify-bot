@@ -162,6 +162,26 @@ Logging:
     Enabled: True
     ChannelID: "channel_id"
 
+  Ban:
+    Enabled: True
+    ChannelID: "channel_id"
+    
   Report:
     Enabled: True
     ChannelID: "channel_id"
+
+########################################
+#                                      #
+#                 Ban                  #
+#                                      #
+########################################
+
+Ban:
+  AreStaffPunishable: False # True, False, or "Ignore"
+  DMUser: True
+  SendReview: True
+  RequireReason: False
+  RequireProof: False
+
+  StaffRoles:
+    - "1274412739170795560"
