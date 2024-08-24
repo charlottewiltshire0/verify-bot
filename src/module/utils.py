@@ -538,8 +538,35 @@ class BanUtils:
     def __init__(self):
         self.session = scoped_session(SessionLocal)
 
+    def parse_duration(self, duration_str: str):
+        units = {
+            's': 'seconds',
+            'm': 'minutes',
+            'h': 'hours',
+            'd': 'days',
+            'y': 'years'
+        }
+        match = re.findall(r'(\d+)([smhdy])', duration_str)
+        if not match:
+            return None
+
+        duration_kwargs = {}
+        for value, unit in match:
+            if unit == 'y':
+                duration_kwargs['days'] = int(value) * 365
+            else:
+                duration_kwargs[units[unit]] = int(value)
+
+        return timedelta(**duration_kwargs)
+
     def issue_ban(self, user_id: int, guild_id: int, moderator_id: int, reason: str = None, proof: str = None,
-                  expiration_date: datetime = None):
+                  duration: str = None):
+        expiration_date = None
+        if duration:
+            delta = self.parse_duration(duration)
+            if delta:
+                expiration_date = datetime.utcnow() + delta
+
         ban = Ban(
             user_id=user_id,
             guild_id=guild_id,
@@ -555,7 +582,7 @@ class BanUtils:
         return ban
 
     def revoke_ban(self, ban_id: int, revoked_by: int):
-        ban = self.db.query(Ban).filter(Ban.id == ban_id, Ban.status == BanStatus.ACTIVE).first()
+        ban = self.session.query(Ban).filter(Ban.id == ban_id, Ban.status == BanStatus.ACTIVE).first()
         if ban:
             ban.status = BanStatus.REVOKED
             ban.revoked_by = revoked_by
