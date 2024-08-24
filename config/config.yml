@@ -64,18 +64,18 @@ AutoBan:
     MinimumAccountAge: 7 # Минимальный возраст аккаунта в днях
 
   NoAvatar:
-    DMUser: True
     Enabled: True
+    DMUser: True
     TriggerAction: "KICK" # Действие при отсутствии аватара: KICK, TIMEOUT, BAN, LOG
 
   AdvertisingName:
-    DMUser: True
     Enabled: True
+    DMUser: True
     TriggerAction: "KICK" # Действие при активации: KICK, TIMEOUT, BAN, LOG
 
   Username:
-    DMUser: True
     Enabled: True
+    DMUser: True
     TriggerAction: "LOG" # Действие при активации: KICK, TIMEOUT, BAN, LOG
 
     # Имя пользователя должно точно совпадать с одним из указанных элементов, без учёта регистра. Если в имени пользователя присутствует слово "Discord", полное имя пользователя, присоединяющегося, должно быть "discord".
