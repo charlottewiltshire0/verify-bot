@@ -13,7 +13,7 @@ class User(commands.Cog):
         name="user",
         description="Отображает информацию о пользователе."
     )
-    async def user_slash(self, interaction: disnake.AppCmdInter, member: disnake.Member = None):
+    async def user_slash(self, interaction: disnake.AppCmdInter, member: disnake.Member = commands.Param(description="Укажите пользователя, которого вы хотите проверить", default=None)):
         await interaction.response.defer()
         user = member or interaction.user
         embed = await self.embed_factory.create_embed(preset='User', user=user)
