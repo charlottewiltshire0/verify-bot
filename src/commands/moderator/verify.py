@@ -1,10 +1,9 @@
 import disnake
 from disnake.ext import commands
 from disnake.ext.commands import MissingPermissions
-from loguru import logger
 
 from src.buttons.verifyButton import VerifyButton
-from src.module import EmbedFactory, VerifyUtils, Yml, log_action, send_embed_to_member
+from src.module import EmbedFactory, VerifyUtils, Yml, log_action, send_embed_to_member, check_staff_roles
 
 
 class Verify(commands.Cog):
@@ -29,16 +28,6 @@ class Verify(commands.Cog):
             return True
         return False
 
-    async def check_staff_roles(self, interaction: disnake.AppCmdInter) -> bool:
-        user_roles = [role.id for role in interaction.author.roles]
-        is_admin = any(role.permissions.administrator for role in interaction.author.roles)
-        if is_admin or any(role_id in self.staff_roles for role_id in user_roles):
-            return True
-
-        embed = await self.embed_factory.create_embed(preset='NoPermissions', color_type="Error")
-        await interaction.response.send_message(embed=embed, ephemeral=True)
-        return False
-
     @commands.slash_command(
         name="verify",
         description="Верифицировать пользователя на сервере"
@@ -55,7 +44,8 @@ class Verify(commands.Cog):
         if await self.check_self_verification(interaction, member):
             return
 
-        if not await self.check_staff_roles(interaction):
+        if not await check_staff_roles(interaction=interaction, staff_roles=self.staff_roles,
+                                       embed_factory=self.embed_factory):
             return
 
         if self.verify_utils.is_user_verified(member.id, interaction.guild.id):
