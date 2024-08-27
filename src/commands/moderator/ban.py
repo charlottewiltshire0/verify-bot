@@ -1,7 +1,7 @@
 import disnake
 from disnake.ext import commands
 
-from src.module import EmbedFactory, VerifyUtils, Yml, BanUtils, check_staff_roles
+from src.module import EmbedFactory, VerifyUtils, Yml, BanUtils, check_staff_roles, send_embed_to_member, log_action
 
 
 class Ban(commands.Cog):
@@ -60,8 +60,30 @@ class Ban(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
 
-        embed = await self.embed_factory.create_embed(preset='BanSuccess', color_type="Success")
-        await interaction.followup.send(embed=embed, ephemeral=True)
+        ban = self.ban_utils.issue_ban(
+            user_id=member.id,
+            guild_id=interaction.guild.id,
+            moderator_id=interaction.author.id,
+            reason=reason,
+            proof=proof,
+            duration=duration
+        )
+
+        if ban:
+            embed = await self.embed_factory.create_embed(preset='BanSuccess', color_type="Error")
+            await interaction.followup.send(embed=embed, ephemeral=True)
+
+            if self.dm_user_enabled:
+                await send_embed_to_member(embed_factory=self.embed_factory, member=member, preset="DMBan",
+                                           color_type="Error")
+
+            if self.logging_enabled:
+                await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id, embed_factory=self.embed_factory,
+                                 action='LogBan', member=member, color="Error")
+
+        else:
+            embed = await self.embed_factory.create_embed(preset='BanFailed', color_type="Error")
+            await interaction.followup.send(embed=embed, ephemeral=True)
 
 
 def setup(bot: commands.Bot):
