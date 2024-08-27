@@ -411,7 +411,7 @@ Embeds:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
     Title: "<:ban:1272608029883502612> Результат бана:"
-    Description: "<:arrow:1274280332304322611> **Причина**: {banned-reason}\n<:arrow:1274280332304322611> **Окончание**: {banned-expiration}\n<:arrow:1274280332304322611> **Доказательство**: {banned-reason}\n<:arrow:1274280332304322611> **Модератор** {banned-moderator} `{banned-moderator-id}`\n<:arrow:1274280332304322611> **Забанен**: {banned-user} `{banned-id}`"
+    Description: "<:arrow:1274280332304322611> **Причина**: {banned-reason}\n<:arrow:1274280332304322611> **Окончание**: {banned-expiration}\n<:arrow:1274280332304322611> **Доказательство**: {banned-reason}\n<:arrow:1274280332304322611> **Модератор**: {banned-moderator} `{banned-moderator-id}`\n<:arrow:1274280332304322611> **Забанен**: {banned-user} `{banned-id}`"
 
   BanFailed:
     Author: "{bot-displayname}"
