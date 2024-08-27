@@ -1,7 +1,8 @@
 import disnake
 from disnake.ext import commands
 
-from src.module import EmbedFactory, VerifyUtils, Yml, BanUtils, check_staff_roles, send_embed_to_member, log_action
+from src.module import EmbedFactory, VerifyUtils, Yml, BanUtils, check_staff_roles, send_embed_to_member, log_action, \
+    BanStatus
 
 
 class Ban(commands.Cog):
@@ -41,7 +42,6 @@ class Ban(commands.Cog):
     )
     async def ban_add_slash(self, interaction: disnake.AppCmdInter, member: disnake.Member, reason: str = None,
                             duration: str = None, proof: str = None):
-        await interaction.response.defer()
         if await self.check_self_ban(interaction, member):
             return
 
@@ -60,6 +60,13 @@ class Ban(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
 
+        existing_ban = self.ban_utils.get_ban(user_id=member.id, guild_id=interaction.guild.id)
+        if existing_ban and existing_ban.status == BanStatus.ACTIVE:
+            embed = await self.embed_factory.create_embed(preset='AlreadyBannedError', color_type="Error",
+                                                          user=member)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+
         ban = self.ban_utils.issue_ban(
             user_id=member.id,
             guild_id=interaction.guild.id,
@@ -72,7 +79,7 @@ class Ban(commands.Cog):
         if ban:
             embed = await self.embed_factory.create_embed(preset='BanSuccess', color_type="Error",
                                                           user=member)
-            await interaction.followup.send(embed=embed, ephemeral=True)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
 
             if self.dm_user_enabled:
                 await send_embed_to_member(embed_factory=self.embed_factory, member=member, preset="DMBan",
@@ -84,7 +91,7 @@ class Ban(commands.Cog):
 
         else:
             embed = await self.embed_factory.create_embed(preset='BanFailed', color_type="Error")
-            await interaction.followup.send(embed=embed, ephemeral=True)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
 def setup(bot: commands.Bot):
