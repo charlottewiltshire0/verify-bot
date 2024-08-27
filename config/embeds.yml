@@ -401,6 +401,12 @@ Embeds:
     Title: "<:crossmark:1272260131677278209> Причина обязательна!"
     Description: "Вы должны указать причину для выдачи бана."
 
+  AlreadyBannedError:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Пользователь уже забанен!"
+    Description: "Пользователь {user-mention} уже имеет активный бан."
+
   RequireProofError:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
