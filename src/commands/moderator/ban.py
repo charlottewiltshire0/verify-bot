@@ -70,7 +70,8 @@ class Ban(commands.Cog):
         )
 
         if ban:
-            embed = await self.embed_factory.create_embed(preset='BanSuccess', color_type="Error")
+            embed = await self.embed_factory.create_embed(preset='BanSuccess', color_type="Error",
+                                                          user=member)
             await interaction.followup.send(embed=embed, ephemeral=True)
 
             if self.dm_user_enabled:
@@ -78,8 +79,8 @@ class Ban(commands.Cog):
                                            color_type="Error")
 
             if self.logging_enabled:
-                await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id, embed_factory=self.embed_factory,
-                                 action='LogBan', member=member, color="Error")
+                await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id,
+                                 embed_factory=self.embed_factory, action='LogBan', member=member, color="Error")
 
         else:
             embed = await self.embed_factory.create_embed(preset='BanFailed', color_type="Error")
