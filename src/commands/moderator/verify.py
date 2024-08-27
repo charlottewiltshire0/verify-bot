@@ -13,7 +13,7 @@ class Verify(commands.Cog):
         self.verify_utils = VerifyUtils()
         self.verify_settings = Yml("./config/config.yml").load().get("Verify", {})
         self.staff_roles = [int(role_id) for role_id in self.verify_settings.get("StaffRoles", [])]
-        self.unverified_role = self.verify_settings.get("UnverifiedRole", None)
+        self.unverified_role = self.verify_settings.get("UnverifiedRole", 0)
 
         self.logging_enabled = Yml("./config/config.yml").load().get('Logging', {}).get('Verify', {}).get('Enabled',
                                                                                                           False)
