@@ -134,6 +134,7 @@ Channels:
 Verify:
   DMUser: True
   SendReview: True
+  UnverifiedRole: "role_id"
 
   Roles:
     - id: "role_id"
