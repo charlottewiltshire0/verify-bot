@@ -67,6 +67,16 @@ class Ban(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
 
+        try:
+            await interaction.guild.ban(
+                member,
+                reason=reason
+            )
+        except disnake.Forbidden:
+            embed = await self.embed_factory.create_embed(preset='BanFailed', color_type="Error")
+            await interaction.followup.send(embed=embed, ephemeral=True)
+            return
+
         ban = self.ban_utils.issue_ban(
             user_id=member.id,
             guild_id=interaction.guild.id,
