@@ -112,6 +112,45 @@ class Ban(commands.Cog):
             embed = await self.embed_factory.create_embed(preset='BanFailed', color_type="Error")
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
+    @ban_slash.sub_command(
+        name="remove",
+        description="Снять бан с пользователя по ID"
+    )
+    async def ban_remove_slash(self,
+                               interaction: disnake.AppCmdInter,
+                               user_id: int = commands.Param(description="ID пользователя для снятия бана")):
+        ban = self.ban_utils.get_ban(user_id=user_id, guild_id=interaction.guild.id)
+        if not ban or ban.status != BanStatus.ACTIVE:
+            embed = await self.embed_factory.create_embed(preset='BanNotFoundError', color_type="Error")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+
+        success = self.ban_utils.remove_ban(user_id=user_id, guild_id=interaction.guild.id)
+        if success:
+            embed = await self.embed_factory.create_embed(preset='UnbanSuccess', color_type="Success")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+
+            member = interaction.guild.get_member(user_id)
+            if member and self.dm_user_enabled:
+                await send_embed_to_member(embed_factory=self.embed_factory, member=member, preset="DMUnban",
+                                           color_type="Success")
+
+            if self.logging_enabled:
+                await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id,
+                                 embed_factory=self.embed_factory, action='LogUnban', member=user_id, color="Success")
+
+            try:
+                await interaction.guild.unban(
+                    disnake.Object(id=user_id)
+                )
+            except disnake.Forbidden:
+                embed = await self.embed_factory.create_embed(preset='UnbanFailed', color_type="Error")
+                await interaction.followup.send(embed=embed, ephemeral=True)
+                return
+        else:
+            embed = await self.embed_factory.create_embed(preset='UnbanFailed', color_type="Error")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Ban(bot))
