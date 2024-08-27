@@ -10,8 +10,7 @@ import asyncio
 import disnake
 from disnake.ext import commands
 from loguru import logger
-from sqlalchemy import select, func
-from sqlalchemy.exc import NoResultFound, SQLAlchemyError, IntegrityError
+from sqlalchemy.exc import NoResultFound, IntegrityError
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.sql.elements import and_
 
@@ -29,6 +28,7 @@ class TextFormatter:
         self.verify_utils = VerifyUtils()
         self.report_utils = ReportUtils()
         self.mention_utils = MentionUtils()
+        self.ban_utils = BanUtils()
 
     async def format_text(self, text: str, user: Optional[disnake.Member] = None,
                           channel: Optional[disnake.TextChannel] = None) -> str:
@@ -99,6 +99,14 @@ class TextFormatter:
                                                                                     guild_id=user.guild.id) if user else '',
             '{report-member-ids}': self.report_utils.get_formatted_member_ids(victim_id=user.id,
                                                                               guild_id=user.guild.id) if user else '',
+            '{banned-reason}': self.ban_utils.get_reason(user_id=user.id, guild_id=user.guild.id) if user else '',
+            '{banned-proof}': self.ban_utils.get_proof(user_id=user.id, guild_id=user.guild.id) if user else '',
+            '{banned-moderator-id}': self.ban_utils.get_moderator_id(user_id=user.id,
+                                                                     guild_id=user.guild.id) if user else '',
+            '{banned-moderator}': f'<@{self.ban_utils.get_moderator_id(user_id=user.id, guild_id=user.guild.id)}>' if user else '',
+            '{banned-expiration}': self.ban_utils.get_ban_end_date(user_id=user.id, guild_id=user.guild.id) if user else '',
+            '{banned-id}': self.ban_utils.get_user_id(user_id=user.id, guild_id=user.guild.id) if user else '',
+            '{banned-user}': f'<@{self.ban_utils.get_user_id(user_id=user.id, guild_id=user.guild.id)}>' if user else '',
         }
 
         async_replacements = {
@@ -600,6 +608,14 @@ class BanUtils:
     def get_proof(self, user_id: int, guild_id: int):
         ban = self.get_ban(user_id, guild_id)
         return ban.proof if ban else None
+
+    def get_reason(self, user_id: int, guild_id: int):
+        ban = self.get_ban(user_id, guild_id)
+        return ban.reason if ban else None
+
+    def get_user_id(self, user_id: int, guild_id: int):
+        ban = self.get_ban(user_id, guild_id)
+        return ban.user_id if ban else None
 
     def get_moderator_id(self, user_id: int, guild_id: int):
         ban = self.get_ban(user_id, guild_id)
