@@ -411,7 +411,24 @@ Embeds:
     Author: "{bot-displayname}"
     AuthorIcon: "{bot-pfp}"
     Title: "<:ban:1272608029883502612> Результат бана:"
-    Description: "<:arrow:1274280332304322611> **Причина**: {banned-reason}\n**Модератор** {user-mention}\n<:arrow:1274280332304322611> **Забанен**: {banned-user} `{banned-id}`"
+    Description: "<:arrow:1274280332304322611> **Причина**: {banned-reason}\n<:arrow:1274280332304322611> **Окончание**: {banned-expiration}\n<:arrow:1274280332304322611> **Доказательство**: {banned-reason}\n<:arrow:1274280332304322611> **Модератор** {banned-moderator} `{banned-moderator-id}`\n<:arrow:1274280332304322611> **Забанен**: {banned-user} `{banned-id}`"
+
+  BanFailed:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Ошибка!"
+    Description: "Не удалось забанить пользователя."
+
+  DMBan:
+    Author: "{bot-displayname}"
+    AuthorIcon: "{bot-pfp}"
+    Title: "<:crossmark:1272260131677278209> Вы были забанены!"
+    Description: "Вы были забанены на сервере."
+    Timestamp: True
+
+  LogBan:
+    Title: "Результат бана:"
+    Description: "<:arrow:1274280332304322611> **Причина**: {banned-reason}\n<:arrow:1274280332304322611> **Окончание**: {banned-expiration}\n<:arrow:1274280332304322611> **Доказательство**: {banned-reason}\n<:arrow:1274280332304322611> **Модератор** {banned-moderator} `{banned-moderator-id}`\n<:arrow:1274280332304322611> **Забанен**: {banned-user} `{banned-id}`\n<:arrow:1274280332304322611> {date}"
 
   LogMentionAdd:
     Title: "Канал для упоминания добавлен"
