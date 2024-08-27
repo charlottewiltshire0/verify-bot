@@ -408,10 +408,8 @@ Embeds:
     Description: "Вы должны предоставить доказательства для выдачи бана."
 
   BanSuccess:
-    Author: "{bot-displayname}"
-    AuthorIcon: "{bot-pfp}"
-    Title: "<:ban:1272608029883502612> Результат бана:"
-    Description: "<:arrow:1274280332304322611> **Причина**: {banned-reason}\n<:arrow:1274280332304322611> **Окончание**: {banned-expiration}\n<:arrow:1274280332304322611> **Доказательство**: {banned-reason}\n<:arrow:1274280332304322611> **Модератор**: {banned-moderator} `{banned-moderator-id}`\n<:arrow:1274280332304322611> **Забанен**: {banned-user} `{banned-id}`"
+    Title: "Результат бана:"
+    Description: "<:arrow:1274280332304322611> **Причина**: {banned-reason}\n<:arrow:1274280332304322611> **Окончание**: {banned-expiration}\n<:arrow:1274280332304322611> **Доказательство**: {banned-reason}\n<:arrow:1274280332304322611> **Модератор** {banned-moderator} `{banned-moderator-id}`\n<:arrow:1274280332304322611> **Забанен**: {banned-user} `{banned-id}`\n<:arrow:1274280332304322611> {date}"
 
   BanFailed:
     Author: "{bot-displayname}"
