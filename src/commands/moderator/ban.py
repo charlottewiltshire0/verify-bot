@@ -1,7 +1,7 @@
 import disnake
 from disnake.ext import commands
 
-from src.module import EmbedFactory, VerifyUtils, Yml, BanUtils, check_staff_roles, send_embed_to_member, log_action, \
+from src.module import EmbedFactory, Yml, BanUtils, check_staff_roles, send_embed_to_member, log_action, \
     BanStatus
 
 
@@ -25,7 +25,8 @@ class Ban(commands.Cog):
         if member.id == interaction.author.id:
             embed = await self.embed_factory.create_embed(preset='SelfBanError', color_type="Error")
             await interaction.response.send_message(embed=embed, ephemeral=True)
-            self.bot.error(preset='SelfBanError', ephemeral=True, interaction=interaction, embed_factory=self.embed_factory)
+            self.bot.error(preset='SelfBanError', ephemeral=True, interaction=interaction,
+                           embed_factory=self.embed_factory)
             return True
         return False
 
@@ -40,8 +41,17 @@ class Ban(commands.Cog):
         name="add",
         description="Добавить пользователя в верифицированные"
     )
-    async def ban_add_slash(self, interaction: disnake.AppCmdInter, member: disnake.Member, reason: str = None,
-                            duration: str = None, proof: str = None):
+    async def ban_add_slash(self,
+                            interaction: disnake.AppCmdInter,
+                            member: disnake.Member = commands.Param(
+                                description="Участник сервера, которого нужно забанить"),
+                            reason: str = commands.Param(description="Причина бана", default=None),
+                            duration: str = commands.Param(
+                                description="Длительность бана (например, 7d, 30m). Оставьте пустым для постоянного бана",
+                                default=None),
+                            proof: str = commands.Param(
+                                description="Ссылка на доказательства нарушения (например, скриншот)", default=None)
+                            ):
         if await self.check_self_ban(interaction, member):
             return
 
@@ -55,7 +65,6 @@ class Ban(commands.Cog):
             return
 
         if self.require_proof and not proof:
-
             embed = await self.embed_factory.create_embed(preset='RequireProofError', color_type="Error")
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
