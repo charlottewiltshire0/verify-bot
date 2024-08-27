@@ -13,6 +13,7 @@ class VerifyButton(disnake.ui.View):
         self.embed_factory = embed_factory
         self.member = member
         self.value = Optional[bool]
+        self.unverified_role_id = int(self.verify_settings.get("UnverifiedRole", 0))
 
     @disnake.ui.button(label="Верифицировать", style=disnake.ButtonStyle.green, custom_id="verify_accept", emoji="✅")
     async def verify_accept(self, button: disnake.ui.Button, interaction: disnake.CommandInteraction):
@@ -21,6 +22,11 @@ class VerifyButton(disnake.ui.View):
         embed = await self.embed_factory.create_embed(preset='SelectRole', user=self.member)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
         await view.wait()
+
+        if self.unverified_role_id:
+            role = interaction.guild.get_role(self.unverified_role_id)
+            if role:
+                await self.member.remove_roles(role)
 
         self.value = True
         embed = await self.embed_factory.create_embed(preset='VerifySuccess', user=self.member, color_type="Success")
