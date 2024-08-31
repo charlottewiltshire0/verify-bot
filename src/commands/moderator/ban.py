@@ -114,41 +114,34 @@ class Ban(commands.Cog):
 
     @ban_slash.sub_command(
         name="remove",
-        description="Снять бан с пользователя по ID"
+        description="Снять бан с пользователя"
     )
     async def ban_remove_slash(self,
                                interaction: disnake.AppCmdInter,
-                               user_id: int = commands.Param(description="ID пользователя для снятия бана")):
-        ban = self.ban_utils.get_ban(user_id=user_id, guild_id=interaction.guild.id)
-        if not ban or ban.status != BanStatus.ACTIVE:
-            embed = await self.embed_factory.create_embed(preset='BanNotFoundError', color_type="Error")
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+                               member: disnake.User = commands.Param(
+                                   description="Пользователь, с которого нужно снять бан"),
+                               reason: str = commands.Param(description="Причина снятия бана", default=None)
+                               ):
+        if not await check_staff_roles(interaction=interaction, staff_roles=self.staff_roles,
+                                       embed_factory=self.embed_factory):
             return
 
-        success = self.ban_utils.remove_ban(user_id=user_id, guild_id=interaction.guild.id)
-        if success:
-            embed = await self.embed_factory.create_embed(preset='UnbanSuccess', color_type="Success")
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-
-            member = interaction.guild.get_member(user_id)
-            if member and self.dm_user_enabled:
-                await send_embed_to_member(embed_factory=self.embed_factory, member=member, preset="DMUnban",
-                                           color_type="Success")
-
-            if self.logging_enabled:
-                await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id,
-                                 embed_factory=self.embed_factory, action='LogUnban', member=user_id, color="Success")
-
+        ban = self.ban_utils.revoke_ban_by_user_id(user_id=member.id, guild_id=interaction.guild.id, revoked_by=interaction.author.id)
+        if ban:
             try:
-                await interaction.guild.unban(
-                    disnake.Object(id=user_id)
-                )
+                await interaction.guild.unban(user=member, reason=reason)
+                embed = await self.embed_factory.create_embed(preset='BanRemoveSuccess', color_type="Success", user=member)
+                await interaction.response.send_message(embed=embed, ephemeral=True)
+
+                if self.logging_enabled:
+                    await log_action(bot=self.bot, logging_channel_id=self.logging_channel_id,
+                                     embed_factory=self.embed_factory, action='LogBan', member=member, color="Error")
+
             except disnake.Forbidden:
                 embed = await self.embed_factory.create_embed(preset='UnbanFailed', color_type="Error")
-                await interaction.followup.send(embed=embed, ephemeral=True)
-                return
+                await interaction.response.send_message(embed=embed, ephemeral=True)
         else:
-            embed = await self.embed_factory.create_embed(preset='UnbanFailed', color_type="Error")
+            embed = await self.embed_factory.create_embed(preset='BanNotFoundError', color_type="Error")
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
