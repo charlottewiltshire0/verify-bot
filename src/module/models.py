@@ -3,6 +3,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from enum import Enum as PyEnum
 
+from src.module.types import JSONType
+
 Base = declarative_base()
 metadata = Base.metadata
 
@@ -26,15 +28,13 @@ class Settings(Base):
 class Verify(Base):
     __tablename__ = 'verify'
 
-    id = Column(BigInteger, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     guild = Column(BigInteger, unique=True, nullable=False)
     channel_mention = Column(BigInteger, unique=True, nullable=True)
-    staff_roles = Column(ARRAY(BigInteger), nullable=True)
     verify_users = relationship('VerifyUsers', back_populates='verify', cascade='all, delete-orphan')
 
     def __repr__(self):
-        return (f"<Verify(id={self.id}, guild={self.guild}, channel_mention={self.channel_mention}, "
-                f"staff_roles={self.staff_roles})>")
+        return f"<Verify(id={self.id}, guild={self.guild}, channel_mention={self.channel_mention})>"
 
 
 class VerifyUsers(Base):
@@ -55,8 +55,8 @@ class VerifyUsers(Base):
     def __repr__(self):
         return (f"<VerifyUsers(id={self.id}, user_id={self.user_id}, moder_id={self.moder_id}, "
                 f"guild_id={self.guild_id}, status={self.status}, rejection={self.rejection}, "
-                f"verification_date={self.verification_date}), last_moder_id={self.last_moder_id}, "
-                f"last_verification_date={self.last_verification_date})>, role_id={self.role_id}")
+                f"verification_date={self.verification_date}, last_moder_id={self.last_moder_id}, "
+                f"last_verification_date={self.last_verification_date}, role_id={self.role_id})>")
 
 
 class ReportStatus(PyEnum):
@@ -69,11 +69,11 @@ class ReportStatus(PyEnum):
 class Report(Base):
     __tablename__ = 'reports'
 
-    id = Column(BigInteger, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     status = Column(Enum(ReportStatus), nullable=False, default=ReportStatus.PENDING)
     victim_id = Column(BigInteger, nullable=False)
     perpetrator_id = Column(BigInteger, nullable=False)
-    member_ids = Column(ARRAY(BigInteger), nullable=True)
+    member_ids = Column(JSONType, nullable=True)
     message_id = Column(BigInteger, nullable=True)
     guild_id = Column(BigInteger, nullable=False)
     reason = Column(String, nullable=True)
@@ -90,8 +90,7 @@ class Report(Base):
             f"perpetrator_id={self.perpetrator_id}, member_ids={self.member_ids}, "
             f"guild_id={self.guild_id}, voice_channel_id={self.voice_channel_id}, text_channel_id={self.text_channel_id}, "
             f"is_claimed={self.is_claimed}, claimed_by_user_id={self.claimed_by_user_id}, "
-            f"closed_by_user_id={self.closed_by_user_id}, closed_at={self.closed_at})>, reason={self.reason}"
-        )
+            f"closed_by_user_id={self.closed_by_user_id}, closed_at={self.closed_at}, reason={self.reason})>")
 
 
 class BanStatus(PyEnum):
@@ -103,7 +102,7 @@ class BanStatus(PyEnum):
 class Ban(Base):
     __tablename__ = 'ban'
 
-    id = Column(BigInteger, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(BigInteger, nullable=False)
     guild_id = Column(BigInteger, nullable=False)
     ban_date = Column(DateTime, nullable=False)
@@ -120,5 +119,4 @@ class Ban(Base):
             f"<Ban(id={self.id}, user_id={self.user_id}, guild_id={self.guild_id}, "
             f"ban_date={self.ban_date}, expiration_date={self.expiration_date}, "
             f"reason={self.reason}, proof={self.proof}, moderator_id={self.moderator_id}, "
-            f"status={self.status}, revoked_by={self.revoked_by}, revoked_date={self.revoked_date})>"
-        )
+            f"status={self.status}, revoked_by={self.revoked_by}, revoked_date={self.revoked_date})>")

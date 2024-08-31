@@ -1,4 +1,5 @@
 import importlib
+import json
 import os
 import re
 from datetime import datetime, timedelta
@@ -10,8 +11,8 @@ import asyncio
 import disnake
 from disnake.ext import commands
 from loguru import logger
-from sqlalchemy import select, func
-from sqlalchemy.exc import NoResultFound, SQLAlchemyError, IntegrityError
+from sqlalchemy import TypeDecorator
+from sqlalchemy.exc import NoResultFound, IntegrityError
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.sql.elements import and_
 
@@ -29,6 +30,7 @@ class TextFormatter:
         self.verify_utils = VerifyUtils()
         self.report_utils = ReportUtils()
         self.mention_utils = MentionUtils()
+        self.ban_utils = BanUtils()
 
     async def format_text(self, text: str, user: Optional[disnake.Member] = None,
                           channel: Optional[disnake.TextChannel] = None) -> str:
@@ -99,6 +101,14 @@ class TextFormatter:
                                                                                     guild_id=user.guild.id) if user else '',
             '{report-member-ids}': self.report_utils.get_formatted_member_ids(victim_id=user.id,
                                                                               guild_id=user.guild.id) if user else '',
+            '{banned-reason}': self.ban_utils.get_reason(user_id=user.id, guild_id=user.guild.id) if user else '',
+            '{banned-proof}': self.ban_utils.get_proof(user_id=user.id, guild_id=user.guild.id) if user else '',
+            '{banned-moderator-id}': self.ban_utils.get_moderator_id(user_id=user.id,
+                                                                     guild_id=user.guild.id) if user else '',
+            '{banned-moderator}': f'<@{self.ban_utils.get_moderator_id(user_id=user.id, guild_id=user.guild.id)}>' if user else '',
+            '{banned-expiration}': self.ban_utils.get_ban_end_date(user_id=user.id, guild_id=user.guild.id) if user else '',
+            '{banned-id}': self.ban_utils.get_user_id(user_id=user.id, guild_id=user.guild.id) if user else '',
+            '{banned-user}': f'<@{self.ban_utils.get_user_id(user_id=user.id, guild_id=user.guild.id)}>' if user else '',
         }
 
         async_replacements = {
@@ -160,21 +170,24 @@ class ReportUtils:
     def __init__(self):
         self.session = scoped_session(SessionLocal)
 
-    def get_report_by_id_or_victim(self, report_id: int = None, victim_id: int = None, guild_id: int = None) -> Report:
-        """Retrieves a report by its ID or by victim ID and guild ID."""
+    def _fetch_report(self, report_id: Optional[int], victim_id: Optional[int], guild_id: Optional[int]) -> Optional[Report]:
+        """Fetches a report based on the provided criteria."""
         try:
             if report_id:
-                report = self.session.query(Report).filter_by(id=report_id).first()
-            else:
-                report = self.session.query(Report).filter(
+                return self.session.query(Report).filter_by(id=report_id).first()
+            elif victim_id and guild_id:
+                return self.session.query(Report).filter(
                     and_(Report.victim_id == victim_id, Report.guild_id == guild_id)
                 ).first()
-
-            if report:
-                self.session.refresh(report)
-            return report
         except NoResultFound:
             return None
+
+    def get_report_by_id_or_victim(self, report_id: Optional[int] = None, victim_id: Optional[int] = None, guild_id: Optional[int] = None) -> Optional[Report]:
+        """Retrieves a report by its ID or by victim ID and guild ID."""
+        report = self._fetch_report(report_id, victim_id, guild_id)
+        if report:
+            self.session.refresh(report)
+        return report
 
     def create_report(self, victim_id: int, perpetrator_id: int, guild_id: int, reason: str = None,
                       voice_channel_id: int = None, text_channel_id: int = None) -> Report:
@@ -581,14 +594,15 @@ class BanUtils:
         self.session.commit()
         return ban
 
-    def revoke_ban(self, ban_id: int, revoked_by: int):
-        ban = self.session.query(Ban).filter(Ban.id == ban_id, Ban.status == BanStatus.ACTIVE).first()
+    def revoke_ban_by_user_id(self, user_id: int, guild_id: int, revoked_by: int):
+        ban = self.session.query(Ban).filter(Ban.user_id == user_id, Ban.guild_id == guild_id, Ban.status == BanStatus.ACTIVE).first()
         if ban:
             ban.status = BanStatus.REVOKED
             ban.revoked_by = revoked_by
             ban.revoked_date = datetime.utcnow()
             self.session.commit()
-        return ban
+            return ban
+        return None
 
     def get_ban(self, user_id: int, guild_id: int):
         return self.session.query(Ban).filter(Ban.user_id == user_id, Ban.guild_id == guild_id).first()
@@ -600,6 +614,14 @@ class BanUtils:
     def get_proof(self, user_id: int, guild_id: int):
         ban = self.get_ban(user_id, guild_id)
         return ban.proof if ban else None
+
+    def get_reason(self, user_id: int, guild_id: int):
+        ban = self.get_ban(user_id, guild_id)
+        return ban.reason if ban else None
+
+    def get_user_id(self, user_id: int, guild_id: int):
+        ban = self.get_ban(user_id, guild_id)
+        return ban.user_id if ban else None
 
     def get_moderator_id(self, user_id: int, guild_id: int):
         ban = self.get_ban(user_id, guild_id)

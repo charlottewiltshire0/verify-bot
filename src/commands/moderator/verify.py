@@ -13,6 +13,7 @@ class Verify(commands.Cog):
         self.verify_utils = VerifyUtils()
         self.verify_settings = Yml("./config/config.yml").load().get("Verify", {})
         self.staff_roles = [int(role_id) for role_id in self.verify_settings.get("StaffRoles", [])]
+        self.unverified_role = self.verify_settings.get("UnverifiedRole", 0)
 
         self.logging_enabled = Yml("./config/config.yml").load().get('Logging', {}).get('Verify', {}).get('Enabled',
                                                                                                           False)
@@ -86,7 +87,8 @@ class Verify(commands.Cog):
         if await self.check_self_verification(interaction, member):
             return
 
-        if not await self.check_staff_roles(interaction):
+        if not await check_staff_roles(interaction=interaction, staff_roles=self.staff_roles,
+                                       embed_factory=self.embed_factory):
             return
 
         if not self.verify_utils.is_user_verified(member.id, interaction.guild.id):
@@ -109,6 +111,11 @@ class Verify(commands.Cog):
             return
 
         await member.remove_roles(role)
+
+        if self.unverified_role:
+            unverified_role = disnake.utils.get(interaction.guild.roles, id=int(self.unverified_role))
+            if unverified_role:
+                await member.add_roles(unverified_role)
 
         self.verify_utils.unverify_user(member.id, interaction.guild.id)
         embed = await self.embed_factory.create_embed(preset='VerifyRemoved', user=member, color_type="Success")
