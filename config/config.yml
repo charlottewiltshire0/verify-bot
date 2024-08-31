@@ -25,8 +25,8 @@ EmbedColors:
 ########################################
 
 Storage:
-  Type: "Postgres" # postgres or sqlite
-  URL: "postgresql://postgres:universo1@localhost:5432/discordbot" # url for postgresql or url for path
+  Type: "postgres"  # Укажите тип базы данных: "postgres" для PostgreSQL или "sqlite" для SQLite
+  URL: "postgresql://username:password@localhost:5432/mydatabase"  # URL для подключения к PostgreSQL или SQLite
   
 ########################################
 #                                      #
