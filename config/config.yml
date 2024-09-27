@@ -85,25 +85,45 @@ AutoBan:
 ########################################
 
 Report:
-    LimitPerUser: 5
-    PingSupport: True
-    PingUser: True
-    DMUser: True
-    SendReview: True
-    RemoveLeave: False # Удаление репорта, когда пользователь покидает сервер
+  MaxReports: 1 # Установите максимальное количество открытых репортов для пользователя одновременно.
+  DeletionTime: "5" # # В секундах, для мгновенного удаления установите значение 0.
+  RemoveLeave: False # Удаление репорта, когда пользователь покидает сервер.
+  RestrictDeletion: false # Должен ли репорт быть закрываемым пользователями?
+  SupportRole: ["ROLE_ID", "ROLE_ID"] # Роли, которые будут иметь доступ к репортам поддержки.
+  UserRole: ["ROLE_ID", "ROLE_ID"] # Роли, которые будут иметь доступ к своим репортам.
+  TagSupport: True # Должна ли SupportRole быть помечена при создании.
+  TagCreator: True # Должен ли UserRole быть помечен при создании.
 
-    StaffRoles:
-      - "role_id"
+  Priority:
+    Enabled: True
+    DefaultPriority: "Low" # Установить уровень приоритета по умолчанию для новых репортов.
+    Levels:
+      LowPriority:
+        Roles: [ "ROLE_ID1", "ROLE_ID2" ] # Установите роли для этого приоритета.
+        Tag: [ "ROLE_ID3", "ROLE_ID4" ] # Роли для упоминания при открытии репорта с этим приоритетом.
+        MoveTop: False # Должен ли их репорт быть перемещён в начало категории? (Установлено в False)
+      MediumPriority:
+        Roles: [ "ROLE_ID1", "ROLE_ID2" ]
+        Tag: [ "ROLE_ID3", "ROLE_ID4" ]
+        MoveTop: True
+      HighPriority:
+        Roles: [ "ROLE_ID1", "ROLE_ID2" ]
+        Tag: [ "ROLE_ID3", "ROLE_ID4" ]
+        MoveTop: True
 
-    Channel:
-      VC: True
-      Category: "category_id"
-      Topic: "**Модератор** {user-displayname} **Причина** {report-reason} **Время** {date} **ID** {report-id}"
+  Channel:
+    CategoryID: "CATEGORY_ID"
+    ArchiveCategory: "CATEGORY_ID" # Оставьте пустым, чтобы удалить репорт вместо архивации
+    ChannelName: "{report-id}-репорт-{user}-{priority}"
+    ChannelTopic: "{userid}-{priority}"
 
-    Transcripts:
-      Enabled: True
-      Channel: "transcripts"
-      DMToUser: True
+  Transcripts:
+    Enabled: True
+    Type: "TXT" # TXT или WEB
+    Save: True # Включить или отключить сохранение транскриптов.
+    MinMessages: "1" # Минимальное количество сообщений в тикете, необходимое для сохранения транскрипта.
+    SavePath: "./transcripts/" # Путь для сохранения транскриптов.
+    ArchiveChannelID: "CHANNEL_ID" # ID канала, на который будут отправлены транскрипты.
 
 ########################################
 #                                      #
